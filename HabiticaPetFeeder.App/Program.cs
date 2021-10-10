@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
+using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.App
 {
@@ -35,7 +32,7 @@ namespace HabiticaPetFeeder.App
 
                 .ConfigureServices((services) => {
                     services.AddScoped<ICommonFoodReferenceData, CommonFoodReferenceData>();
-                    services.AddScoped<ICommonFoodsReferenceService, CommonFoodsReferenceService>();
+                    services.AddScoped<ICommonFoodsReferenceService, CommonFoodReferenceService>();
                     
                     services.AddScoped<PetFeederOperation>();
                 });

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace HabiticaPetFeeder.App
 {
@@ -10,7 +8,7 @@ namespace HabiticaPetFeeder.App
     {
         public Dictionary<string, string> GetPropertyNameValuePairs(object obj)
         {
-            return obj.GetType().GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+            return obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .ToDictionary(key => key.Name, value => value.GetValue(obj).ToString());
         }
     }

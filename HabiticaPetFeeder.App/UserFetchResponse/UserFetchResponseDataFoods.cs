@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace HabiticaPetFeeder.App
 {
 
-    public class UserFetchResponseDataFood
+    public class UserFetchResponseDataFoods
     {
         public int Potatoe { get; set; }
         public int CottonCandyBlue { get; set; }

@@ -5,12 +5,12 @@ namespace HabiticaPetFeeder.App
 {
     public class PetFeederOperation
     {
-        private readonly ILogger<TempService> logger;
+        private readonly ILogger<PetFeederOperation> logger;
         private readonly ICommonFoodsReferenceService commonFoodsReferenceService;
 
         public PetFeederOperation(ILoggerFactory loggerFactory, ICommonFoodsReferenceService commonFoodsReferenceService)
         {
-            logger = loggerFactory.CreateLogger<TempService>();
+            logger = loggerFactory.CreateLogger<PetFeederOperation>();
             this.commonFoodsReferenceService = commonFoodsReferenceService;
         }
 

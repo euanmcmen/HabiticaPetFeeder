@@ -18,7 +18,7 @@ namespace HabiticaPetFeeder.App
             this.propertyReflector = propertyReflector;
         }
 
-        public List<Food> ExtractFoods(UserFetchResponseDataFood userFoods)
+        public List<Food> ExtractFoods(UserFetchResponseDataFoods userFoods)
         {
             var userFoodPropertyInfo = propertyReflector.GetPropertyNameValuePairs(userFoods);
 

@@ -5,11 +5,11 @@
         string GetPreferringTypeForFood(string name);
     }
 
-    public class CommonFoodsReferenceService : ICommonFoodsReferenceService
+    public class CommonFoodReferenceService : ICommonFoodsReferenceService
     {
         private readonly ICommonFoodReferenceData commonFoodReferenceData;
 
-        public CommonFoodsReferenceService(ICommonFoodReferenceData commonFoodReferenceData)
+        public CommonFoodReferenceService(ICommonFoodReferenceData commonFoodReferenceData)
         {
             this.commonFoodReferenceData = commonFoodReferenceData;
         }
