@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.App
@@ -35,10 +36,38 @@ namespace HabiticaPetFeeder.App
 
             logger.LogInformation($"Extracted {foods.Count} foods.");
 
-            //Create the preferred pet type/foods matrix.
+            //Create the preferred pet foods collection.
+            var petFoodPreferencesSet = new Dictionary<Pet, List<Food>>();
+
+            foreach (var pet in pets)
+            {
+                //This pet is an egg.
+                if (pet.FedPoints == -1)
+                    continue;
+
+                foreach (var food in foods)
+                {
+                    if (food.Type != pet.Type)
+                        continue;
+
+                    if (petFoodPreferencesSet.ContainsKey(pet))
+                    {
+                        petFoodPreferencesSet[pet].Add(food);
+                    }
+                    else
+                    {
+                        petFoodPreferencesSet.Add(pet, new List<Food>() { food });
+                    }
+                }
+            }
+
+            foreach (var item in petFoodPreferencesSet)
+            {
+                logger.LogInformation($"Pet {item.Key.FullName} really likes {string.Join(" & ", item.Value.Select(x => x.FullName))}");
+            }
 
             /*
-             * Animal.Type:{ [Food.FullName], [Food.FullName] }
+             * { LionCub-White: [ {"Milk": 174 }, {"Cake_White": 7}, {Candy_White": 1,}, { "Pie_White": 1}] }
              * 
              */
 
