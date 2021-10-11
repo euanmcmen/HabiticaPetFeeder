@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.App
 {
-    public record Pet(string Name, string Type, int FedPoints)
+    public record Pet(string FullName, string Name, string Type, int FedPoints)
     {
-        string GetFullName => $"{Name}_{Type}";
     }
 }

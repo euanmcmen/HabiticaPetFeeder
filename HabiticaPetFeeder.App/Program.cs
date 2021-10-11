@@ -31,9 +31,21 @@ namespace HabiticaPetFeeder.App
                 })
 
                 .ConfigureServices((services) => {
-                    services.AddScoped<ICommonFoodReferenceData, CommonFoodReferenceData>();
-                    services.AddScoped<ICommonFoodsReferenceService, CommonFoodReferenceService>();
-                    
+
+                    services.AddSingleton<ICommonFoodReferenceData>(new CommonFoodReferenceData());
+
+                    services.AddScoped<IUserResponseParserFactory, UserResponseParserFactory>();
+
+                    services.AddScoped<IUserResponseElementParser, UserResponseElementParser>();
+
+                    services.AddScoped<UserResponsePetParser>()
+                        .AddScoped<IUserResponseParser<Pet>, UserResponsePetParser>(s => s.GetService<UserResponsePetParser>());
+
+                    services.AddScoped<UserResponseFoodParser>()
+                        .AddScoped<IUserResponseParser<Food>, UserResponseFoodParser>(s => s.GetService<UserResponseFoodParser>());
+
+                    services.AddScoped<IHabiticaApiClient, HabiticaApiClient>();
+
                     services.AddScoped<PetFeederOperation>();
                 });
         }

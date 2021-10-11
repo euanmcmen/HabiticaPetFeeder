@@ -19,9 +19,9 @@ namespace HabiticaPetFeeder.App
                 new ("Red", "Strawberry"),
                 new ("Shade", "Chocolate"),
                 new ("Skeleton", "Fish"),
-                new ("Zombie", "RottonMeat"),
-                new ("CottonCandyPink", "PinkCottonCandy"),
-                new ("CottonCandyBlue", "BlueCottonCandy"),
+                new ("Zombie", "RottenMeat"),
+                new ("CottonCandyPink", "CottonCandyPink"),
+                new ("CottonCandyBlue", "CottonCandyBlue"),
                 new ("Golden", "Honey")
             };
 

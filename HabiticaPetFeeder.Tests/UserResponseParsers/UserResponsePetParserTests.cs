@@ -4,13 +4,13 @@ using Xunit;
 
 namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
 {
-    public class UserFetchResponsePetParserTests_Fixture : IDisposable
+    public class UserResponsePetParserTests_Fixture : IDisposable
     {
-        public UserFetchResponsePetParser PetParser { get; }
+        public UserResponsePetParser PetParser { get; }
 
-        public UserFetchResponsePetParserTests_Fixture()
+        public UserResponsePetParserTests_Fixture()
         {
-            PetParser = new UserFetchResponsePetParser();
+            PetParser = new UserResponsePetParser();
         }
 
         public void Dispose()
@@ -18,11 +18,11 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
         }
     }
 
-    public class UserFetchResponsePetParserTests : IClassFixture<UserFetchResponsePetParserTests_Fixture>
+    public class UserResponsePetParserTests : IClassFixture<UserResponsePetParserTests_Fixture>
     {
-        private readonly UserFetchResponsePetParserTests_Fixture fixture;
+        private readonly UserResponsePetParserTests_Fixture fixture;
 
-        public UserFetchResponsePetParserTests(UserFetchResponsePetParserTests_Fixture fixture)
+        public UserResponsePetParserTests(UserResponsePetParserTests_Fixture fixture)
         {
             this.fixture = fixture;
         }
@@ -34,6 +34,7 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
         {
             var result = fixture.PetParser.Parse(inputName, inputFedPoints);
 
+            Assert.True(result.FullName == inputName);
             Assert.True(result.Name == outputName);
             Assert.True(result.Type == outputType);
             Assert.True(result.FedPoints == outputFedPoints);

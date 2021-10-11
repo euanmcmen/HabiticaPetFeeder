@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.App
 {
-    public record Food(string Name, string Type, int Quantity)
+    public record Food(string FullName, string Name, string Type, int Quantity)
     {
-        string GetFullName => string.IsNullOrEmpty(Type) ? Name : $"{Name}_{Type}";
     }
 }

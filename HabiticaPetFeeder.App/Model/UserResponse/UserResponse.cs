@@ -1,8 +1,8 @@
 ﻿namespace HabiticaPetFeeder.App
 {
-    public class UserFetchResponse
+    public class UserResponse
     {
         public bool success { get; set; }
-        public UserFetchResponseData data { get; set; }
+        public UserResponseData data { get; set; }
     }
 }
