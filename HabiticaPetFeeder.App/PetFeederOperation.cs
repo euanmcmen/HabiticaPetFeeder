@@ -58,6 +58,10 @@ namespace HabiticaPetFeeder.App
                     {
                         petFoodPreferencesSet.Add(pet, new List<Food>() { food });
                     }
+
+                    //NOTES
+                    //If the pet is a Magic Potion pet, it will have no "favourites" because pets hatched with Magic Potions prefer everything.
+                    //I'm leaving those for now.
                 }
             }
 
