@@ -43,6 +43,10 @@ namespace HabiticaPetFeeder.App
 
                     services.AddScoped<IHabiticaApiClient, HabiticaApiClient>();
 
+                    services.AddScoped<IPetService, PetService>();
+                    services.AddScoped<IFoodService, FoodService>();
+                    services.AddScoped<IPetFoodService, PetFoodService>();
+
                     services.AddScoped<PetFeederOperation>();
                 });
         }

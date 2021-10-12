@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.App.Model
+namespace HabiticaPetFeeder.App
 {
-    public record PetFeed(string PetFullName, string FoodFullName, int FeedQuantity);
+    public record PetFoodFeed(string PetFullName, string FoodFullName, int FeedQuantity);
 }

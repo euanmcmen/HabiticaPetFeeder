@@ -32,7 +32,9 @@ namespace HabiticaPetFeeder.App
         {
             var foodParts = propertyName.Split("_");
 
-            return new Food(propertyName, foodParts[0], GetFoodTypeOrDefault(foodParts), int.Parse(propertyValue));
+            var food = new Food(propertyName, foodParts[0], GetFoodTypeOrDefault(foodParts), int.Parse(propertyValue));
+
+            return food;
         }
 
         private string GetFoodTypeOrDefault(string[] foodParts)
