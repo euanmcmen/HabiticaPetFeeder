@@ -31,9 +31,6 @@ namespace HabiticaPetFeeder.App
                 })
 
                 .ConfigureServices((services) => {
-
-                    services.AddSingleton<ICommonFoodReferenceData>(new CommonFoodReferenceData());
-
                     services.AddScoped<IUserResponseParserFactory, UserResponseParserFactory>();
 
                     services.AddScoped<IUserResponseElementParser, UserResponseElementParser>();

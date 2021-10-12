@@ -1,16 +1,31 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace HabiticaPetFeeder.App
 {
     public class UserResponseFoodParser : IUserResponseParser<Food>
     {
         private readonly ILogger<UserResponseFoodParser> logger;
-        private readonly ICommonFoodReferenceData commonFoodReferenceData;
+        //private readonly CommonFoodReferenceData commonFoodReferenceData;
 
-        public UserResponseFoodParser(ILoggerFactory loggerFactory, ICommonFoodReferenceData commonFoodReferenceData)
+        private readonly static Dictionary<string, string> commonFoodPreferencesByName = new()
+        {
+                {"Meat", "Base" },
+                {"Milk", "White" },
+                { "Potatoe", "Desert" },
+                { "Strawberry", "Red" },
+                { "Chocolate", "Shade" },
+                { "Fish", "Skeleton" },
+                { "RottenMeat", "Zombie" },
+                { "CottonCandyPink", "CottonCandyPink" },
+                { "CottonCandyBlue", "CottonCandyBlue"},
+                { "Honey", "Golden" }
+        };
+
+        public UserResponseFoodParser(ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<UserResponseFoodParser>();
-            this.commonFoodReferenceData = commonFoodReferenceData;
+            //this.commonFoodReferenceData = commonFoodReferenceData;
         }
 
         public Food Parse(string propertyName, string propertyValue)
@@ -37,12 +52,12 @@ namespace HabiticaPetFeeder.App
 
             //e.g. {Name} with type to resolve: "Meat", "Milk", "CottonCandyPink"
 
-            if (commonFoodReferenceData.CommonFoodPreferencesByName.TryGetValue(foodParts[0], out var type))
+            if (commonFoodPreferencesByName.TryGetValue(foodParts[0], out var type))
             {
                 return type;
             }
 
-            logger.LogWarning($"Food {foodParts[0]} has no corresponding type in the {nameof(CommonFoodReferenceData)} collection.");
+            logger.LogWarning($"Food {foodParts[0]} has no resolvable type.");
 
             return "NONE";
         }

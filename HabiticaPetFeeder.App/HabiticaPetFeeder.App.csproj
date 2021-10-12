@@ -6,8 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="CommonFoodReference\CommonFoodReferenceService.cs" />
-    <Compile Remove="CommonFoodReference\ICommonFoodsReferenceService.cs" />
+    <Compile Remove="CommonFoodReference\**" />
+    <EmbeddedResource Remove="CommonFoodReference\**" />
+    <None Remove="CommonFoodReference\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Model\UserResponse\UserResponseDataFoods.cs" />
     <Compile Remove="Model\UserResponse\UserResponseDataPets.cs" />
   </ItemGroup>

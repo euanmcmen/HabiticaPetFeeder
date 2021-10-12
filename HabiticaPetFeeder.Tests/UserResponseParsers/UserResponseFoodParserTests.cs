@@ -12,7 +12,7 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
 
         public UserResponseFoodParserTests_Fixture()
         {
-            FoodParser = new UserResponseFoodParser(GetMockedLogFactoryForType<UserResponseFoodParser>().Object, new CommonFoodReferenceData());
+            FoodParser = new UserResponseFoodParser(GetMockedLogFactoryForType<UserResponseFoodParser>().Object);
         }
 
         private static Mock<ILoggerFactory> GetMockedLogFactoryForType<T>()

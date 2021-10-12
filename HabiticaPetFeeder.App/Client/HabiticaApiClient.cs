@@ -144,7 +144,7 @@ namespace HabiticaPetFeeder.App
               'Potatoe': 199,
               'CottonCandyBlue': 197,
               'Chocolate': 180,
-              'Meat': 167,
+              'Meat': 10,
               'CottonCandyPink': 212,
               'Milk': 174,
               'Strawberry': 199,
