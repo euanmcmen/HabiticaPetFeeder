@@ -1,34 +1,31 @@
 ﻿using HabiticaPetFeeder.App.Model;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HabiticaPetFeeder.App
 {
     public class PetFoodPreferenceService : IPetFoodPreferenceService
     {
         private readonly ILogger<PetFoodPreferenceService> logger;
+        private readonly IPetService petService;
+        private readonly IFoodService foodService;
 
-        public PetFoodPreferenceService(ILoggerFactory loggerFactory)
+        public PetFoodPreferenceService(ILoggerFactory loggerFactory, IPetService petService, IFoodService foodService)
         {
             logger = loggerFactory.CreateLogger<PetFoodPreferenceService>();
+            this.petService = petService;
+            this.foodService = foodService;
         }
 
-        public PetFoodPreferences GetUserBasicPetPreferredFoods(List<Pet> pets, List<Food> foods)
+        public PetFoodPreferences GetUserBasicPetPreferredFoods(IEnumerable<Pet> pets, IEnumerable<Food> foods)
         {
-            //Create the preferred pet foods collection.
             var petFoodPreferencesResult = new PetFoodPreferences();
 
-            var basicPets = pets
-                .Where(x => x.IsBasicPet)
-                .ToHashSet();
+            var basicPets = petService.FilterForBasicPets(pets);
 
             foreach (var pet in basicPets)
             {
-                var matchingFoods = foods
-                    .Where(x => x.Type == pet.Type && x.Quantity.Value > 0)
-                    .OrderByDescending(x => x.Quantity.Value)
-                    .ToHashSet();
+                var matchingFoods = foodService.FilterForFeedableFoodsByType(foods, pet.Type);
 
                 foreach (var food in matchingFoods)
                 {

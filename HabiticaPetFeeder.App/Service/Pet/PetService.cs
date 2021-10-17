@@ -17,12 +17,26 @@ namespace HabiticaPetFeeder.App
             this.userResponseElementParser = userResponseElementParser;
         }
 
-        public List<Pet> GetUserPets(UserResponseDataItems data)
+        public IEnumerable<Pet> GetUserPets(UserResponseDataItems data)
         {
             return userResponseElementParser
                 .ExtractElement<Pet>(data.pets)
                 .Where(CanBeFed)
-                .ToList();
+                .ToHashSet();
+        }
+
+        public IEnumerable<Pet> FilterForBasicPets(IEnumerable<Pet> pets)
+        {
+            return pets
+                .Where(x => x.IsBasicPet)
+                .ToHashSet();
+        }
+
+        public IEnumerable<Pet> FilterForFeedablePets(IEnumerable<Pet> pets)
+        {
+            return pets
+                .Where(x => x.FedPoints.Value < 50)
+                .ToHashSet();
         }
 
         private bool CanBeFed(Pet pet) => pet.FedPoints.Value > 0 && pet.FedPoints.Value < 50;

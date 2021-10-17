@@ -5,11 +5,11 @@ namespace HabiticaPetFeeder.App.Model
 {
     public class PetFoodPreferences
     {
-        private readonly Dictionary<Pet, List<string>> petFoodPreferences;
+        private readonly Dictionary<Pet, HashSet<string>> petFoodPreferences;
 
         public PetFoodPreferences()
         {
-            petFoodPreferences = new Dictionary<Pet, List<string>>();
+            petFoodPreferences = new Dictionary<Pet, HashSet<string>>();
         }
 
         public void AddPetPreferredFood(Pet pet, Food food)
@@ -20,14 +20,14 @@ namespace HabiticaPetFeeder.App.Model
             }
             else
             {
-                petFoodPreferences.Add(pet, new List<string>() { food.FullName });
+                petFoodPreferences.Add(pet, new HashSet<string>() { food.FullName });
             }
         }
 
         public HashSet<string> GetPetPreferredFoodNames(Pet pet)
         {
             return petFoodPreferences.TryGetValue(pet, out var preferredFoods) 
-                ? preferredFoods.ToHashSet()
+                ? preferredFoods
                 : new HashSet<string>();
         }
     }

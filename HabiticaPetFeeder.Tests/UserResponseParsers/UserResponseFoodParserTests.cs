@@ -34,7 +34,6 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
         [InlineData("Cake_CottonCandyBlue", "4", "Cake", "CottonCandyBlue", 4)]
         [InlineData("CottonCandyBlue", "197", "CottonCandyBlue", "CottonCandyBlue", 197)]
         [InlineData("RottenMeat", "175", "RottenMeat", "Zombie", 175)]
-        [InlineData("Saddle", "10", "Saddle", "NONE", 10)]
         public void Parse_ReturnsFoodStructure(string inputName, string inputQuantity, string outputName, string outputType, int outputQuantity)
         {
             var result = fixture.FoodParser.Parse(inputName, inputQuantity);

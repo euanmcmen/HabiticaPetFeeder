@@ -44,11 +44,26 @@ namespace HabiticaPetFeeder.App
         {
             var petParts = propertyName.Split("-");
 
-            var isBasicPet = basicPetNames.Contains(petParts[0]) && basicPetTypes.Contains(petParts[1]);
-
-            logger.LogInformation($"Pet {propertyName} {(isBasicPet ? "is a" : "is not a")} basic pet.");
+            var isBasicPet = IsBasicPetName(propertyName, petParts[0]) && IsBasicPetType(petParts[1]);
 
             return new Pet(propertyName, petParts[0], petParts[1], new IncreasingQuantity(int.Parse(propertyValue)), isBasicPet);
+        }
+
+        private bool IsBasicPetName(string fullName, string name)
+        {
+            var result = basicPetNames.Contains(name);
+
+            if (!result)
+            {
+                logger.LogWarning($"{fullName} does not have a basic name.");
+            }
+
+            return result;
+        }
+
+        private bool IsBasicPetType(string type)
+        {
+            return basicPetTypes.Contains(type);
         }
     }
 }
