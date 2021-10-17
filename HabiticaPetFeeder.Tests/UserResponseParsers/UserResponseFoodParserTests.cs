@@ -12,16 +12,7 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
 
         public UserResponseFoodParserTests_Fixture()
         {
-            FoodParser = new UserResponseFoodParser(GetMockedLogFactoryForType<UserResponseFoodParser>().Object);
-        }
-
-        private static Mock<ILoggerFactory> GetMockedLogFactoryForType<T>()
-        {
-            var mockLogger = new Mock<ILogger<T>>();
-            var mockLoggerFactory = new Mock<ILoggerFactory>();
-            mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(mockLogger.Object);
-
-            return mockLoggerFactory;
+            FoodParser = new UserResponseFoodParser(TestHelpers.GetMockedLogFactoryForType<UserResponseFoodParser>().Object);
         }
 
         public void Dispose()
@@ -51,7 +42,7 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
             Assert.True(result.Name == outputName);
             Assert.True(result.FullName == inputName);
             Assert.True(result.Type == outputType);
-            Assert.True(result.Quantity == outputQuantity);
+            Assert.True(result.Quantity.Value == outputQuantity);
         }
     }
 }

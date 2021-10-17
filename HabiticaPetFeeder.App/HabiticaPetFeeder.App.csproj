@@ -14,6 +14,8 @@
   <ItemGroup>
     <Compile Remove="Model\UserResponse\UserResponseDataFoods.cs" />
     <Compile Remove="Model\UserResponse\UserResponseDataPets.cs" />
+    <Compile Remove="Service\IPetFoodService.cs" />
+    <Compile Remove="Service\PetFoodService.cs" />
   </ItemGroup>
 
   <ItemGroup>

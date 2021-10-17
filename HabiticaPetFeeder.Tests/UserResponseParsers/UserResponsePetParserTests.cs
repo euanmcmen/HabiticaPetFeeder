@@ -10,7 +10,7 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
 
         public UserResponsePetParserTests_Fixture()
         {
-            PetParser = new UserResponsePetParser();
+            PetParser = new UserResponsePetParser(TestHelpers.GetMockedLogFactoryForType<UserResponsePetParser>().Object);
         }
 
         public void Dispose()
@@ -37,7 +37,7 @@ namespace HabiticaPetFeeder.Tests.UserFetchResponseParsers
             Assert.True(result.FullName == inputName);
             Assert.True(result.Name == outputName);
             Assert.True(result.Type == outputType);
-            Assert.True(result.FedPoints == outputFedPoints);
+            Assert.True(result.FedPoints.Value == outputFedPoints);
         }
     }
 }

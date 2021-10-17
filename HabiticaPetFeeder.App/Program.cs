@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HabiticaPetFeeder.App.Model;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,7 +46,8 @@ namespace HabiticaPetFeeder.App
 
                     services.AddScoped<IPetService, PetService>();
                     services.AddScoped<IFoodService, FoodService>();
-                    services.AddScoped<IPetFoodService, PetFoodService>();
+                    services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();
+                    services.AddScoped<IPetFoodFeedService, PetFoodFeedService>();
 
                     services.AddScoped<PetFeederOperation>();
                 });

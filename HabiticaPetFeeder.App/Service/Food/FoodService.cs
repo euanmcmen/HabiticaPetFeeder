@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HabiticaPetFeeder.App.Model;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,11 +7,6 @@ namespace HabiticaPetFeeder.App
 {
     public class FoodService : IFoodService
     {
-        public enum FoodFilter
-        {
-            All,
-            NoSaddle
-        }
 
         private readonly ILogger<FoodService> logger;
         private readonly IUserResponseElementParser userResponseElementParser;
@@ -20,18 +16,20 @@ namespace HabiticaPetFeeder.App
             this.userResponseElementParser = userResponseElementParser;
         }
 
-        public List<Food> GetUserFoods(UserResponseDataItems data, FoodFilter foodFilter)
+        public List<Food> GetUserFoods(UserResponseDataItems data)
         {
-            var allUserFoods = userResponseElementParser.ExtractElement<Food>(data.food);
+            return userResponseElementParser.ExtractElement<Food>(data.food).ToList();
+        }
 
-            var result = new List<Food>();
+        public List<Food> FilterFoods(List<Food> foods, FoodFilter foodFilter)
+        {
+            var result = new List<Food>(foods.Count);
 
-            foreach (var food in allUserFoods)
+            foreach (var food in foods)
             {
-                //Apply filter.
                 if (foodFilter == FoodFilter.NoSaddle)
                 {
-                    if(food.FullName == "Saddle")
+                    if (food.FullName == "Saddle")
                     {
                         continue;
                     }

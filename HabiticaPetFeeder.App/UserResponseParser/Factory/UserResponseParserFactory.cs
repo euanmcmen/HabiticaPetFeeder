@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HabiticaPetFeeder.App.Model;
+using System;
 
 namespace HabiticaPetFeeder.App
 {

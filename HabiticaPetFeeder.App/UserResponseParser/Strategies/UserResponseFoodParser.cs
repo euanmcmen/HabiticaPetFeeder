@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HabiticaPetFeeder.App.Model;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
 namespace HabiticaPetFeeder.App
 {
     public class UserResponseFoodParser : IUserResponseParser<Food>
     {
-        private readonly ILogger<UserResponseFoodParser> logger;
-        //private readonly CommonFoodReferenceData commonFoodReferenceData;
-
         private readonly static Dictionary<string, string> commonFoodPreferencesByName = new()
         {
                 {"Meat", "Base" },
@@ -22,17 +20,18 @@ namespace HabiticaPetFeeder.App
                 { "Honey", "Golden" }
         };
 
+        private readonly ILogger<UserResponseFoodParser> logger;
+
         public UserResponseFoodParser(ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<UserResponseFoodParser>();
-            //this.commonFoodReferenceData = commonFoodReferenceData;
         }
 
         public Food Parse(string propertyName, string propertyValue)
         {
             var foodParts = propertyName.Split("_");
 
-            var food = new Food(propertyName, foodParts[0], GetFoodTypeOrDefault(foodParts), int.Parse(propertyValue));
+            var food = new Food(propertyName, foodParts[0], GetFoodTypeOrDefault(foodParts), new DecreasingQuantity(int.Parse(propertyValue)));
 
             return food;
         }
