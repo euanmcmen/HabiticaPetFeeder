@@ -1,32 +1,34 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace HabiticaPetFeeder.App.Model
 {
     public class PetFoodPreferences
     {
-        private readonly Dictionary<Pet, List<Food>> petFoodPreferences;
+        private readonly Dictionary<Pet, List<string>> petFoodPreferences;
 
         public PetFoodPreferences()
         {
-            petFoodPreferences = new Dictionary<Pet, List<Food>>();
+            petFoodPreferences = new Dictionary<Pet, List<string>>();
         }
 
         public void AddPetPreferredFood(Pet pet, Food food)
         {
             if (petFoodPreferences.ContainsKey(pet))
             {
-                petFoodPreferences[pet].Add(food);
+                petFoodPreferences[pet].Add(food.FullName);
             }
             else
             {
-                petFoodPreferences.Add(pet, new List<Food>() { food });
+                petFoodPreferences.Add(pet, new List<string>() { food.FullName });
             }
-
-            petFoodPreferences[pet].Sort((x, y) => ByDescending(x, y));
         }
 
-        public List<Food> GetPetPreferredFood(Pet pet) => petFoodPreferences.TryGetValue(pet, out var result) ? result : new List<Food>();
-
-        private static int ByDescending(Food x, Food y) => y.Quantity.Value.CompareTo(x.Quantity.Value);
+        public HashSet<string> GetPetPreferredFoodNames(Pet pet)
+        {
+            return petFoodPreferences.TryGetValue(pet, out var preferredFoods) 
+                ? preferredFoods.ToHashSet()
+                : new HashSet<string>();
+        }
     }
 }

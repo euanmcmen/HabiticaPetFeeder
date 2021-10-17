@@ -19,17 +19,19 @@ namespace HabiticaPetFeeder.App
             //Create the preferred pet foods collection.
             var petFoodPreferencesResult = new PetFoodPreferences();
 
-            foreach (var pet in pets)
+            var basicPets = pets
+                .Where(x => x.IsBasicPet)
+                .ToHashSet();
+
+            foreach (var pet in basicPets)
             {
-                //Only basic pets have food preferences.  Magic potion pets (non-basic pets) can be fed anything.
-                if (!pet.IsBasicPet)
-                    continue;
+                var matchingFoods = foods
+                    .Where(x => x.Type == pet.Type && x.Quantity.Value > 0)
+                    .OrderByDescending(x => x.Quantity.Value)
+                    .ToHashSet();
 
-                foreach (var food in foods)
+                foreach (var food in matchingFoods)
                 {
-                    if (food.Type != pet.Type)
-                        continue;
-
                     petFoodPreferencesResult.AddPetPreferredFood(pet, food);
                 }
             }

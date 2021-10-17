@@ -25,24 +25,6 @@ namespace HabiticaPetFeeder.App
                 .ToList();
         }
 
-        public List<Pet> FilterPets(List<Pet> pets, PetFilter petFilter)
-        {
-            var result = new List<Pet>(pets.Count);
-
-            foreach (var pet in pets)
-            {
-                if (petFilter == PetFilter.Basic)
-                {
-                    if (!pet.IsBasicPet)
-                        continue;
-                }
-
-                result.Add(pet);
-            }
-
-            return result;
-        }
-
         private bool CanBeFed(Pet pet) => pet.FedPoints.Value > 0 && pet.FedPoints.Value < 50;
     }
 }

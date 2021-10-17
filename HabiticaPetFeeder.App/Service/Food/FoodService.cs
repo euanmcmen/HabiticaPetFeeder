@@ -20,25 +20,5 @@ namespace HabiticaPetFeeder.App
         {
             return userResponseElementParser.ExtractElement<Food>(data.food).ToList();
         }
-
-        public List<Food> FilterFoods(List<Food> foods, FoodFilter foodFilter)
-        {
-            var result = new List<Food>(foods.Count);
-
-            foreach (var food in foods)
-            {
-                if (foodFilter == FoodFilter.NoSaddle)
-                {
-                    if (food.FullName == "Saddle")
-                    {
-                        continue;
-                    }
-                }
-
-                result.Add(food);
-            }
-
-            return result;
-        }
     }
 }

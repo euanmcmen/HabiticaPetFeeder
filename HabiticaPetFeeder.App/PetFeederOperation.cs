@@ -40,33 +40,18 @@ namespace HabiticaPetFeeder.App
             var allFoods = foodService.GetUserFoods(userResult.data.items);
             var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
 
-            //#####
-            //BASIC FEED OPERATION
-            //#####
-
-            var basicPetFeeds = petFoodFeedService.GetBasicPetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences);
-
-            //Filter all-data lists for basic pets & non-saddle foods
-            //var basicPets = petService.FilterPets(allPets, PetFilter.Basic);
-            //var userFoodsNoSaddle = foodService.FilterFoods(allFoods, FoodFilter.NoSaddle);
-
-            //Build a list of feeds for each pet and their preferred foods.
-
-            ////Get feeds for each basic pet with each basic food.
-            //var basicPetFeeds = petFoodService.GetPetFoodFeeds(basicPetFoodPreferences);
-
-            //#####
-            //END OF BASIC FEED OPERATION.
-            //#####
-
-            foreach (var petFeed in basicPetFeeds)
-            {
-                logger.LogInformation($"Pet {petFeed.PetFullName} will be fed {petFeed.FoodFullName} {petFeed.FeedQuantity} times.");
-            }
+            var basicPetFeeds = petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences);
 
             if (allPets.Where(x => x.IsBasicPet).All(x => x.FedPoints.Value >= 50))
             {
                 logger.LogInformation("All basic pets have been fed.");
+            }
+
+            var remainingFeeds = petFoodFeedService.GetFoodFeeds(allPets, allFoods);
+
+            if (allPets.All(x => x.FedPoints.Value >= 50))
+            {
+                logger.LogInformation("All pets have been fed.");
             }
 
             logger.LogInformation("Finished.");

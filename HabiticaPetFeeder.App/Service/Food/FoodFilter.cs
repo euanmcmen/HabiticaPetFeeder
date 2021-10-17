@@ -2,7 +2,6 @@
 {
     public enum FoodFilter
     {
-        All,
         NoSaddle
     }
 }

@@ -6,7 +6,5 @@ namespace HabiticaPetFeeder.App
     public interface IFoodService
     {
         List<Food> GetUserFoods(UserResponseDataItems data);
-
-        List<Food> FilterFoods(List<Food> foods, FoodFilter foodFilter);
     }
 }

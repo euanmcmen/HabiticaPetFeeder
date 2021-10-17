@@ -1,8 +1,10 @@
-﻿namespace HabiticaPetFeeder.App
+﻿using System;
+
+namespace HabiticaPetFeeder.App
 {
     public enum PetFilter
     {
         All = 0,
-        Basic = 1
+        Feedable = 1
     }
 }
