@@ -1,7 +1,7 @@
-﻿using HabiticaPetFeeder.App.Model;
+﻿using HabiticaPetFeeder.Logic.Model;
 using System.Collections.Generic;
 
-namespace HabiticaPetFeeder.App.Service
+namespace HabiticaPetFeeder.Logic.Service
 {
     public interface IPetFoodPreferenceService
     {

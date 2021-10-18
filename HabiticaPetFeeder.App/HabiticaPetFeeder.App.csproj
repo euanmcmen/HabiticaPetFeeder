@@ -6,16 +6,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Client\**" />
     <Compile Remove="CommonFoodReference\**" />
+    <Compile Remove="Model\**" />
+    <Compile Remove="Service\**" />
+    <Compile Remove="UserResponseParser\**" />
+    <EmbeddedResource Remove="Client\**" />
     <EmbeddedResource Remove="CommonFoodReference\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <EmbeddedResource Remove="Service\**" />
+    <EmbeddedResource Remove="UserResponseParser\**" />
+    <None Remove="Client\**" />
     <None Remove="CommonFoodReference\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Model\UserResponse\UserResponseDataFoods.cs" />
-    <Compile Remove="Model\UserResponse\UserResponseDataPets.cs" />
-    <Compile Remove="Service\IPetFoodService.cs" />
-    <Compile Remove="Service\PetFoodService.cs" />
+    <None Remove="Model\**" />
+    <None Remove="Service\**" />
+    <None Remove="UserResponseParser\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +31,10 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HabiticaPetFeeder.Logic\HabiticaPetFeeder.Logic.csproj" />
   </ItemGroup>
 
   <ItemGroup>

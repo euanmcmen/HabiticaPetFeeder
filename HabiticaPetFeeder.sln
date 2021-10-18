@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabiticaPetFeeder.App", "HabiticaPetFeeder.App\HabiticaPetFeeder.App.csproj", "{56D5400E-46D1-4FD5-99EB-68563B04D283}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabiticaPetFeeder.Tests", "HabiticaPetFeeder.Tests\HabiticaPetFeeder.Tests.csproj", "{486037EC-5E4B-4269-B55A-7E8E57A71BD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabiticaPetFeeder.Tests", "HabiticaPetFeeder.Tests\HabiticaPetFeeder.Tests.csproj", "{486037EC-5E4B-4269-B55A-7E8E57A71BD6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A} = {D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabiticaPetFeeder.Logic", "HabiticaPetFeeder.Logic\HabiticaPetFeeder.Logic.csproj", "{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,10 @@ Global
 		{486037EC-5E4B-4269-B55A-7E8E57A71BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{486037EC-5E4B-4269-B55A-7E8E57A71BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{486037EC-5E4B-4269-B55A-7E8E57A71BD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

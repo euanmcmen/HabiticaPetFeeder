@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HabiticaPetFeeder.App\HabiticaPetFeeder.App.csproj" />
+    <ProjectReference Include="..\HabiticaPetFeeder.Logic\HabiticaPetFeeder.Logic.csproj" />
   </ItemGroup>
 
 </Project>

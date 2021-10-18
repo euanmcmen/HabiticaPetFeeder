@@ -1,4 +1,4 @@
-﻿using HabiticaPetFeeder.App.Model;
+﻿using HabiticaPetFeeder.Logic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,22 +32,7 @@ namespace HabiticaPetFeeder.App
                 })
 
                 .ConfigureServices((services) => {
-                    services.AddScoped<IUserResponseParserFactory, UserResponseParserFactory>();
-
-                    services.AddScoped<IUserResponseElementParser, UserResponseElementParser>();
-
-                    services.AddScoped<UserResponsePetParser>()
-                        .AddScoped<IUserResponseParser<Pet>, UserResponsePetParser>(s => s.GetService<UserResponsePetParser>());
-
-                    services.AddScoped<UserResponseFoodParser>()
-                        .AddScoped<IUserResponseParser<Food>, UserResponseFoodParser>(s => s.GetService<UserResponseFoodParser>());
-
-                    services.AddScoped<IHabiticaApiClient, HabiticaApiClient>();
-
-                    services.AddScoped<IPetService, PetService>();
-                    services.AddScoped<IFoodService, FoodService>();
-                    services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();
-                    services.AddScoped<IPetFoodFeedService, PetFoodFeedService>();
+                    services.UseHabiticaPetFeederServiceLayer();
 
                     services.AddScoped<PetFeederOperation>();
                 });

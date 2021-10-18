@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HabiticaPetFeeder.App.Model
+namespace HabiticaPetFeeder.Logic.Model
 {
     public class PetFoodPreferences
     {

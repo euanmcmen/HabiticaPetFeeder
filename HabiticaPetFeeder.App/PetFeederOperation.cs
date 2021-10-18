@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HabiticaPetFeeder.Logic.Client;
+using HabiticaPetFeeder.Logic.Service;
+using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,8 +32,6 @@ namespace HabiticaPetFeeder.App
 
         public async Task RunOperationAsync()
         {
-            //I guess this operation will focus on the initial basic pet & preferred food feeds.
-
             logger.LogInformation("Starting...");
 
             var userResult = await habiticaApiClient.GetUserAsync();
@@ -52,6 +52,13 @@ namespace HabiticaPetFeeder.App
             if (allPets.All(x => x.FedPoints.Value >= 50))
             {
                 logger.LogInformation("All pets have been fed.");
+            }
+
+            var combinedFeeds = basicPetFeeds.Concat(remainingFeeds);
+
+            foreach(var feed in combinedFeeds)
+            {
+                logger.LogInformation($"Pet {feed.PetFullName} fed {feed.FoodFullName} x{feed.FeedQuantity}.");
             }
 
             logger.LogInformation("Finished.");

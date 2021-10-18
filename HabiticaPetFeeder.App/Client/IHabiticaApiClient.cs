@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.App
+namespace HabiticaPetFeeder.App.Client
 {
     public interface IHabiticaApiClient
     {

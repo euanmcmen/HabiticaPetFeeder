@@ -1,8 +1,8 @@
-﻿using HabiticaPetFeeder.App.Model;
+﻿using HabiticaPetFeeder.Logic.Model;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace HabiticaPetFeeder.App
+namespace HabiticaPetFeeder.Logic.UserResponseParser
 {
     public class UserResponsePetParser : IUserResponseParser<Pet>
     {

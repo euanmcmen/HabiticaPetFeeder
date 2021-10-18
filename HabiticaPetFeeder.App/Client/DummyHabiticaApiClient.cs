@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.App
+namespace HabiticaPetFeeder.App.Client
 {
-    public class HabiticaApiClient : IHabiticaApiClient
+    public class DummyHabiticaApiClient : IHabiticaApiClient
     {
         public async Task<UserResponse> GetUserAsync()
         {
@@ -18,14 +18,6 @@ namespace HabiticaPetFeeder.App
             var result = JsonConvert.DeserializeObject<UserResponse>(TestResponse);
 
             return result;
-
-            //return JsonConvert.DeserializeObject<UserResponse>(TestResponse, new JsonSerializerSettings
-            //{
-            //    ContractResolver = new DefaultContractResolver
-            //    {
-            //        NamingStrategy = new KebabCaseNamingStrategy()
-            //    }
-            //});
         }
 
         private static string TestResponse =
