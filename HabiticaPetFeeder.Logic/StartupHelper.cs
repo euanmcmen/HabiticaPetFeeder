@@ -1,8 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
-using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.ContentResponseParser;
 using HabiticaPetFeeder.Logic.Service;
-using HabiticaPetFeeder.Logic.UserResponseParser;
-using HabiticaPetFeeder.Logic.UserResponseParser.Factory;
+using HabiticaPetFeeder.Logic.Service.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HabiticaPetFeeder.Logic
@@ -11,18 +10,21 @@ namespace HabiticaPetFeeder.Logic
     {
         public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services)
         {
-            services.AddScoped<IUserResponseParserFactory, UserResponseParserFactory>();
+            //services.AddScoped<IUserResponseParserFactory, UserResponseParserFactory>();
 
-            services.AddScoped<IUserResponseElementParser, UserResponseElementParser>();
+            //services.AddScoped<IUserResponseElementParser, UserResponseElementParser>();
 
-            services.AddScoped<UserResponsePetParser>()
-                .AddScoped<IUserResponseParser<Pet>, UserResponsePetParser>(s => s.GetService<UserResponsePetParser>());
+            //services.AddScoped<UserResponsePetParser>()
+            //    .AddScoped<IUserResponseParser<Pet>, UserResponsePetParser>(s => s.GetService<UserResponsePetParser>());
 
-            services.AddScoped<UserResponseFoodParser>()
-                .AddScoped<IUserResponseParser<Food>, UserResponseFoodParser>(s => s.GetService<UserResponseFoodParser>());
+            //services.AddScoped<UserResponseFoodParser>()
+            //    .AddScoped<IUserResponseParser<Food>, UserResponseFoodParser>(s => s.GetService<UserResponseFoodParser>());
+
+            services.AddScoped<IContentResponseElementParser, ContentResponseElementParser>();
 
             services.AddScoped<IHabiticaApiClient, DummyHabiticaApiClient>();
 
+            services.AddScoped<IDataService, DataService>();
             services.AddScoped<IPetService, PetService>();
             services.AddScoped<IFoodService, FoodService>();
             services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();

@@ -8413,7 +8413,417 @@ namespace HabiticaPetFeeder.Logic.Client
                 'text': 'Royal Purple Jack-O-Lantern',
                 'canFind': false
             }
-        }
+        },
+        'food': {
+                    'Meat': {
+                        'text': 'Meat',
+                        'textA': 'Meat',
+                        'textThe': 'the Meat',
+                        'target': 'Base',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'Meat',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Milk': {
+                        'text': 'Milk',
+                        'textA': 'Milk',
+                        'textThe': 'the Milk',
+                        'target': 'White',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'Milk',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Potatoe': {
+                        'text': 'Potato',
+                        'textA': 'a Potato',
+                        'textThe': 'the Potato',
+                        'target': 'Desert',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'Potatoe',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Strawberry': {
+                        'text': 'Strawberry',
+                        'textA': 'a Strawberry',
+                        'textThe': 'the Strawberry',
+                        'target': 'Red',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'Strawberry',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Chocolate': {
+                        'text': 'Chocolate',
+                        'textA': 'Chocolate',
+                        'textThe': 'the Chocolate',
+                        'target': 'Shade',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'Chocolate',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Fish': {
+                        'text': 'Fish',
+                        'textA': 'a Fish',
+                        'textThe': 'the Fish',
+                        'target': 'Skeleton',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'Fish',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'RottenMeat': {
+                        'text': 'Rotten Meat',
+                        'textA': 'Rotten Meat',
+                        'textThe': 'the Rotten Meat',
+                        'target': 'Zombie',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'RottenMeat',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'CottonCandyPink': {
+                        'text': 'Pink Cotton Candy',
+                        'textA': 'Pink Cotton Candy',
+                        'textThe': 'the Pink Cotton Candy',
+                        'target': 'CottonCandyPink',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'CottonCandyPink',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'CottonCandyBlue': {
+                        'text': 'Blue Cotton Candy',
+                        'textA': 'Blue Cotton Candy',
+                        'textThe': 'the Blue Cotton Candy',
+                        'target': 'CottonCandyBlue',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'CottonCandyBlue',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Honey': {
+                        'text': 'Honey',
+                        'textA': 'Honey',
+                        'textThe': 'the Honey',
+                        'target': 'Golden',
+                        'canDrop': true,
+                        'value': 1,
+                        'key': 'Honey',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Saddle': {
+                        'sellWarningNote': 'Hey! This is a pretty useful item! Are you familiar with how to use a Saddle with your Pets?',
+                        'text': 'Saddle',
+                        'value': 5,
+                        'notes': 'Instantly raises one of your pets into a mount.',
+                        'key': 'Saddle',
+                        'canDrop': false
+                    },
+                    'Cake_Skeleton': {
+                        'text': 'Bare Bones Cake',
+                        'textA': 'a Bare Bones Cake',
+                        'textThe': 'the Bare Bones Cake',
+                        'target': 'Skeleton',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_Skeleton',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_Base': {
+                        'text': 'Basic Cake',
+                        'textA': 'a Basic Cake',
+                        'textThe': 'the Basic Cake',
+                        'target': 'Base',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_Base',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_CottonCandyBlue': {
+                        'text': 'Candy Blue Cake',
+                        'textA': 'a Candy Blue Cake',
+                        'textThe': 'the Candy Blue Cake',
+                        'target': 'CottonCandyBlue',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_CottonCandyBlue',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_CottonCandyPink': {
+                        'text': 'Candy Pink Cake',
+                        'textA': 'a Candy Pink Cake',
+                        'textThe': 'the Candy Pink Cake',
+                        'target': 'CottonCandyPink',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_CottonCandyPink',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_Shade': {
+                        'text': 'Chocolate Cake',
+                        'textA': 'a Chocolate Cake',
+                        'textThe': 'the Chocolate Cake',
+                        'target': 'Shade',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_Shade',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_White': {
+                        'text': 'Cream Cake',
+                        'textA': 'a Cream Cake',
+                        'textThe': 'the Cream Cake',
+                        'target': 'White',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_White',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_Golden': {
+                        'text': 'Honey Cake',
+                        'textA': 'a Honey Cake',
+                        'textThe': 'the Honey Cake',
+                        'target': 'Golden',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_Golden',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_Zombie': {
+                        'text': 'Rotten Cake',
+                        'textA': 'a Rotten Cake',
+                        'textThe': 'the Rotten Cake',
+                        'target': 'Zombie',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_Zombie',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_Desert': {
+                        'text': 'Sand Cake',
+                        'textA': 'a Sand Cake',
+                        'textThe': 'the Sand Cake',
+                        'target': 'Desert',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_Desert',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Cake_Red': {
+                        'text': 'Strawberry Cake',
+                        'textA': 'a Strawberry Cake',
+                        'textThe': 'the Strawberry Cake',
+                        'target': 'Red',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Cake_Red',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_Skeleton': {
+                        'text': 'Bare Bones Candy',
+                        'textA': 'Bare Bones Candy',
+                        'textThe': 'the Bare Bones Candy',
+                        'target': 'Skeleton',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_Skeleton',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_Base': {
+                        'text': 'Basic Candy',
+                        'textA': 'Basic Candy',
+                        'textThe': 'the Basic Candy',
+                        'target': 'Base',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_Base',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_CottonCandyBlue': {
+                        'text': 'Sour Blue Candy',
+                        'textA': 'Sour Blue Candy',
+                        'textThe': 'the Sour Blue Candy',
+                        'target': 'CottonCandyBlue',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_CottonCandyBlue',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_CottonCandyPink': {
+                        'text': 'Sour Pink Candy',
+                        'textA': 'Sour Pink Candy',
+                        'textThe': 'the Sour Pink Candy',
+                        'target': 'CottonCandyPink',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_CottonCandyPink',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_Shade': {
+                        'text': 'Chocolate Candy',
+                        'textA': 'Chocolate Candy',
+                        'textThe': 'the Chocolate Candy',
+                        'target': 'Shade',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_Shade',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_White': {
+                        'text': 'Vanilla Candy',
+                        'textA': 'Vanilla Candy',
+                        'textThe': 'the Vanilla Candy',
+                        'target': 'White',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_White',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_Golden': {
+                        'text': 'Honey Candy',
+                        'textA': 'Honey Candy',
+                        'textThe': 'the Honey Candy',
+                        'target': 'Golden',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_Golden',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_Zombie': {
+                        'text': 'Rotten Candy',
+                        'textA': 'Rotten Candy',
+                        'textThe': 'the Rotten Candy',
+                        'target': 'Zombie',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_Zombie',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_Desert': {
+                        'text': 'Sand Candy',
+                        'textA': 'Sand Candy',
+                        'textThe': 'the Sand Candy',
+                        'target': 'Desert',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_Desert',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Candy_Red': {
+                        'text': 'Cinnamon Candy',
+                        'textA': 'Cinnamon Candy',
+                        'textThe': 'the Cinnamon Candy',
+                        'target': 'Red',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Candy_Red',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_Skeleton': {
+                        'text': 'Bone Marrow Pot Pie',
+                        'textA': 'a slice of Bone Marrow Pot Pie',
+                        'textThe': 'the Bone Marrow Pot Pie',
+                        'target': 'Skeleton',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_Skeleton',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_Base': {
+                        'text': 'Basic Apple Pie',
+                        'textA': 'a slice of Basic Apple Pie',
+                        'textThe': 'the Basic Apple Pie',
+                        'target': 'Base',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_Base',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_CottonCandyBlue': {
+                        'text': 'Blueberry Pie',
+                        'textA': 'a slice of Blueberry Pie',
+                        'textThe': 'the Blueberry Pie',
+                        'target': 'CottonCandyBlue',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_CottonCandyBlue',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_CottonCandyPink': {
+                        'text': 'Pink Rhubarb Pie',
+                        'textA': 'a slice of Pink Rhubarb Pie',
+                        'textThe': 'the Pink Rhubarb Pie',
+                        'target': 'CottonCandyPink',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_CottonCandyPink',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_Shade': {
+                        'text': 'Dark Chocolate Pie',
+                        'textA': 'a slice of Dark Chocolate Pie',
+                        'textThe': 'the Dark Chocolate Pie',
+                        'target': 'Shade',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_Shade',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_White': {
+                        'text': 'Vanilla Pudding Pie',
+                        'textA': 'a slice of Vanilla Pudding Pie',
+                        'textThe': 'the Vanilla Pudding Pie',
+                        'target': 'White',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_White',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_Golden': {
+                        'text': 'Golden Banana Cream Pie',
+                        'textA': 'a slice of Golden Banana Cream Pie',
+                        'textThe': 'the Golden Banana Cream Pie',
+                        'target': 'Golden',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_Golden',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_Zombie': {
+                        'text': 'Rotten Pie',
+                        'textA': 'a Rotten slice of Pie',
+                        'textThe': 'the Rotten Pie',
+                        'target': 'Zombie',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_Zombie',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_Desert': {
+                        'text': 'Desert Dessert Pie',
+                        'textA': 'a slice of Desert Dessert Pie',
+                        'textThe': 'the Desert Dessert Pie',
+                        'target': 'Desert',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_Desert',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    },
+                    'Pie_Red': {
+                        'text': 'Red Cherry Pie',
+                        'textA': 'a slice of Red Cherry Pie',
+                        'textThe': 'the Red Cherry Pie',
+                        'target': 'Red',
+                        'canDrop': false,
+                        'value': 1,
+                        'key': 'Pie_Red',
+                        'notes': 'Feed this to a pet and it may grow into a sturdy steed.'
+                    }
+                },
     }
 }
 

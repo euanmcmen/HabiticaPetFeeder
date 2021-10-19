@@ -1,5 +1,4 @@
 ﻿using HabiticaPetFeeder.Logic.Service;
-using HabiticaPetFeeder.Logic.UserResponseParser;
 using Moq;
 using System;
 using Xunit;
@@ -12,9 +11,7 @@ namespace HabiticaPetFeeder.Tests.Service
 
         public FoodServiceTests_Fixture()
         {
-            var userResponseElementParser = new Mock<IUserResponseElementParser>();
-
-            FoodService = new FoodService(TestHelpers.GetMockedLogFactoryForType<FoodService>().Object, userResponseElementParser.Object);
+            FoodService = new FoodService(TestHelpers.GetMockedLogFactoryForType<FoodService>().Object);
         }
 
         public void Dispose()

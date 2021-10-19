@@ -1,5 +1,6 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.Data;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace HabiticaPetFeeder.App
     public class PetFeederOperation
     {
         private readonly ILogger<PetFeederOperation> logger;
+        private readonly IDataService dataService;
         private readonly IPetService petService;
         private readonly IFoodService foodService;
         private readonly IPetFoodPreferenceService petFoodPreferenceService;
@@ -16,6 +18,7 @@ namespace HabiticaPetFeeder.App
         private readonly IHabiticaApiClient habiticaApiClient;
 
         public PetFeederOperation(ILoggerFactory loggerFactory,
+            IDataService dataService,
             IPetService petService,
             IFoodService foodService,
             IPetFoodPreferenceService petFoodPreferenceService,
@@ -23,6 +26,7 @@ namespace HabiticaPetFeeder.App
             IHabiticaApiClient habiticaApiClient)
         {
             logger = loggerFactory.CreateLogger<PetFeederOperation>();
+            this.dataService = dataService;
             this.petService = petService;
             this.foodService = foodService;
             this.petFoodPreferenceService = petFoodPreferenceService;
@@ -36,10 +40,14 @@ namespace HabiticaPetFeeder.App
 
             var userResult = await habiticaApiClient.GetUserAsync();
 
-            var test = await habiticaApiClient.GetContentAsync();
+            var contentResult = await habiticaApiClient.GetContentAsync();
 
-            var allPets = petService.GetUserPets(userResult.data.items);
-            var allFoods = foodService.GetUserFoods(userResult.data.items);
+            //var allPets = petService.GetUserPets(userResult.data.items);
+            var allPets = dataService.GetPets(userResult, contentResult);
+
+            //var allFoods = foodService.GetUserFoods(userResult.data.items);
+            var allFoods = dataService.GetFoods(userResult, contentResult);
+
             var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
 
             var basicPetFeeds = petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences);

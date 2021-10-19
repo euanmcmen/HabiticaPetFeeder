@@ -1,6 +1,4 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.UserResponse;
-using HabiticaPetFeeder.Logic.UserResponseParser;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +8,20 @@ namespace HabiticaPetFeeder.Logic.Service
     public class FoodService : IFoodService
     {
         private readonly ILogger<FoodService> logger;
-        private readonly IUserResponseElementParser userResponseElementParser;
 
-        public FoodService(ILoggerFactory loggerFactory, IUserResponseElementParser userResponseElementParser)
+        public FoodService(ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<FoodService>();
-            this.userResponseElementParser = userResponseElementParser;
         }
 
-        public IEnumerable<Food> GetUserFoods(UserResponseDataItems data)
-        {
-            return userResponseElementParser
-                .ExtractElement<Food>(data.food)
-                .Where(x => x.FullName != "Saddle")
-                .ToHashSet();
-        }
+        //public IEnumerable<Food> GetUserFoods(UserResponseDataItems data)
+        //{
+        //    throw new NotImplementedException();
+        //    //return userResponseElementParser
+        //    //    .ExtractElement<Food>(data.food)
+        //    //    .Where(x => x.FullName != "Saddle")
+        //    //    .ToHashSet();
+        //}
 
         public IEnumerable<Food> FilterForFeedableFoodsByPreference(IEnumerable<Food> foods, HashSet<string> preferenceNames)
         {

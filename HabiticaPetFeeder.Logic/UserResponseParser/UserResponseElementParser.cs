@@ -13,6 +13,11 @@ namespace HabiticaPetFeeder.Logic.UserResponseParser
             this.userResponseParserFactory = userResponseParserFactory;
         }
 
+        public UserResponseElementParser()
+        {
+
+        }
+
         public IEnumerable<T> ExtractElement<T>(Dictionary<string, string> input) where T: class
         {
             var strategy = userResponseParserFactory.GetUserResponseParser<T>();

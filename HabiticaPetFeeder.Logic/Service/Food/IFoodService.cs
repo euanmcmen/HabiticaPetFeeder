@@ -6,7 +6,7 @@ namespace HabiticaPetFeeder.Logic.Service
 {
     public interface IFoodService
     {
-        IEnumerable<Food> GetUserFoods(UserResponseDataItems data);
+        //IEnumerable<Food> GetUserFoods(UserResponseDataItems data);
 
         public IEnumerable<Food> FilterForFeedableFoodsByPreference(IEnumerable<Food> input, HashSet<string> preferenceNames);
 

@@ -4,7 +4,7 @@ namespace HabiticaPetFeeder.Logic.Model.UserResponse
 {
     public class UserResponseDataItems
     {
-        public Dictionary<string, string> pets { get; set; }
-        public Dictionary<string, string> food { get; set; }
+        public Dictionary<string, int> pets { get; set; }
+        public Dictionary<string, int> food { get; set; }
     }
 }
