@@ -36,6 +36,8 @@ namespace HabiticaPetFeeder.App
 
             var userResult = await habiticaApiClient.GetUserAsync();
 
+            var test = await habiticaApiClient.GetContentAsync();
+
             var allPets = petService.GetUserPets(userResult.data.items);
             var allFoods = foodService.GetUserFoods(userResult.data.items);
             var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
