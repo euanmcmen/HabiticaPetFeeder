@@ -1,10 +1,5 @@
-﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.UserResponse;
-using HabiticaPetFeeder.Logic.Service;
-using Moq;
+﻿using HabiticaPetFeeder.Logic.Service;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service

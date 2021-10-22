@@ -179,8 +179,18 @@ namespace HabiticaPetFeeder.Logic.Client
               'Pie_Skeleton': 1,
               'Pie_White': 1,
               'Pie_Zombie': 1
-          }
-      }
+        },
+        'mounts': {
+            'Dragon-RoyalPurple': true,
+            'Cactus-Desert': true,
+            'Orca-Base': true,
+            'Dragon-Skeleton': true,
+            'Gryphon-RoyalPurple': true,
+            'Dragon-White': true,
+            'Aether-Invisible': true,
+            'FlyingPig-RoyalPurple': true
+        }
+    }
   }
 }
 

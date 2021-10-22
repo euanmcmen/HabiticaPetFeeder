@@ -5,8 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ContentResponseParser\**" />
     <Compile Remove="UserResponseParser\**" />
+    <EmbeddedResource Remove="ContentResponseParser\**" />
     <EmbeddedResource Remove="UserResponseParser\**" />
+    <None Remove="ContentResponseParser\**" />
     <None Remove="UserResponseParser\**" />
   </ItemGroup>
 

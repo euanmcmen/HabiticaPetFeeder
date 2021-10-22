@@ -1,6 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Service;
-using HabiticaPetFeeder.Logic.Service.Data;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,24 +10,18 @@ namespace HabiticaPetFeeder.App
     {
         private readonly ILogger<PetFeederOperation> logger;
         private readonly IDataService dataService;
-        private readonly IPetService petService;
-        private readonly IFoodService foodService;
         private readonly IPetFoodPreferenceService petFoodPreferenceService;
         private readonly IPetFoodFeedService petFoodFeedService;
         private readonly IHabiticaApiClient habiticaApiClient;
 
         public PetFeederOperation(ILoggerFactory loggerFactory,
             IDataService dataService,
-            IPetService petService,
-            IFoodService foodService,
             IPetFoodPreferenceService petFoodPreferenceService,
             IPetFoodFeedService petFoodFeedService,
             IHabiticaApiClient habiticaApiClient)
         {
             logger = loggerFactory.CreateLogger<PetFeederOperation>();
             this.dataService = dataService;
-            this.petService = petService;
-            this.foodService = foodService;
             this.petFoodPreferenceService = petFoodPreferenceService;
             this.petFoodFeedService = petFoodFeedService;
             this.habiticaApiClient = habiticaApiClient;

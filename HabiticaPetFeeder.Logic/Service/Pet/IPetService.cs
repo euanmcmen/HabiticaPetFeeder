@@ -1,5 +1,4 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.UserResponse;
 using System.Collections.Generic;
 
 namespace HabiticaPetFeeder.Logic.Service

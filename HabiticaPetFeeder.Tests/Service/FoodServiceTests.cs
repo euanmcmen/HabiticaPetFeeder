@@ -1,5 +1,4 @@
 ﻿using HabiticaPetFeeder.Logic.Service;
-using Moq;
 using System;
 using Xunit;
 
