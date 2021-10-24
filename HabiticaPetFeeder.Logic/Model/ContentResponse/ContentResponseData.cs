@@ -10,6 +10,8 @@ namespace HabiticaPetFeeder.Logic.Model.ContentResponse
 
         public Dictionary<string, string> specialPets { get; set; }
 
+        public Dictionary<string, string> questPets { get; set; }
+
         public Dictionary<string, string> wackyPets { get; set; }
 
         public Dictionary<string, ContentResponsePetInfo> petInfo { get; set; }
