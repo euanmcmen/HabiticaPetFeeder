@@ -1,30 +1,24 @@
-﻿using HabiticaPetFeeder.Logic.Model.ContentResponse;
+﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Model.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
 using HabiticaPetFeeder.Logic.Service;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service
 {
-    public class DataServiceTests_Fixture //: IDisposable
+    public class DataService_InputData_Fixture
     {
-        public DataService DataService { get; }
+        public UserResponse TestClientDataUserResponse { get; }
 
-        public UserResponse TestUserResponse { get; }
+        public ContentResponse TestClientDataContentResponse { get; }
 
-        public ContentResponse TestContentResponse { get; }
-
-        public DataServiceTests_Fixture()
+        public DataService_InputData_Fixture()
         {
-            //TestHelpers.GetMockedLogFactoryForType<DataService>().Object
+            TestClientDataUserResponse = BuildTestUserResponse();
 
-            TestUserResponse = BuildTestUserResponse();
-
-            TestContentResponse = BuildTestContentResponse();
-
-            DataService = new DataService();
+            TestClientDataContentResponse = BuildTestContentResponse();
         }
 
         private static ContentResponse BuildTestContentResponse()
@@ -99,7 +93,7 @@ namespace HabiticaPetFeeder.Tests.Service
                         { "Wolf-Veggie", "true" },
                         { "Dragon-Dessert", "true" },
                         { "BearCub-Veggie", "true" },
-                    }                    
+                    }
                 }
             };
         }
@@ -148,25 +142,48 @@ namespace HabiticaPetFeeder.Tests.Service
                 }
             };
         }
+    }
+
+    public class DataServiceTests_Fixture
+    {
+        public DataService DataService { get; }
+
+        public DataServiceTests_Fixture()
+        {
+            DataService = new DataService(TestHelpers.GetMockedLogFactoryForType<DataService>().Object);
+        }
 
         public void Dispose()
         {
         }
     }
 
-    public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>
+    public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassFixture<DataService_InputData_Fixture>
     {
         private readonly DataServiceTests_Fixture fixture;
+        private readonly DataService_InputData_Fixture testDataInputFixture;
 
-        public DataServiceTests(DataServiceTests_Fixture fixture)
+        private IEnumerable<Pet> GetPets()
+        {
+            return fixture.DataService.GetPets(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
+        }
+
+        private IEnumerable<Food> GetFoods()
+        {
+            return fixture.DataService.GetFoods(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
+        }
+
+
+        public DataServiceTests(DataServiceTests_Fixture fixture, DataService_InputData_Fixture testDataInputFixture)
         {
             this.fixture = fixture;
+            this.testDataInputFixture = testDataInputFixture;
         }
 
         [Fact]
         public void GetPets_ReturnsFeedablePets()
         {
-            var result = fixture.DataService.GetPets(fixture.TestUserResponse, fixture.TestContentResponse);
+            var result = GetPets();
 
             //The LionCub White and the Wolf Base are basic pets which have not been raised to a mount.
             Assert.Equal("LionCub-White", result.ElementAt(0).FullName);
@@ -174,12 +191,15 @@ namespace HabiticaPetFeeder.Tests.Service
 
             //The Tiger Royal Purple is a premium pet which has not been raised into a mount.
             Assert.Equal("TigerCub-RoyalPurple", result.ElementAt(2).FullName);
+
+            //There should be no other pets (unless I add more...)
+            Assert.Equal(3, result.Count());
         }
 
         [Fact]
         public void GetPets_ExcludesNonFeedablePets()
         {
-            var result = fixture.DataService.GetPets(fixture.TestUserResponse, fixture.TestContentResponse);
+            var result = GetPets();
 
             //The Dragon Skeleton, while also being a basic pet with a positive fed points value, has been turned into a mount and cannot be fed.
             Assert.DoesNotContain(result, x => x.FullName == "Dragon-Skeleton");
@@ -194,7 +214,7 @@ namespace HabiticaPetFeeder.Tests.Service
         [Fact]
         public void GetFood_ReturnsUsableFood()
         {
-            var result = fixture.DataService.GetFoods(fixture.TestUserResponse, fixture.TestContentResponse);
+            var result = GetFoods();
 
             Assert.Equal(7, result.Count());
         }
@@ -202,7 +222,7 @@ namespace HabiticaPetFeeder.Tests.Service
         [Fact]
         public void GetFood_ExcludesSaddle()
         {
-            var result = fixture.DataService.GetFoods(fixture.TestUserResponse, fixture.TestContentResponse);
+            var result = GetFoods();
 
             Assert.DoesNotContain(result, x => x.FullName == "Saddle");
         }

@@ -1,6 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,8 +9,11 @@ namespace HabiticaPetFeeder.Logic.Service
 {
     public class DataService : IDataService
     {
-        public DataService()
+        private readonly ILogger<DataService> logger;
+
+        public DataService(ILoggerFactory loggerFactory)
         {
+            logger = loggerFactory.CreateLogger<DataService>();
         }
 
         public IEnumerable<Pet> GetPets(UserResponse userResponse, ContentResponse contentResponse)
