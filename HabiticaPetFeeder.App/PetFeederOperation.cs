@@ -43,23 +43,34 @@ namespace HabiticaPetFeeder.App
 
             var basicPetFeeds = petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences);
 
+            foreach (var feed in basicPetFeeds)
+            {
+                logger.LogInformation($"[BASIC] Pet {feed.PetFullName} fed {feed.FoodFullName} x{feed.FeedQuantity}.");
+            }
+
             if (allPets.Where(x => x.IsBasicPet).All(x => x.FedPoints.Value >= 50))
             {
                 logger.LogInformation("All basic pets have been fed.");
             }
+            else
+            {
+                logger.LogInformation("Some basic pets were not fed.");
+            }
 
             var remainingFeeds = petFoodFeedService.GetFoodFeeds(allPets, allFoods);
+
+            foreach (var feed in remainingFeeds)
+            {
+                logger.LogInformation($"[GENERAL] Pet {feed.PetFullName} fed {feed.FoodFullName} x{feed.FeedQuantity}.");
+            }
 
             if (allPets.All(x => x.FedPoints.Value >= 50))
             {
                 logger.LogInformation("All pets have been fed.");
             }
-
-            var combinedFeeds = basicPetFeeds.Concat(remainingFeeds);
-
-            foreach(var feed in combinedFeeds)
+            else
             {
-                logger.LogInformation($"Pet {feed.PetFullName} fed {feed.FoodFullName} x{feed.FeedQuantity}.");
+                logger.LogInformation("Some pets were not fed.");
             }
 
             logger.LogInformation("Finished.");

@@ -6,10 +6,16 @@
 
   <ItemGroup>
     <Compile Remove="ContentResponseParser\**" />
+    <Compile Remove="Service\Food\**" />
+    <Compile Remove="Service\Pet\**" />
     <Compile Remove="UserResponseParser\**" />
     <EmbeddedResource Remove="ContentResponseParser\**" />
+    <EmbeddedResource Remove="Service\Food\**" />
+    <EmbeddedResource Remove="Service\Pet\**" />
     <EmbeddedResource Remove="UserResponseParser\**" />
     <None Remove="ContentResponseParser\**" />
+    <None Remove="Service\Food\**" />
+    <None Remove="Service\Pet\**" />
     <None Remove="UserResponseParser\**" />
   </ItemGroup>
 

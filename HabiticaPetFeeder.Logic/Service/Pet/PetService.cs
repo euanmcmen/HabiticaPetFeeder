@@ -1,5 +1,6 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,16 +25,18 @@ namespace HabiticaPetFeeder.Logic.Service
 
         public IEnumerable<Pet> FilterForBasicPets(IEnumerable<Pet> pets)
         {
-            return pets
-                .Where(x => x.IsBasicPet)
-                .ToHashSet();
+            throw new NotImplementedException();
+            //return pets
+            //    .Where(x => x.IsBasicPet)
+            //    .ToHashSet();
         }
 
         public IEnumerable<Pet> FilterForFeedablePets(IEnumerable<Pet> pets)
         {
-            return pets
-                .Where(x => x.FedPoints.Value < 50)
-                .ToHashSet();
+            throw new NotImplementedException();
+            //return pets
+            //    .Where(x => x.FedPoints.Value < 50)
+            //    .ToHashSet();
         }
     }
 }

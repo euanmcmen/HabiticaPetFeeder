@@ -24,7 +24,7 @@ namespace HabiticaPetFeeder.App
         static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(loggingBuilder => loggingBuilder.AddConsole())
+                .ConfigureLogging(loggingBuilder => loggingBuilder.AddSimpleConsole(x => x.SingleLine = true))
 
                 .ConfigureAppConfiguration((app) => {
                     app.Sources.Clear();
