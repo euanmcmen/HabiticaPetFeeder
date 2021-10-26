@@ -9,14 +9,14 @@ namespace HabiticaPetFeeder.Tests
 
         public IEnumerable<Food> Foods { get; private set; }
 
-        public IEnumerable<PetFoodPreferences> PetFoodPreferences { get; private set; }
+        public PetFoodPreferences BasicPetFoodPreferences { get; private set; }
 
         public TestData_Fixture()
         {
             //Should be fed 6 milks.
             var lionWhite = new Pet("LionCub-White", "White", new IncreasingQuantity(20), true);
 
-            //Should be fed 4 meats and 4 cakes.  No meats & one cake remaining.
+            //Should be fed 5 meats and 3 cakes.  No meats & one cake remaining.
             var wolfBase = new Pet("Wolf-Base", "Base", new IncreasingQuantity(10), true);
 
             //Should be fed combination of fish & potatoes.
@@ -30,11 +30,11 @@ namespace HabiticaPetFeeder.Tests
             };
 
             var milkWhite = new Food("Milk", "White", new DecreasingQuantity(100));
-            var meatBase = new Food("Meat", "Base", new DecreasingQuantity(4));
+            var meatBase = new Food("Meat", "Base", new DecreasingQuantity(5));
             var potatoeDesert = new Food("Potatoe", "Desert", new DecreasingQuantity(100));
             var fishSkeleton = new Food("Fish", "Skeleton", new DecreasingQuantity(100));
             var cakeWhite = new Food("Cake_White", "White", new DecreasingQuantity(10));
-            var cakeBase = new Food("Cake_Base", "Base", new DecreasingQuantity(5));
+            var cakeBase = new Food("Cake_Base", "Base", new DecreasingQuantity(4));
             var cakeDesert = new Food("Cake_Desert", "Desert", new DecreasingQuantity(10));
             var pieWhite = new Food("Pie_White", "White", new DecreasingQuantity(5));
             var pieDesert = new Food("Pie_Desert", "Desert", new DecreasingQuantity(5));
@@ -54,20 +54,12 @@ namespace HabiticaPetFeeder.Tests
                 { candyWhite },
             };
 
-            var petFoodPreferences = new List<PetFoodPreferences>();
-
-            var lionWhitePreferences = new PetFoodPreferences();
-            lionWhitePreferences.AddPetPreferredFood(lionWhite, milkWhite);
-            lionWhitePreferences.AddPetPreferredFood(lionWhite, pieWhite);
-            lionWhitePreferences.AddPetPreferredFood(lionWhite, candyWhite);
-            petFoodPreferences.Add(lionWhitePreferences);
-
-            var wolfBasePreferences = new PetFoodPreferences();
-            wolfBasePreferences.AddPetPreferredFood(wolfBase, meatBase);
-            wolfBasePreferences.AddPetPreferredFood(wolfBase, cakeBase);
-            petFoodPreferences.Add(wolfBasePreferences);
-
-            PetFoodPreferences = petFoodPreferences;
+            BasicPetFoodPreferences = new PetFoodPreferences();
+            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, milkWhite);
+            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, pieWhite);
+            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, candyWhite);
+            BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, meatBase);
+            BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, cakeBase);
         }
     }
 }

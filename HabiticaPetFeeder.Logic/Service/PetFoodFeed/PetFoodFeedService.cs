@@ -1,22 +1,20 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Util;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HabiticaPetFeeder.Logic.Service
 {
     public class PetFoodFeedService : IPetFoodFeedService
     {
         private readonly ILogger<PetFoodFeedService> logger;
-        private readonly IPetService petService;
-        private readonly IFoodService foodService;
         private const int NonPreferredFoodFeedPoints = 2;
         private const int PreferredFoodFeedPoints = 5;
 
-        public PetFoodFeedService(ILoggerFactory loggerFactory, IPetService petService, IFoodService foodService)
+        public PetFoodFeedService(ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<PetFoodFeedService>();
-            this.petService = petService;
-            this.foodService = foodService;
         }
 
         public IEnumerable<PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, PetFoodPreferences petFoodPreferences)
@@ -26,20 +24,36 @@ namespace HabiticaPetFeeder.Logic.Service
 
         public IEnumerable<PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods)
         {
-            return GetFoodFeedsWithPreference(pets, foods, null);
+            return GetFoodFeedsWithPreference(pets, foods, new EmptyPetPreferences());
         }
 
-        private IEnumerable<PetFoodFeed> GetFoodFeedsWithPreference(IEnumerable<Pet> pets, IEnumerable<Food> foods, PetFoodPreferences petFoodPreferences = null)
+        /// <summary>
+        /// Feeds pets according to their preferences.
+        /// </summary>
+        /// <param name="pets"></param>
+        /// <param name="foods"></param>
+        /// <param name="petFoodPreferences"></param>
+        /// <returns></returns>
+        private static IEnumerable<PetFoodFeed> GetFoodFeedsWithPreference(IEnumerable<Pet> pets, IEnumerable<Food> foods, IPetFoodPreference petFoodPreferences)
         {
             var petFeeds = new HashSet<PetFoodFeed>();
 
-            var petsToFeed = petService.FilterForFeedablePets(pets);
+            var petsWithPreferences = petFoodPreferences.GetPetsWithPreferences();
 
-            foreach (var pet in petsToFeed)
+            var petsWithPreferencesToFeed = pets
+                .Where(x => x.FedPoints.Value < 50)
+                .Where(x => petsWithPreferences.IsEmpty() || petsWithPreferences.Contains(x.FullName))
+                .ToHashSet();
+
+            foreach (var pet in petsWithPreferencesToFeed)
             {
-                var preferredFoodNames = petFoodPreferences?.GetPetPreferredFoodNames(pet) ?? null;
+                var petPreferredFoods = petFoodPreferences.GetPetPreferredFoodNames(pet);
 
-                var foodsToFeed = foodService.FilterForFeedableFoodsByPreference(foods, preferredFoodNames);
+                var foodsToFeed = foods
+                    .Where(x => x.Quantity.Value > 0)
+                    .Where(x => petPreferredFoods.IsEmpty() || petPreferredFoods.Contains(x.FullName))
+                    .OrderByDescending(x => x.Quantity.Value)
+                    .ToHashSet();
 
                 foreach (var food in foodsToFeed)
                 {

@@ -1,5 +1,6 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,27 +26,22 @@ namespace HabiticaPetFeeder.Logic.Service
 
         public IEnumerable<Food> FilterForFeedableFoodsByPreference(IEnumerable<Food> foods, HashSet<string> preferenceNames)
         {
-            var result = foods;
-
-            if (preferenceNames != null)
-            {
-                result = result.Where(x => preferenceNames.Contains(x.FullName));
-            }
-
-            return ToSortedQuantity(result);
-
+            throw new NotImplementedException();
+            //return ToSortedQuantity(foods.Where(x => preferenceNames.Contains(x.FullName)));
         }
+
+        //public IEnumerable<Food> FilterForFeedableFoodsByPreference(IEnumerable<Food> foods, Pet pet, preference)
+        //{
+        //    petFoodPreferences.GetPetPreferredFoodNames(pet)
+        //    return ToSortedQuantity(foods.Where(x => preferenceNames.Contains(x.FullName)));
+        //}
 
         public IEnumerable<Food> FilterForFeedableFoodsByType(IEnumerable<Food> foods, string type)
         {
-            return ToSortedQuantity(foods.Where(x => x.Type == type));
+            throw new NotImplementedException();
+            //return ToSortedQuantity(foods.Where(x => x.Type == type));
         }
 
-        private static IEnumerable<Food> ToSortedQuantity(IEnumerable<Food> foods)
-        {
-            return foods.Where(x => x.Quantity.Value > 0)
-                .OrderByDescending(x => x.Quantity.Value)
-                .ToHashSet();
-        }
+
     }
 }

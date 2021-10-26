@@ -1,8 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace HabiticaPetFeeder.Logic.Model
 {
-    public class PetFoodPreferences
+    public interface IPetFoodPreference
+    {
+        HashSet<string> GetPetPreferredFoodNames(Pet pet);
+
+        HashSet<string> GetPetsWithPreferences();
+    }
+
+    public class EmptyPetPreferences : IPetFoodPreference
+    {
+        public HashSet<string> GetPetPreferredFoodNames(Pet pet)
+        {
+            return new HashSet<string>();
+        }
+
+        public HashSet<string> GetPetsWithPreferences()
+        {
+            return new HashSet<string>();
+        }
+    }
+
+    public class PetFoodPreferences : IPetFoodPreference
     {
         private readonly Dictionary<Pet, HashSet<string>> petFoodPreferences;
 
@@ -21,6 +42,13 @@ namespace HabiticaPetFeeder.Logic.Model
             {
                 petFoodPreferences.Add(pet, new HashSet<string>() { food.FullName });
             }
+        }
+
+        public HashSet<string> GetPetsWithPreferences()
+        {
+            return petFoodPreferences.Keys
+                .Select(x => x.FullName)
+                .ToHashSet();
         }
 
         public HashSet<string> GetPetPreferredFoodNames(Pet pet)
