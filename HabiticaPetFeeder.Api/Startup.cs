@@ -29,6 +29,8 @@ namespace HabiticaPetFeeder.Api
         {
             services.UseHabiticaPetFeederServiceLayer();
 
+            services.AddCors();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -45,6 +47,8 @@ namespace HabiticaPetFeeder.Api
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HabiticaPetFeeder.Api v1"));
             }
+
+            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod());
 
             app.UseHttpsRedirection();
 
