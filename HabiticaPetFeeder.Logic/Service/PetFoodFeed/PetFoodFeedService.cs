@@ -75,7 +75,9 @@ namespace HabiticaPetFeeder.Logic.Service
 
                     if (allocationsOfThisFoodToThisPet > 0)
                     {
-                        petFeeds.Add(new PetFoodFeed(pet.FullName, food.FullName, allocationsOfThisFoodToThisPet));
+                        var isPetSatisfied = pet.FedPoints.Value >= 50;
+
+                        petFeeds.Add(new PetFoodFeed(pet.FullName, food.FullName, allocationsOfThisFoodToThisPet, isPetSatisfied));
                     }
                 }
             }
