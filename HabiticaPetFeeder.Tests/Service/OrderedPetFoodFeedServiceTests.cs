@@ -49,14 +49,14 @@ namespace HabiticaPetFeeder.Tests.Service
         {
             var result = fixture.PetFoodFeedService.GetPreferredFoodFeeds(testData.Pets, testData.Foods, testData.BasicPetFoodPreferences);
 
-            //Lion is fed 6 milk.
-            Assert.Contains(result, x => x.PetFullName == "LionCub-White" && x.FoodFullName == "Milk" && x.FeedQuantity == 6);
+            //Lion is fed 6 milk and is satisfied.
+            Assert.Contains(result, x => x.PetFullName == "LionCub-White" && x.FoodFullName == "Milk" && x.FeedQuantity == 6 && x.WillSatisfyPet);
             
-            //Wolf is fed 5 meat.
-            Assert.Contains(result, x => x.PetFullName == "Wolf-Base" && x.FoodFullName == "Meat" && x.FeedQuantity == 5);
+            //Wolf is fed 5 meat but is not yet satisfied.
+            Assert.Contains(result, x => x.PetFullName == "Wolf-Base" && x.FoodFullName == "Meat" && x.FeedQuantity == 5 && !x.WillSatisfyPet);
 
-            //Wolf is then fed 3 cake.
-            Assert.Contains(result, x => x.PetFullName == "Wolf-Base" && x.FoodFullName == "Cake_Base" && x.FeedQuantity == 3);
+            //Wolf is then fed 3 cake and is satisfied.
+            Assert.Contains(result, x => x.PetFullName == "Wolf-Base" && x.FoodFullName == "Cake_Base" && x.FeedQuantity == 3 && x.WillSatisfyPet);
 
             //Tiger should not be fed due to basic food preferences.
             Assert.DoesNotContain(result, x => x.PetFullName == "TigerCub-RoyalPurple");
@@ -68,7 +68,7 @@ namespace HabiticaPetFeeder.Tests.Service
             var result = fixture.PetFoodFeedService.GetFoodFeeds(testData.Pets, testData.Foods);
 
             //Tiger should be included here and should be fully fed something...
-            Assert.Single(result, x => x.PetFullName == "TigerCub-RoyalPurple" && x.FeedQuantity == 9);
+            Assert.Single(result, x => x.PetFullName == "TigerCub-RoyalPurple" && x.FeedQuantity == 9 && x.WillSatisfyPet);
 
             //Lion and Wolf should not be contained here.
             Assert.DoesNotContain(result, x => x.PetFullName == "LionCub-White");
