@@ -1,12 +1,11 @@
-﻿using HabiticaPetFeeder.Logic.Client;
+﻿using HabiticaPetFeeder.Api.Model;
+using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service;
-using Microsoft.AspNetCore.Http;
+using HabiticaPetFeeder.Logic.Service.PetFoodFeedSummary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Api.Controllers
@@ -20,21 +19,28 @@ namespace HabiticaPetFeeder.Api.Controllers
         private readonly IDataService dataService;
         private readonly IPetFoodPreferenceService petFoodPreferenceService;
         private readonly IPetFoodFeedService petFoodFeedService;
+        private readonly IPetFoodFeedSummaryService petFoodFeedSummaryService;
         private readonly IHabiticaApiClient habiticaApiClient;
 
-        public PetFeedsController(ILoggerFactory loggerFactory,IDataService dataService,IPetFoodPreferenceService petFoodPreferenceService,IPetFoodFeedService petFoodFeedService,
-            IHabiticaApiClient habiticaApiClient)
+        public PetFeedsController(ILoggerFactory loggerFactory,
+                                  IDataService dataService,
+                                  IPetFoodPreferenceService petFoodPreferenceService,
+                                  IPetFoodFeedService petFoodFeedService,
+                                  IPetFoodFeedSummaryService petFoodFeedSummaryService,
+                                  IHabiticaApiClient habiticaApiClient)
         {
             this.dataService = dataService;
             this.petFoodPreferenceService = petFoodPreferenceService;
             this.petFoodFeedService = petFoodFeedService;
+            this.petFoodFeedSummaryService = petFoodFeedSummaryService;
             this.habiticaApiClient = habiticaApiClient;
 
             logger = loggerFactory.CreateLogger<PetFeedsController>();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetPetFeeds()
+        [HttpGet]
+        [Route("")]
+        public async Task<IActionResult> GetPetFeedsAsync()
         {
             await Task.CompletedTask;
 
@@ -46,17 +52,24 @@ namespace HabiticaPetFeeder.Api.Controllers
 
             var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
 
-            var basicPetFeeds = petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences);
+            var feeds = new List<PetFoodFeed>();
+            feeds.AddRange(petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences));
+            feeds.AddRange(petFoodFeedService.GetFoodFeeds(allPets, allFoods));
 
-            var remainingFeeds = petFoodFeedService.GetFoodFeeds(allPets, allFoods);
-
-            var combinedFeeds = new List<IEnumerable<PetFoodFeed>>
+            var summary = new PetFoodFeedSummary()
             {
-                basicPetFeeds,
-                remainingFeeds
+                TotalNumberOfPetsFed = petFoodFeedSummaryService.GetNumberOfPetsFed(feeds),
+                TotalNumberOfFoodsFed = petFoodFeedSummaryService.GetNumberOfFoodsFed(feeds),
+                TotalNumberOfSatisfiedPets = petFoodFeedSummaryService.GetNumberOfSatisfiedPets(feeds)
             };
 
-            return Ok(combinedFeeds);
+            var petFeedsResult = new PetFoodFeedResult()
+            {
+                PetFoodFeeds = feeds,
+                PetFoodFeedSummary = summary
+            };
+
+            return Ok(petFeedsResult);
         }
     }
 }
