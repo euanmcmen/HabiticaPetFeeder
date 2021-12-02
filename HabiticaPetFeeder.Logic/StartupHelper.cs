@@ -1,5 +1,6 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.PetFoodFeedSummary;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HabiticaPetFeeder.Logic
@@ -11,10 +12,9 @@ namespace HabiticaPetFeeder.Logic
             services.AddScoped<IHabiticaApiClient, DummyHabiticaApiClient>();
 
             services.AddScoped<IDataService, DataService>();
-            //services.AddScoped<IPetService, PetService>();
-            //services.AddScoped<IFoodService, FoodService>();
             services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();
             services.AddScoped<IPetFoodFeedService, PetFoodFeedService>();
+            services.AddScoped<IPetFoodFeedSummaryService, PetFoodFeedSummaryService>();
         }
     }
 }
