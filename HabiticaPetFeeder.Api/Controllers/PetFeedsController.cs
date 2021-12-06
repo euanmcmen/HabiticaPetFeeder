@@ -2,9 +2,11 @@
 using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.HabiticaApi;
 using HabiticaPetFeeder.Logic.Service.PetFoodFeedSummary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,27 +17,30 @@ namespace HabiticaPetFeeder.Api.Controllers
     public class PetFeedsController : ControllerBase
     {
         private readonly ILogger<PetFeedsController> logger;
-
+        private readonly IHabiticaApiService habiticaApiService;
         private readonly IDataService dataService;
         private readonly IPetFoodPreferenceService petFoodPreferenceService;
         private readonly IPetFoodFeedService petFoodFeedService;
         private readonly IPetFoodFeedSummaryService petFoodFeedSummaryService;
-        private readonly IHabiticaApiClient habiticaApiClient;
+        private readonly IOptions<UserApiAuthInfo> secretUserOptions;
 
         public PetFeedsController(ILoggerFactory loggerFactory,
+                                  IHabiticaApiService habiticaApiService,
                                   IDataService dataService,
                                   IPetFoodPreferenceService petFoodPreferenceService,
                                   IPetFoodFeedService petFoodFeedService,
                                   IPetFoodFeedSummaryService petFoodFeedSummaryService,
-                                  IHabiticaApiClient habiticaApiClient)
+                                  IOptions<UserApiAuthInfo> secretUserOptions
+            )
         {
+            logger = loggerFactory.CreateLogger<PetFeedsController>();
+
+            this.habiticaApiService = habiticaApiService;
             this.dataService = dataService;
             this.petFoodPreferenceService = petFoodPreferenceService;
             this.petFoodFeedService = petFoodFeedService;
             this.petFoodFeedSummaryService = petFoodFeedSummaryService;
-            this.habiticaApiClient = habiticaApiClient;
-
-            logger = loggerFactory.CreateLogger<PetFeedsController>();
+            this.secretUserOptions = secretUserOptions;
         }
 
         [HttpGet]
@@ -44,10 +49,10 @@ namespace HabiticaPetFeeder.Api.Controllers
         {
             await Task.CompletedTask;
 
-            var userResult = await habiticaApiClient.GetUserAsync();
-            var contentResult = await habiticaApiClient.GetContentAsync();
+            var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(GetUserApiAuthInfo());
 
             var allPets = dataService.GetPets(userResult, contentResult);
+
             var allFoods = dataService.GetFoods(userResult, contentResult);
 
             var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
@@ -70,6 +75,11 @@ namespace HabiticaPetFeeder.Api.Controllers
             };
 
             return Ok(petFeedsResult);
+        }
+
+        private UserApiAuthInfo GetUserApiAuthInfo()
+        {
+            return secretUserOptions.Value;
         }
     }
 }

@@ -1,4 +1,5 @@
 using HabiticaPetFeeder.Logic;
+using HabiticaPetFeeder.Logic.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +29,8 @@ namespace HabiticaPetFeeder.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.UseHabiticaPetFeederServiceLayer();
+
+            RegisterUserInfoFromConfiguration(services);
 
             services.AddCors();
 
@@ -59,6 +62,20 @@ namespace HabiticaPetFeeder.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+        }
+
+        private void RegisterUserInfoFromConfiguration(IServiceCollection services)
+        {
+            var result = Configuration.GetSection("HabiticaApiCredentials").Get<UserApiAuthInfo>();
+
+            if (result == null || string.IsNullOrEmpty(result.ApiUserId) || string.IsNullOrEmpty(result.ApiKey))
+                return;
+
+            services.Configure<UserApiAuthInfo>((options) =>
+            {
+                options.ApiUserId = result.ApiUserId;
+                options.ApiKey = result.ApiKey;
             });
         }
     }

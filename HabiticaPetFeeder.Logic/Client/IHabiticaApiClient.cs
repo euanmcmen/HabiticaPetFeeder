@@ -7,6 +7,10 @@ namespace HabiticaPetFeeder.Logic.Client
 {
     public interface IHabiticaApiClient
     {
+        bool IsAuthenticated { get; }
+
+        Task AuthenticateAsync(UserApiAuthInfo userApiAuthInfo);
+
         Task<UserResponse> GetUserAsync();
 
         Task<ContentResponse> GetContentAsync();

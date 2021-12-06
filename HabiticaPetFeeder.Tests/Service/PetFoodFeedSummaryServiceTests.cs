@@ -32,12 +32,6 @@ namespace HabiticaPetFeeder.Tests.Service
                 new PetFoodFeed("Wolf-Base", "Cake_Base", 3, true),
                 new PetFoodFeed("TigerCub-Base", "Meat", 1, false)
             };
-
-            //Wolf is fed 5 meat but is not yet satisfied.
-            //Assert.Contains(result, x => x.PetFullName == "Wolf-Base" && x.FoodFullName == "Meat" && x.FeedQuantity == 5 && !x.WillSatisfyPet);
-
-            //Wolf is then fed 3 cake and is satisfied.
-            //Assert.Contains(result, x => x.PetFullName == "Wolf-Base" && x.FoodFullName == "Cake_Base" && x.FeedQuantity == 3 && x.WillSatisfyPet);
         }
     }
 
@@ -51,9 +45,6 @@ namespace HabiticaPetFeeder.Tests.Service
             this.fixture = fixture;
             this.inputFixture = inputFixture;
         }
-
-        //GetNumberOfPetsFed counts unique number of Pet fed in list of PetFoodFeeds
-        //
 
         [Fact]
         public void GetNumberOfPetsFed_returns_count_of_Pets()

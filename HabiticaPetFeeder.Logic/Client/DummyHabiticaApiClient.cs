@@ -1,4 +1,5 @@
-﻿using HabiticaPetFeeder.Logic.Model.ContentResponse;
+﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Model.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
@@ -7,6 +8,13 @@ namespace HabiticaPetFeeder.Logic.Client
 {
     public class DummyHabiticaApiClient : IHabiticaApiClient
     {
+        public bool IsAuthenticated => true;
+
+        public async Task AuthenticateAsync(UserApiAuthInfo userApiAuthInfo)
+        {
+            await Task.CompletedTask;
+        }
+
         public async Task<UserResponse> GetUserAsync()
         {
             await Task.CompletedTask;
@@ -31,6 +39,21 @@ namespace HabiticaPetFeeder.Logic.Client
 {
   'success': true,
   'data': {
+        'auth': {
+            'local': {
+                'username': 'DressingFrown',
+                'lowerCaseUsername': 'dressingfrown',
+                'email': 'euanmcmen@hotmail.com'
+            },
+            'timestamps': {
+                'created': '2020-06-01T08:03:31.270Z',
+                'loggedin': '2021-12-06T08:49:55.890Z',
+                'updated': '2021-12-06T19:37:54.672Z'
+            },
+            'facebook': {},
+            'google': {},
+            'apple': {}
+        },
       'items': {
           'pets': {
               'LionCub-White': 20,
@@ -8838,7 +8861,5 @@ namespace HabiticaPetFeeder.Logic.Client
 }
 
 ";
-    
-
     }
 }

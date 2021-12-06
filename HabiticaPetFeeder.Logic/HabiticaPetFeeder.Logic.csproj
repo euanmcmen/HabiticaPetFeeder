@@ -1,23 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="ContentResponseParser\**" />
-    <Compile Remove="Service\Food\**" />
-    <Compile Remove="Service\Pet\**" />
-    <Compile Remove="UserResponseParser\**" />
-    <EmbeddedResource Remove="ContentResponseParser\**" />
-    <EmbeddedResource Remove="Service\Food\**" />
-    <EmbeddedResource Remove="Service\Pet\**" />
-    <EmbeddedResource Remove="UserResponseParser\**" />
-    <None Remove="ContentResponseParser\**" />
-    <None Remove="Service\Food\**" />
-    <None Remove="Service\Pet\**" />
-    <None Remove="UserResponseParser\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
