@@ -4,6 +4,7 @@ using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.HabiticaApi;
 using HabiticaPetFeeder.Logic.Service.PetFoodFeedSummary;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -22,7 +23,7 @@ namespace HabiticaPetFeeder.Api.Controllers
         private readonly IPetFoodPreferenceService petFoodPreferenceService;
         private readonly IPetFoodFeedService petFoodFeedService;
         private readonly IPetFoodFeedSummaryService petFoodFeedSummaryService;
-        private readonly IOptions<UserApiAuthInfo> secretUserOptions;
+        private readonly IOptions<SecretUserApiAuthInfo> secretUserOptions;
 
         public PetFeedsController(ILoggerFactory loggerFactory,
                                   IHabiticaApiService habiticaApiService,
@@ -30,7 +31,7 @@ namespace HabiticaPetFeeder.Api.Controllers
                                   IPetFoodPreferenceService petFoodPreferenceService,
                                   IPetFoodFeedService petFoodFeedService,
                                   IPetFoodFeedSummaryService petFoodFeedSummaryService,
-                                  IOptions<UserApiAuthInfo> secretUserOptions
+                                  IOptions<SecretUserApiAuthInfo> secretUserOptions
             )
         {
             logger = loggerFactory.CreateLogger<PetFeedsController>();
@@ -47,9 +48,14 @@ namespace HabiticaPetFeeder.Api.Controllers
         [Route("")]
         public async Task<IActionResult> GetPetFeedsAsync()
         {
-            await Task.CompletedTask;
+            var userApiAuthInfo = GetUserApiAuthInfo(Request);
 
-            var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(GetUserApiAuthInfo());
+            if (!ValidateUserApiAuthInfo(userApiAuthInfo))
+            {
+                return Unauthorized();
+            }
+
+            var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(userApiAuthInfo);
 
             var allPets = dataService.GetPets(userResult, contentResult);
 
@@ -77,9 +83,23 @@ namespace HabiticaPetFeeder.Api.Controllers
             return Ok(petFeedsResult);
         }
 
-        private UserApiAuthInfo GetUserApiAuthInfo()
+        private UserApiAuthInfo GetUserApiAuthInfo(HttpRequest httpRequest)
         {
-            return secretUserOptions.Value;
+            return secretUserOptions.Value.UseSecretAuth ? secretUserOptions.Value : GetUserApiAuthInfoFromHeader(httpRequest);
+        }
+
+        private static UserApiAuthInfo GetUserApiAuthInfoFromHeader(HttpRequest httpRequest)
+        {
+            return new UserApiAuthInfo
+            {
+                ApiUserId = httpRequest.Headers["x-api-userid"],
+                ApiKey = httpRequest.Headers["x-api-userkey"]
+            };
+        }
+
+        private static bool ValidateUserApiAuthInfo(UserApiAuthInfo userApiAuthInfo)
+        {
+            return !string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) && !string.IsNullOrEmpty(userApiAuthInfo.ApiKey);
         }
     }
 }

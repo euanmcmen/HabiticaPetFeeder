@@ -1,3 +1,4 @@
+using HabiticaPetFeeder.Api.Model;
 using HabiticaPetFeeder.Logic;
 using HabiticaPetFeeder.Logic.Model;
 using Microsoft.AspNetCore.Builder;
@@ -67,15 +68,21 @@ namespace HabiticaPetFeeder.Api
 
         private void RegisterUserInfoFromConfiguration(IServiceCollection services)
         {
+            var useSecretAuth = Configuration.GetValue<bool>("AllowAuthenticationFromAppSecrets");
+
+            if (!useSecretAuth)
+                return;
+
             var result = Configuration.GetSection("HabiticaApiCredentials").Get<UserApiAuthInfo>();
 
             if (result == null || string.IsNullOrEmpty(result.ApiUserId) || string.IsNullOrEmpty(result.ApiKey))
                 return;
 
-            services.Configure<UserApiAuthInfo>((options) =>
+            services.Configure<SecretUserApiAuthInfo>((options) =>
             {
                 options.ApiUserId = result.ApiUserId;
                 options.ApiKey = result.ApiKey;
+                options.UseSecretAuth = useSecretAuth;
             });
         }
     }
