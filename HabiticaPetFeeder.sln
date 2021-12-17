@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31321.278
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabiticaPetFeeder.App", "HabiticaPetFeeder.App\HabiticaPetFeeder.App.csproj", "{56D5400E-46D1-4FD5-99EB-68563B04D283}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabiticaPetFeeder.Tests", "HabiticaPetFeeder.Tests\HabiticaPetFeeder.Tests.csproj", "{486037EC-5E4B-4269-B55A-7E8E57A71BD6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A} = {D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}
@@ -12,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabiticaPetFeeder.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabiticaPetFeeder.Logic", "HabiticaPetFeeder.Logic\HabiticaPetFeeder.Logic.csproj", "{D4CDBF27-0A68-44FB-AC82-24BA63D41F0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HabiticaPetFeeder.Api", "HabiticaPetFeeder.Api\HabiticaPetFeeder.Api.csproj", "{5BB81179-DF14-41B4-A5C7-C569E503D78B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HabiticaPetFeeder.Api", "HabiticaPetFeeder.Api\HabiticaPetFeeder.Api.csproj", "{5BB81179-DF14-41B4-A5C7-C569E503D78B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,10 +18,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{56D5400E-46D1-4FD5-99EB-68563B04D283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56D5400E-46D1-4FD5-99EB-68563B04D283}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56D5400E-46D1-4FD5-99EB-68563B04D283}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56D5400E-46D1-4FD5-99EB-68563B04D283}.Release|Any CPU.Build.0 = Release|Any CPU
 		{486037EC-5E4B-4269-B55A-7E8E57A71BD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{486037EC-5E4B-4269-B55A-7E8E57A71BD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{486037EC-5E4B-4269-B55A-7E8E57A71BD6}.Release|Any CPU.ActiveCfg = Release|Any CPU

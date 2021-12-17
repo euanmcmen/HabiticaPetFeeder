@@ -1,21 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="UserResponseParsers\**" />
-    <EmbeddedResource Remove="UserResponseParsers\**" />
-    <None Remove="UserResponseParsers\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Service\FoodServiceTests.cs" />
-    <Compile Remove="Service\PetServiceTests.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />

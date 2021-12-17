@@ -31,8 +31,6 @@ namespace HabiticaPetFeeder.Api
         {
             services.UseHabiticaPetFeederServiceLayer();
 
-            RegisterUserInfoFromConfiguration(services);
-
             services.AddCors();
 
             services.AddControllers();
@@ -52,7 +50,7 @@ namespace HabiticaPetFeeder.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HabiticaPetFeeder.Api v1"));
             }
 
-            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod());
+            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
@@ -63,26 +61,6 @@ namespace HabiticaPetFeeder.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
-        }
-
-        private void RegisterUserInfoFromConfiguration(IServiceCollection services)
-        {
-            var useSecretAuth = Configuration.GetValue<bool>("AllowAuthenticationFromAppSecrets");
-
-            if (!useSecretAuth)
-                return;
-
-            var result = Configuration.GetSection("HabiticaApiCredentials").Get<UserApiAuthInfo>();
-
-            if (result == null || string.IsNullOrEmpty(result.ApiUserId) || string.IsNullOrEmpty(result.ApiKey))
-                return;
-
-            services.Configure<SecretUserApiAuthInfo>((options) =>
-            {
-                options.ApiUserId = result.ApiUserId;
-                options.ApiKey = result.ApiKey;
-                options.UseSecretAuth = useSecretAuth;
             });
         }
     }

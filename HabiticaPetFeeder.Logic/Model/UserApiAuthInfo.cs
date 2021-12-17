@@ -2,8 +2,8 @@
 {
     public class UserApiAuthInfo
     {
-        public string ApiKey { get; set; }
-
         public string ApiUserId { get; set; }
+
+        public string ApiKey { get; set; }
     }
 }
