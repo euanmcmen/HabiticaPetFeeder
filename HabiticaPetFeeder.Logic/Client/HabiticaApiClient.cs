@@ -32,7 +32,7 @@ namespace HabiticaPetFeeder.Logic.Client
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("x-client", $"{MyApiUserId}-{MyAppName}");
             httpClient.DefaultRequestHeaders.Add("x-api-user", userApiAuthInfo.ApiUserId);
-            httpClient.DefaultRequestHeaders.Add("x-api-key", userApiAuthInfo.ApiKey);
+            httpClient.DefaultRequestHeaders.Add("x-api-key", userApiAuthInfo.ApiUserKey);
 
             IsAuthenticated = true;
 

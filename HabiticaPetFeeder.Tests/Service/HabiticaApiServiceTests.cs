@@ -32,9 +32,9 @@ namespace HabiticaPetFeeder.Tests.Service
         }
 
         [Fact]
-        public async Task GetHabiticaUserAsync_returns_user_and_content_data()
+        public async Task GetHabiticaUserAsync_ReturnsUserAndContentData()
         {
-            var testCredentials = new UserApiAuthInfo() { ApiKey = "test-key", ApiUserId = "test-id" };
+            var testCredentials = new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" };
 
             fixture.MockApiClient.Setup(x => x.GetUserAsync()).ReturnsAsync(new Logic.Model.UserResponse.UserResponse() { success = true });
 
@@ -47,7 +47,7 @@ namespace HabiticaPetFeeder.Tests.Service
         }
 
         [Fact]
-        public async Task GetHabiticaUserAsync_throws_exception_on_null_credentials()
+        public async Task GetHabiticaUserAsync_ThrowsExceptionOnNullCredentials()
         {
             await Assert.ThrowsAsync<ArgumentNullException>(() => fixture.HabiticaApiService.GetHabiticaUserAsync(null));
         }

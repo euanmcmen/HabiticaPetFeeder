@@ -24,7 +24,7 @@ namespace HabiticaPetFeeder.Logic.Service.HabiticaApi
 
         public async Task<(UserResponse userResponse, ContentResponse contentResponse)> GetHabiticaUserAsync(UserApiAuthInfo userApiAuthInfo)
         {
-            if (userApiAuthInfo is null || string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiKey))
+            if (userApiAuthInfo is null || string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey))
                 throw new ArgumentNullException(nameof(userApiAuthInfo));
 
             await habiticaApiClient.AuthenticateAsync(userApiAuthInfo);

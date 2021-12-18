@@ -47,21 +47,21 @@ namespace HabiticaPetFeeder.Tests.Service
         }
 
         [Fact]
-        public void GetNumberOfPetsFed_returns_count_of_Pets()
+        public void GetNumberOfPetsFed_ReturnsCountOfPets()
         {
             var result = fixture.PetFoodFeedSummaryService.GetNumberOfPetsFed(inputFixture.PetFoodFeeds);
             Assert.Equal(3, result);
         }
 
         [Fact]
-        public void GetNumberOfSatisfiedPets_returns_count_of_satisfied_Pets()
+        public void GetNumberOfSatisfiedPets_ReturnsCountOfSatisfiedPets()
         {
             var result = fixture.PetFoodFeedSummaryService.GetNumberOfSatisfiedPets(inputFixture.PetFoodFeeds);
             Assert.Equal(2, result);
         }
 
         [Fact]
-        public void GetNumberOfFoodsFed_returns_total_count_of_Foods()
+        public void GetNumberOfFoodsFed_ReturnsTotalCountOfFoods()
         {
             //Milkx6 + Meatx5+1 + Cake_Basex3 = 15
 

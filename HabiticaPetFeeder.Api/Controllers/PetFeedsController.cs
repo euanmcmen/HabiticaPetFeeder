@@ -45,8 +45,8 @@ public class PetFeedsController : ControllerBase
         if (userApiAuthInfo is null) 
             throw new ArgumentNullException(nameof(userApiAuthInfo));
 
-        if (string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiKey)) 
-            throw new ArgumentException("ApiUserId and ApiKey cannot be null.");
+        if (string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey)) 
+            throw new ArgumentException("ApiUserId and ApiUserKey cannot be null.");
 
         List<PetFoodFeed> feeds = await BuildPetFeedsForUserAsync(userApiAuthInfo);
 
