@@ -1,8 +1,6 @@
-﻿using HabiticaPetFeeder.Api.Model;
-using HabiticaPetFeeder.Logic.Model;
+﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.HabiticaApi;
-using HabiticaPetFeeder.Logic.Service.PetFoodFeedSummary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,29 +11,26 @@ namespace HabiticaPetFeeder.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PetFeedsController : ControllerBase
+public class PetFoodFeedsController : ControllerBase
 {
-    private readonly ILogger<PetFeedsController> logger;
+    private readonly ILogger<PetFoodFeedsController> logger;
     private readonly IHabiticaApiService habiticaApiService;
     private readonly IDataService dataService;
     private readonly IPetFoodPreferenceService petFoodPreferenceService;
     private readonly IPetFoodFeedService petFoodFeedService;
-    private readonly IPetFoodFeedSummaryService petFoodFeedSummaryService;
 
-    public PetFeedsController(ILoggerFactory loggerFactory,
+    public PetFoodFeedsController(ILoggerFactory loggerFactory,
                               IHabiticaApiService habiticaApiService,
                               IDataService dataService,
                               IPetFoodPreferenceService petFoodPreferenceService,
-                              IPetFoodFeedService petFoodFeedService,
-                              IPetFoodFeedSummaryService petFoodFeedSummaryService)
+                              IPetFoodFeedService petFoodFeedService)
     {
-        logger = loggerFactory.CreateLogger<PetFeedsController>();
+        logger = loggerFactory.CreateLogger<PetFoodFeedsController>();
 
         this.habiticaApiService = habiticaApiService;
         this.dataService = dataService;
         this.petFoodPreferenceService = petFoodPreferenceService;
         this.petFoodFeedService = petFoodFeedService;
-        this.petFoodFeedSummaryService = petFoodFeedSummaryService;
     }
 
     [HttpPost]
@@ -50,20 +45,7 @@ public class PetFeedsController : ControllerBase
 
         List<PetFoodFeed> feeds = await BuildPetFeedsForUserAsync(userApiAuthInfo);
 
-        var summary = new PetFoodFeedSummary()
-        {
-            TotalNumberOfPetsFed = petFoodFeedSummaryService.GetNumberOfPetsFed(feeds),
-            TotalNumberOfFoodsFed = petFoodFeedSummaryService.GetNumberOfFoodsFed(feeds),
-            TotalNumberOfSatisfiedPets = petFoodFeedSummaryService.GetNumberOfSatisfiedPets(feeds)
-        };
-
-        var petFeedsResult = new PetFoodFeedResult()
-        {
-            PetFoodFeeds = feeds,
-            PetFoodFeedSummary = summary
-        };
-
-        return Ok(petFeedsResult);
+        return Ok(feeds);
     }
 
     private async Task<List<PetFoodFeed>> BuildPetFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)

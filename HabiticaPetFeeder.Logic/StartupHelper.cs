@@ -1,7 +1,6 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.HabiticaApi;
-using HabiticaPetFeeder.Logic.Service.PetFoodFeedSummary;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HabiticaPetFeeder.Logic
@@ -10,13 +9,12 @@ namespace HabiticaPetFeeder.Logic
     {
         public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services)
         {
-            services.AddScoped<IHabiticaApiClient>(client => GetApiClient(true));
+            services.AddScoped<IHabiticaApiClient>(client => GetApiClient(false));
 
             services.AddScoped<IHabiticaApiService, HabiticaApiService>();
             services.AddScoped<IDataService, DataService>();
             services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();
             services.AddScoped<IPetFoodFeedService, PetFoodFeedService>();
-            services.AddScoped<IPetFoodFeedSummaryService, PetFoodFeedSummaryService>();
         }
 
         private static IHabiticaApiClient GetApiClient(bool useLiveEndpoint)

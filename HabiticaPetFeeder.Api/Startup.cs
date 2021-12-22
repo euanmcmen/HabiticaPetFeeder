@@ -1,4 +1,3 @@
-using HabiticaPetFeeder.Api.Model;
 using HabiticaPetFeeder.Logic;
 using HabiticaPetFeeder.Logic.Model;
 using Microsoft.AspNetCore.Builder;
