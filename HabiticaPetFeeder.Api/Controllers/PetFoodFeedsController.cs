@@ -43,12 +43,14 @@ public class PetFoodFeedsController : ControllerBase
         if (string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey)) 
             throw new ArgumentException("ApiUserId and ApiUserKey cannot be null.");
 
-        List<PetFoodFeed> feeds = await BuildPetFeedsForUserAsync(userApiAuthInfo);
+        List<PetFoodFeed> feeds = await BuildPetFoodFeedsForUserAsync(userApiAuthInfo);
+
+        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Number of pet food feeds calculated: {feeds.Count}");
 
         return Ok(feeds);
     }
 
-    private async Task<List<PetFoodFeed>> BuildPetFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)
+    private async Task<List<PetFoodFeed>> BuildPetFoodFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)
     {
         var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(userApiAuthInfo);
 
