@@ -1,6 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,31 +10,45 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.Logic.Service.HabiticaApi
+namespace HabiticaPetFeeder.Logic.Service.HabiticaApi;
+
+public class HabiticaApiService : IHabiticaApiService
 {
-    public class HabiticaApiService : IHabiticaApiService
+    private readonly ILogger<HabiticaApiService> logger;
+    private readonly IHabiticaApiClient habiticaApiClient;
+
+    public HabiticaApiService(ILoggerFactory loggerFactory, IHabiticaApiClient habiticaApiClient)
     {
-        private readonly ILogger<HabiticaApiService> logger;
-        private readonly IHabiticaApiClient habiticaApiClient;
+        logger = loggerFactory.CreateLogger<HabiticaApiService>();
+        this.habiticaApiClient = habiticaApiClient;
+    }
 
-        public HabiticaApiService(ILoggerFactory loggerFactory, IHabiticaApiClient habiticaApiClient)
-        {
-            logger = loggerFactory.CreateLogger<HabiticaApiService>();
-            this.habiticaApiClient = habiticaApiClient;
-        }
+    public async Task<(UserResponse userResponse, ContentResponse contentResponse)> GetHabiticaUserAsync(UserApiAuthInfo userApiAuthInfo)
+    {
+        await AuthenticateWithUserAuthInfo(userApiAuthInfo);
 
-        public async Task<(UserResponse userResponse, ContentResponse contentResponse)> GetHabiticaUserAsync(UserApiAuthInfo userApiAuthInfo)
-        {
-            if (userApiAuthInfo is null || string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey))
-                throw new ArgumentNullException(nameof(userApiAuthInfo));
+        var userResponse = await habiticaApiClient.GetUserAsync();
 
-            await habiticaApiClient.AuthenticateAsync(userApiAuthInfo);
+        var contentResponse = await habiticaApiClient.GetContentAsync();
 
-            var userResponse = await habiticaApiClient.GetUserAsync();
+        return (userResponse, contentResponse);
+    }
 
-            var contentResponse = await habiticaApiClient.GetContentAsync();
+    public async Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed)
+    {
+        if (petFoodFeed is null) 
+            throw new ArgumentNullException(nameof(petFoodFeed));
 
-            return (userResponse, contentResponse);
-        }
+        await AuthenticateWithUserAuthInfo(userApiAuthInfo);
+
+        return await habiticaApiClient.FeedPetFoodAsync(petFoodFeed);
+    }
+
+    private async Task AuthenticateWithUserAuthInfo(UserApiAuthInfo userApiAuthInfo)
+    {
+        if (userApiAuthInfo is null || string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey))
+            throw new ArgumentNullException(nameof(userApiAuthInfo));
+
+        await habiticaApiClient.AuthenticateAsync(userApiAuthInfo);
     }
 }

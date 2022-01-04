@@ -6,50 +6,75 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HabiticaPetFeeder.Tests.Service
+namespace HabiticaPetFeeder.Tests.Service;
+
+public class HabiticaApiServiceTests_Fixture
 {
-    public class HabiticaApiServiceTests_Fixture
+    public HabiticaApiService HabiticaApiService { get; private set; }
+
+    public Mock<IHabiticaApiClient> MockApiClient { get; private set; }
+
+    public HabiticaApiServiceTests_Fixture()
     {
-        public HabiticaApiService HabiticaApiService { get; private set; }
+        MockApiClient = new Mock<IHabiticaApiClient>();
 
-        public Mock<IHabiticaApiClient> MockApiClient { get; private set; }
+        HabiticaApiService = new HabiticaApiService(TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object, MockApiClient.Object);
+    }
+}
 
-        public HabiticaApiServiceTests_Fixture()
-        {
-            MockApiClient = new Mock<IHabiticaApiClient>();
+public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fixture>
+{
+    private readonly HabiticaApiServiceTests_Fixture fixture;
 
-            HabiticaApiService= new HabiticaApiService(TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object, MockApiClient.Object);
-        }
+    public HabiticaApiServiceTests(HabiticaApiServiceTests_Fixture fixture)
+    {
+        this.fixture = fixture;
     }
 
-    public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fixture>
+    [Fact]
+    public async Task GetHabiticaUserAsync_ReturnsUserAndContentData()
     {
-        private readonly HabiticaApiServiceTests_Fixture fixture;
+        fixture.MockApiClient.Setup(x => x.GetUserAsync()).ReturnsAsync(new Logic.Model.UserResponse.UserResponse() { success = true });
 
-        public HabiticaApiServiceTests(HabiticaApiServiceTests_Fixture fixture)
-        {
-            this.fixture = fixture;
-        }
+        fixture.MockApiClient.Setup(x => x.GetContentAsync()).ReturnsAsync(new Logic.Model.ContentResponse.ContentResponse() { success = true });
 
-        [Fact]
-        public async Task GetHabiticaUserAsync_ReturnsUserAndContentData()
-        {
-            var testCredentials = new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" };
+        var (userResult, contentresult) = 
+            await fixture.HabiticaApiService.GetHabiticaUserAsync(new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" });
 
-            fixture.MockApiClient.Setup(x => x.GetUserAsync()).ReturnsAsync(new Logic.Model.UserResponse.UserResponse() { success = true });
+        Assert.True(userResult.success);
+        Assert.True(contentresult.success);
+    }
 
-            fixture.MockApiClient.Setup(x => x.GetContentAsync()).ReturnsAsync(new Logic.Model.ContentResponse.ContentResponse() { success = true });
+    [Fact]
+    public async Task FeedPetFoodAsync_ReturnsFeedResult()
+    {
+        fixture.MockApiClient.Setup(x => x.FeedPetFoodAsync(It.IsAny<PetFoodFeed>())).ReturnsAsync(new Logic.Model.FeedResponse.FeedResponse() { success = true });
 
-            var (userResult, contentresult)= await fixture.HabiticaApiService.GetHabiticaUserAsync(testCredentials);
+        var feedResult = await fixture.HabiticaApiService.FeedPetFoodAsync(
+            new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" },
+            new PetFoodFeed("test-pet-name", "test-food-name", 1, false));
 
-            Assert.True(userResult.success);
-            Assert.True(contentresult.success);
-        }
+        Assert.True(feedResult.success);
+    }
 
-        [Fact]
-        public async Task GetHabiticaUserAsync_ThrowsExceptionOnNullCredentials()
-        {
-            await Assert.ThrowsAsync<ArgumentNullException>(() => fixture.HabiticaApiService.GetHabiticaUserAsync(null));
-        }
+    [Fact]
+    public async Task GetHabiticaUserAsync_ThrowsExceptionOnNullCredentials()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() => fixture.HabiticaApiService.GetHabiticaUserAsync(null));
+    }
+
+    [Fact]
+    public async Task FeedPetFoodAsync_ThrowsExceptionOnNullCredentials()
+    {
+
+        await Assert.ThrowsAsync<ArgumentNullException>(() => 
+        fixture.HabiticaApiService.FeedPetFoodAsync(null, new PetFoodFeed("test-pet-name", "test-food-name", 1, false)));
+    }
+
+    [Fact]
+    public async Task FeedPetFoodAsync_ThrowsExceptionOnNullPetFoodFeed()
+    {
+        await Assert.ThrowsAsync<ArgumentNullException>(() => 
+        fixture.HabiticaApiService.FeedPetFoodAsync(new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" }, null));
     }
 }

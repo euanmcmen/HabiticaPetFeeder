@@ -1,61 +1,60 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace HabiticaPetFeeder.Logic.Model
+namespace HabiticaPetFeeder.Logic.Model;
+
+public interface IPetFoodPreference
 {
-    public interface IPetFoodPreference
-    {
-        HashSet<string> GetPetPreferredFoodNames(Pet pet);
+    HashSet<string> GetPetPreferredFoodNames(Pet pet);
 
-        HashSet<string> GetPetsWithPreferences();
+    HashSet<string> GetPetsWithPreferences();
+}
+
+public class EmptyPetPreferences : IPetFoodPreference
+{
+    public HashSet<string> GetPetPreferredFoodNames(Pet pet)
+    {
+        return new HashSet<string>();
     }
 
-    public class EmptyPetPreferences : IPetFoodPreference
+    public HashSet<string> GetPetsWithPreferences()
     {
-        public HashSet<string> GetPetPreferredFoodNames(Pet pet)
-        {
-            return new HashSet<string>();
-        }
+        return new HashSet<string>();
+    }
+}
 
-        public HashSet<string> GetPetsWithPreferences()
+public class PetFoodPreferences : IPetFoodPreference
+{
+    private readonly Dictionary<Pet, HashSet<string>> petFoodPreferences;
+
+    public PetFoodPreferences()
+    {
+        petFoodPreferences = new Dictionary<Pet, HashSet<string>>();
+    }
+
+    public void AddPetPreferredFood(Pet pet, Food food)
+    {
+        if (petFoodPreferences.ContainsKey(pet))
         {
-            return new HashSet<string>();
+            petFoodPreferences[pet].Add(food.FullName);
+        }
+        else
+        {
+            petFoodPreferences.Add(pet, new HashSet<string>() { food.FullName });
         }
     }
 
-    public class PetFoodPreferences : IPetFoodPreference
+    public HashSet<string> GetPetsWithPreferences()
     {
-        private readonly Dictionary<Pet, HashSet<string>> petFoodPreferences;
+        return petFoodPreferences.Keys
+            .Select(x => x.FullName)
+            .ToHashSet();
+    }
 
-        public PetFoodPreferences()
-        {
-            petFoodPreferences = new Dictionary<Pet, HashSet<string>>();
-        }
-
-        public void AddPetPreferredFood(Pet pet, Food food)
-        {
-            if (petFoodPreferences.ContainsKey(pet))
-            {
-                petFoodPreferences[pet].Add(food.FullName);
-            }
-            else
-            {
-                petFoodPreferences.Add(pet, new HashSet<string>() { food.FullName });
-            }
-        }
-
-        public HashSet<string> GetPetsWithPreferences()
-        {
-            return petFoodPreferences.Keys
-                .Select(x => x.FullName)
-                .ToHashSet();
-        }
-
-        public HashSet<string> GetPetPreferredFoodNames(Pet pet)
-        {
-            return petFoodPreferences.TryGetValue(pet, out var preferredFoods) 
-                ? preferredFoods
-                : new HashSet<string>();
-        }
+    public HashSet<string> GetPetPreferredFoodNames(Pet pet)
+    {
+        return petFoodPreferences.TryGetValue(pet, out var preferredFoods)
+            ? preferredFoods
+            : new HashSet<string>();
     }
 }

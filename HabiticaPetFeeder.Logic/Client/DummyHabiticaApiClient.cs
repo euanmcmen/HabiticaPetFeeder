@@ -1,39 +1,50 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.Logic.Client
+namespace HabiticaPetFeeder.Logic.Client;
+
+public class DummyHabiticaApiClient : IHabiticaApiClient
 {
-    public class DummyHabiticaApiClient : IHabiticaApiClient
+    public async Task AuthenticateAsync(UserApiAuthInfo userApiAuthInfo)
     {
-        public bool IsAuthenticated => true;
+        await Task.CompletedTask;
+    }
 
-        public async Task AuthenticateAsync(UserApiAuthInfo userApiAuthInfo)
-        {
-            await Task.CompletedTask;
-        }
+    public async Task<UserResponse> GetUserAsync()
+    {
+        await Task.CompletedTask;
 
-        public async Task<UserResponse> GetUserAsync()
-        {
-            await Task.CompletedTask;
+        var result = JsonConvert.DeserializeObject<UserResponse>(UserResponseTest);
 
-            var result = JsonConvert.DeserializeObject<UserResponse>(UserResponseTest);
+        return result;
+    }
 
-            return result;
-        }
+    public async Task<ContentResponse> GetContentAsync()
+    {
+        await Task.CompletedTask;
 
-        public async Task<ContentResponse> GetContentAsync()
-        {
-            await Task.CompletedTask;
+        var result = JsonConvert.DeserializeObject<ContentResponse>(ContentResponseTest);
 
-            var result = JsonConvert.DeserializeObject<ContentResponse>(ContentResponseTest);
+        return result;
+    }
 
-            return result;
-        }
+    public async Task<FeedResponse> FeedPetFoodAsync(PetFoodFeed petFoodFeed)
+    {
+        await Task.CompletedTask;
 
-        private static readonly string UserResponseTest =
+        var result = JsonConvert.DeserializeObject<FeedResponse>(FeedResponseTest);
+
+        return result;
+    }
+
+    private static string FeedResponseTest =
+@"{'success':true,'data':10,'message':'Shade Armadillo really likes the Chocolate!','notifications':[]} ";
+
+    private static readonly string UserResponseTest =
 @"
 
 {
@@ -220,7 +231,7 @@ namespace HabiticaPetFeeder.Logic.Client
 ";
 
 
-        private static readonly string ContentResponseTest =
+    private static readonly string ContentResponseTest =
 @"
 
 {
@@ -8861,5 +8872,4 @@ namespace HabiticaPetFeeder.Logic.Client
 }
 
 ";
-    }
 }

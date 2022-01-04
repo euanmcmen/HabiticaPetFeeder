@@ -50,6 +50,24 @@ public class PetFoodFeedsController : ControllerBase
         return Ok(feeds);
     }
 
+    [HttpPost]
+    [Route("feed")]
+    public async Task<IActionResult> FeedUserPetAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed)
+    {
+        if (userApiAuthInfo is null)
+            throw new ArgumentNullException(nameof(userApiAuthInfo));
+
+        if (petFoodFeed is null)
+            throw new ArgumentNullException(nameof(petFoodFeed));
+
+        if (string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey))
+            throw new ArgumentException("ApiUserId and ApiUserKey cannot be null.");
+
+        var feedResponse = await habiticaApiService.FeedPetFoodAsync(userApiAuthInfo, petFoodFeed);
+
+        return Ok(feedResponse);
+    }
+
     private async Task<List<PetFoodFeed>> BuildPetFoodFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)
     {
         var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(userApiAuthInfo);

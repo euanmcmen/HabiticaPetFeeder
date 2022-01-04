@@ -1,9 +1,8 @@
-﻿namespace HabiticaPetFeeder.Logic.Model
-{
-    public class UserApiAuthInfo
-    {
-        public string ApiUserId { get; set; }
+﻿namespace HabiticaPetFeeder.Logic.Model;
 
-        public string ApiUserKey { get; set; }
-    }
+public class UserApiAuthInfo
+{
+    public string ApiUserId { get; set; }
+
+    public string ApiUserKey { get; set; }
 }
