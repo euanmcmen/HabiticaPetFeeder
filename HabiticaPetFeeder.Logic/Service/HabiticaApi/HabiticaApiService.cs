@@ -41,7 +41,9 @@ public class HabiticaApiService : IHabiticaApiService
 
         await AuthenticateWithUserAuthInfo(userApiAuthInfo);
 
-        return await habiticaApiClient.FeedPetFoodAsync(petFoodFeed);
+        var feedResponse = await habiticaApiClient.FeedPetFoodAsync(petFoodFeed);
+
+        return feedResponse;
     }
 
     private async Task AuthenticateWithUserAuthInfo(UserApiAuthInfo userApiAuthInfo)

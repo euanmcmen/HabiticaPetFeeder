@@ -34,14 +34,11 @@ public class PetFoodFeedsController : ControllerBase
     }
 
     [HttpPost]
-    [Route("")]
+    [Route("/fetch")]
     public async Task<IActionResult> GetPetFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)
     {
         if (userApiAuthInfo is null) 
             throw new ArgumentNullException(nameof(userApiAuthInfo));
-
-        if (string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey)) 
-            throw new ArgumentException("ApiUserId and ApiUserKey cannot be null.");
 
         List<PetFoodFeed> feeds = await BuildPetFoodFeedsForUserAsync(userApiAuthInfo);
 
@@ -51,19 +48,18 @@ public class PetFoodFeedsController : ControllerBase
     }
 
     [HttpPost]
-    [Route("feed")]
-    public async Task<IActionResult> FeedUserPetAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed)
+    [Route("/feed")]
+    public async Task<IActionResult> FeedUserPetAsync(Model.FeedUserPetRequest feedUserPetRequest)
     {
-        if (userApiAuthInfo is null)
-            throw new ArgumentNullException(nameof(userApiAuthInfo));
+        if (feedUserPetRequest is null)
+            throw new ArgumentNullException(nameof(feedUserPetRequest));
 
-        if (petFoodFeed is null)
-            throw new ArgumentNullException(nameof(petFoodFeed));
-
-        if (string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey))
-            throw new ArgumentException("ApiUserId and ApiUserKey cannot be null.");
+        var userApiAuthInfo = feedUserPetRequest.UserApiAuthInfo;
+        var petFoodFeed = feedUserPetRequest.PetFoodFeed;
 
         var feedResponse = await habiticaApiService.FeedPetFoodAsync(userApiAuthInfo, petFoodFeed);
+
+        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} | PetFeed Result: {(feedResponse.success ? "Successful" : "Unsuccessful")}.  Data: {feedResponse.data}");
 
         return Ok(feedResponse);
     }
