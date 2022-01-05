@@ -34,7 +34,7 @@ public class PetFoodFeedsController : ControllerBase
     }
 
     [HttpPost]
-    [Route("/fetch")]
+    [Route("fetch")]
     public async Task<IActionResult> GetPetFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)
     {
         if (userApiAuthInfo is null) 
@@ -48,7 +48,7 @@ public class PetFoodFeedsController : ControllerBase
     }
 
     [HttpPost]
-    [Route("/feed")]
+    [Route("feed")]
     public async Task<IActionResult> FeedUserPetAsync(Model.FeedUserPetRequest feedUserPetRequest)
     {
         if (feedUserPetRequest is null)
