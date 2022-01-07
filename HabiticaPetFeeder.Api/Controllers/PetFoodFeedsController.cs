@@ -1,6 +1,8 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.Data;
 using HabiticaPetFeeder.Logic.Service.HabiticaApi;
+using HabiticaPetFeeder.Logic.Service.PetFoodFeed;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferences;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

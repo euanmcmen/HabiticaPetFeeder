@@ -3,7 +3,7 @@ using HabiticaPetFeeder.Logic.Model.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
 using System.Collections.Generic;
 
-namespace HabiticaPetFeeder.Logic.Service
+namespace HabiticaPetFeeder.Logic.Service.Data
 {
     public interface IDataService
     {

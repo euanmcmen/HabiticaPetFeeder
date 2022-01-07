@@ -1,12 +1,12 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using System.Collections.Generic;
 
-namespace HabiticaPetFeeder.Logic.Service
+namespace HabiticaPetFeeder.Logic.Service.PetFoodFeed
 {
     public interface IPetFoodFeedService
     {
-        IEnumerable<PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, PetFoodPreferences petFoodPreferences);
+        IEnumerable<Model.PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, Model.PetFoodPreferences petFoodPreferences);
 
-        IEnumerable<PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods);
+        IEnumerable<Model.PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods);
     }
 }

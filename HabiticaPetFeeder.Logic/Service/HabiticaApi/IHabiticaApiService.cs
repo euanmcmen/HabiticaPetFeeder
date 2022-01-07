@@ -10,5 +10,5 @@ public interface IHabiticaApiService
 {
     Task<(UserResponse userResponse, ContentResponse contentResponse)> GetHabiticaUserAsync(UserApiAuthInfo userApiAuthInfo);
 
-    Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed);
+    Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, Model.PetFoodFeed petFoodFeed);
 }

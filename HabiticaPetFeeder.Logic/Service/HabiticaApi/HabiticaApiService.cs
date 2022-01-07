@@ -34,7 +34,7 @@ public class HabiticaApiService : IHabiticaApiService
         return (userResponse, contentResponse);
     }
 
-    public async Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed)
+    public async Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, Model.PetFoodFeed petFoodFeed)
     {
         if (petFoodFeed is null) 
             throw new ArgumentNullException(nameof(petFoodFeed));

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HabiticaPetFeeder.Logic.Service
+namespace HabiticaPetFeeder.Logic.Service.PetFoodFeed
 {
     public class PetFoodFeedService : IPetFoodFeedService
     {
@@ -17,12 +17,12 @@ namespace HabiticaPetFeeder.Logic.Service
             logger = loggerFactory.CreateLogger<PetFoodFeedService>();
         }
 
-        public IEnumerable<PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, PetFoodPreferences petFoodPreferences)
+        public IEnumerable<Model.PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, Model.PetFoodPreferences petFoodPreferences)
         {
             return GetFoodFeedsWithPreference(pets, foods, petFoodPreferences);
         }
 
-        public IEnumerable<PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods)
+        public IEnumerable<Model.PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods)
         {
             return GetFoodFeedsWithPreference(pets, foods, new EmptyPetPreferences());
         }
@@ -34,9 +34,9 @@ namespace HabiticaPetFeeder.Logic.Service
         /// <param name="foods"></param>
         /// <param name="petFoodPreferences"></param>
         /// <returns></returns>
-        private static IEnumerable<PetFoodFeed> GetFoodFeedsWithPreference(IEnumerable<Pet> pets, IEnumerable<Food> foods, IPetFoodPreference petFoodPreferences)
+        private static IEnumerable<Model.PetFoodFeed> GetFoodFeedsWithPreference(IEnumerable<Pet> pets, IEnumerable<Food> foods, IPetFoodPreference petFoodPreferences)
         {
-            var petFeeds = new HashSet<PetFoodFeed>();
+            var petFeeds = new HashSet<Model.PetFoodFeed>();
 
             var petsWithPreferences = petFoodPreferences.GetPetsWithPreferences();
 
@@ -59,7 +59,7 @@ namespace HabiticaPetFeeder.Logic.Service
                 {
                     var allocationsOfThisFoodToThisPet = 0;
 
-                    var fedPointsAdjustment = (!pet.IsBasicPet || pet.Type == food.Type)
+                    var fedPointsAdjustment = !pet.IsBasicPet || pet.Type == food.Type
                         ? PreferredFoodFeedPoints
                         : NonPreferredFoodFeedPoints;
 
@@ -77,7 +77,7 @@ namespace HabiticaPetFeeder.Logic.Service
                     {
                         var isPetSatisfied = pet.FedPoints.Value >= 50;
 
-                        petFeeds.Add(new PetFoodFeed(pet.FullName, food.FullName, allocationsOfThisFoodToThisPet, isPetSatisfied));
+                        petFeeds.Add(new Model.PetFoodFeed(pet.FullName, food.FullName, allocationsOfThisFoodToThisPet, isPetSatisfied));
                     }
                 }
             }

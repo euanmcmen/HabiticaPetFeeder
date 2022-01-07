@@ -1,4 +1,4 @@
-﻿using HabiticaPetFeeder.Logic.Service;
+﻿using HabiticaPetFeeder.Logic.Service.PetFoodFeed;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

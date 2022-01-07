@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HabiticaPetFeeder.Logic.Service
+namespace HabiticaPetFeeder.Logic.Service.Data
 {
     public class DataService : IDataService
     {
@@ -19,9 +19,9 @@ namespace HabiticaPetFeeder.Logic.Service
         public IEnumerable<Pet> GetPets(UserResponse userResponse, ContentResponse contentResponse)
         {
             var basicPetNames = contentResponse.data.pets.Select(x => x.Key).ToHashSet();
-            
+
             var feedablePetNames = basicPetNames.Union(contentResponse.data.premiumPets.Select(x => x.Key)).ToHashSet();
-            
+
             var mountNames = userResponse.data.items.mounts.Select(x => x.Key).ToHashSet();
 
             return userResponse.data.items.pets

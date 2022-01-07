@@ -1,7 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
-using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.Data;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

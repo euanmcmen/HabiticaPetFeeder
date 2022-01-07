@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HabiticaPetFeeder.Logic.Service
+namespace HabiticaPetFeeder.Logic.Service.PetFoodPreferences
 {
     public class PetFoodPreferenceService : IPetFoodPreferenceService
     {
@@ -14,9 +14,9 @@ namespace HabiticaPetFeeder.Logic.Service
             logger = loggerFactory.CreateLogger<PetFoodPreferenceService>();
         }
 
-        public PetFoodPreferences GetUserBasicPetPreferredFoods(IEnumerable<Pet> pets, IEnumerable<Food> foods)
+        public Model.PetFoodPreferences GetUserBasicPetPreferredFoods(IEnumerable<Pet> pets, IEnumerable<Food> foods)
         {
-            var petFoodPreferencesResult = new PetFoodPreferences();
+            var petFoodPreferencesResult = new Model.PetFoodPreferences();
 
             var basicPets = pets
                 .Where(x => x.IsBasicPet)
