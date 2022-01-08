@@ -39,7 +39,7 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
         fixture.MockApiClient.Setup(x => x.GetContentAsync()).ReturnsAsync(new Logic.Model.ContentResponse.ContentResponse() { success = true });
 
         var (userResult, contentresult) = 
-            await fixture.HabiticaApiService.GetHabiticaUserAsync(new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" });
+            await fixture.HabiticaApiService.GetHabiticaUserAsync(new UserApiAuthInfo("test-key", "test-id"));
 
         Assert.True(userResult.success);
         Assert.True(contentresult.success);
@@ -51,7 +51,7 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
         fixture.MockApiClient.Setup(x => x.FeedPetFoodAsync(It.IsAny<PetFoodFeed>())).ReturnsAsync(new Logic.Model.FeedResponse.FeedResponse() { success = true });
 
         var feedResult = await fixture.HabiticaApiService.FeedPetFoodAsync(
-            new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" },
+            new UserApiAuthInfo("test-key", "test-id"),
             new PetFoodFeed("test-pet-name", "test-food-name", 1, false));
 
         Assert.True(feedResult.success);
@@ -75,6 +75,6 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
     public async Task FeedPetFoodAsync_ThrowsExceptionOnNullPetFoodFeed()
     {
         await Assert.ThrowsAsync<ArgumentNullException>(() => 
-        fixture.HabiticaApiService.FeedPetFoodAsync(new UserApiAuthInfo() { ApiUserKey = "test-key", ApiUserId = "test-id" }, null));
+        fixture.HabiticaApiService.FeedPetFoodAsync(new UserApiAuthInfo("test-key", "test-id"), null));
     }
 }

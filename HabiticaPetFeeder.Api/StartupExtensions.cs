@@ -1,4 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
+using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service.Authentication;
 using HabiticaPetFeeder.Logic.Service.Data;
 using HabiticaPetFeeder.Logic.Service.HabiticaApi;
@@ -7,13 +8,15 @@ using HabiticaPetFeeder.Logic.Service.PetFoodPreferences;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HabiticaPetFeeder.Logic
+namespace HabiticaPetFeeder.Api
 {
-    public static class StartupHelper
+    public static class StartupExtensions
     {
-        public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services)
+        public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IHabiticaApiClient>(client => GetApiClient(false));
+            services.AddScoped(client => GetApiClient(false));
+
+            services.Configure<EncryptionSettings>(configuration.GetSection("Encryption"));
 
             services.AddScoped<IHabiticaApiService, HabiticaApiService>();
             services.AddScoped<IDataService, DataService>();

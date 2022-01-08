@@ -1,5 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service.Authentication;
+using HabiticaPetFeeder.Logic.Service.Encryption;
+using Moq;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service
@@ -8,9 +10,13 @@ namespace HabiticaPetFeeder.Tests.Service
     {
         public IAuthenticationService AuthenticationService { get; private set; }
 
+        public Mock<IEncryptionService> MockEncryptionService { get; private set; }
+
         public AuthenticationServiceTests_Fixture()
         {
-            AuthenticationService = new AuthenticationService(TestHelpers.GetMockedLogFactoryForType<AuthenticationService>().Object);
+            MockEncryptionService = new Mock<IEncryptionService>();
+
+            AuthenticationService = new AuthenticationService(TestHelpers.GetMockedLogFactoryForType<AuthenticationService>().Object, MockEncryptionService.Object);
         }
     }
 
@@ -27,7 +33,9 @@ namespace HabiticaPetFeeder.Tests.Service
         public void GetAuthenticationTokenForUser_ReturnsBase64EncodedUserIdAndKey()
         {
             const string expected = "dGVzdFVzZXI6dGVzdEtleQ==";
-            var input = new UserApiAuthInfo() { ApiUserId = "testUser", ApiUserKey = "testKey" };
+            var input = new UserApiAuthInfo("testUser", "unencryptedTestKey");
+
+            fixture.MockEncryptionService.Setup(x => x.Encrypt(input.ApiUserKey)).Returns("testKey");
 
             var actual = fixture.AuthenticationService.GetAuthenticationTokenForUser(input);
 
