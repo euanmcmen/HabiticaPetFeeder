@@ -24,22 +24,36 @@ namespace HabiticaPetFeeder.Tests.Service
     {
         private readonly AuthenticationServiceTests_Fixture fixture;
 
+        private readonly UserApiAuthInfo testAuthInfo = new UserApiAuthInfo("testUser", "testKey");
+
+        private const string PlainText = "testUser:testKey";
+        private const string Encrypted_PlainText = "encrypted";
+        private const string Encoded_Encrypted_PlainText = "ZW5jcnlwdGVk";
+
+
+
         public AuthenticationServiceTests(AuthenticationServiceTests_Fixture fixture)
         {
             this.fixture = fixture;
+
+            fixture.MockEncryptionService.Setup(x => x.Encrypt(PlainText)).Returns(Encrypted_PlainText);
+            fixture.MockEncryptionService.Setup(x => x.Decrypt(Encrypted_PlainText)).Returns(PlainText);
         }
 
         [Fact]
-        public void GetAuthenticationTokenForUser_ReturnsBase64EncodedUserIdAndKey()
+        public void GetAuthenticationTokenForUserAuth_ReturnsBase64EncodedUserIdAndKeyToken()
         {
-            const string expected = "dGVzdFVzZXI6dGVzdEtleQ==";
-            var input = new UserApiAuthInfo("testUser", "unencryptedTestKey");
+            var actual = fixture.AuthenticationService.GetAuthenticationTokenForUserAuth(testAuthInfo);
 
-            fixture.MockEncryptionService.Setup(x => x.Encrypt(input.ApiUserKey)).Returns("testKey");
+            Assert.Equal(Encoded_Encrypted_PlainText, actual);
+        }
 
-            var actual = fixture.AuthenticationService.GetAuthenticationTokenForUser(input);
+        [Fact]
+        public void GetUserAuthFromAuthenticationToken_ReturnsUserAuthFromToken()
+        {
+            var actual = fixture.AuthenticationService.GetUserAuthFromAuthenticationToken(Encoded_Encrypted_PlainText);
 
-            Assert.Equal(expected, actual);
+            Assert.Equal(testAuthInfo, actual);
         }
     }
 }

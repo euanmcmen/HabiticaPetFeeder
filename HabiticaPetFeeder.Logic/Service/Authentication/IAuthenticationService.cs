@@ -4,6 +4,8 @@ namespace HabiticaPetFeeder.Logic.Service.Authentication
 {
     public interface IAuthenticationService
     {
-        string GetAuthenticationTokenForUser(UserApiAuthInfo userApiAuthInfo);
+        string GetAuthenticationTokenForUserAuth(UserApiAuthInfo userApiAuthInfo);
+
+        UserApiAuthInfo GetUserAuthFromAuthenticationToken(string authenticationToken);
     }
 }
