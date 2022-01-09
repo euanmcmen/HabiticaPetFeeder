@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -23,83 +22,71 @@ public class EncryptionService : IEncryptionService
 
     public string Encrypt(string plainText)
     {
-        var keyBytes = Encoding.ASCII.GetBytes(encryptionSettings.Secret);
+        var keyBytes = Encoding.UTF8.GetBytes(encryptionSettings.Secret);
 
-        var encryptedBytes = EncryptStringToBytes_Aes(plainText, keyBytes);
+        var (iv, cipher) = Encrypt_Aes(plainText, keyBytes);
 
-        return Convert.ToBase64String(encryptedBytes);
+        return string.Concat(Convert.ToBase64String(iv), Convert.ToBase64String(cipher));
     }
 
     public string Decrypt(string encryptedText)
     {
-        var encryptedBytes = Encoding.UTF8.GetBytes(encryptedText);
-        var keyBytes = Encoding.ASCII.GetBytes(encryptionSettings.Secret);
+        var keyBytes = Encoding.UTF8.GetBytes(encryptionSettings.Secret);
 
-        return DecryptStringFromBytes_Aes(encryptedBytes, keyBytes);
+        //Encrypted text contains (iv)(text to decrypt).
+        //Both are base64 encoded, with 24 characters.
+        var ivPartBytes = Convert.FromBase64String(encryptedText.Substring(0, 24));
+        var cipherPartBytes = Convert.FromBase64String(encryptedText.Substring(24));
+
+        return Decrypt_Aes(cipherPartBytes, ivPartBytes, keyBytes);
     }
 
     //https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.aes?view=net-6.0
 
-    static byte[] EncryptStringToBytes_Aes(string plainText, byte[] key)
+    private static (byte[] iv, byte[] cipher) Encrypt_Aes(string plainText, byte[] key)
     {
         // Check arguments.
         if (plainText == null || plainText.Length <= 0)
             throw new ArgumentNullException(nameof(plainText));
         if (key == null || key.Length <= 0)
             throw new ArgumentNullException(nameof(key));
-        //if (iv is null || iv.Length <= 0)
-        //    throw new ArgumentNullException(nameof(iv));
 
+        byte[] iv;
         byte[] encrypted;
 
-        // Create an Aes object
-        // with the specified key and IV.
+        // Create an Aes object with the specified key and random IV.
         using (Aes aesAlg = Aes.Create())
         {
             aesAlg.Key = key;
 
             aesAlg.GenerateIV();
 
-            //KeySizes[] ks = aesAlg.LegalKeySizes;
-            //foreach (KeySizes item in ks)
-            //{
-            //    Debug.WriteLine("Legal min key size = " + item.MinSize);
-            //    Debug.WriteLine("Legal max key size = " + item.MaxSize);
-            //    //Output
-            //    // Legal min key size = 128
-            //    // Legal max key size = 256
-            //}
-
-            // Create an encryptor to perform the stream transform.
             ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
 
-            // Create the streams used for encryption.
             using MemoryStream msEncrypt = new MemoryStream();
             using CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using (StreamWriter swEncrypt = new(csEncrypt))
+            using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
             {
-                //Write all data to the stream.
                 swEncrypt.Write(plainText);
             }
+
+            iv = aesAlg.IV;
             encrypted = msEncrypt.ToArray();
         }
 
-        // Return the encrypted bytes from the memory stream.
-        return encrypted;
+        return (iv, encrypted);
     }
 
-    static string DecryptStringFromBytes_Aes(byte[] cipherText, byte[] key)
+    private static string Decrypt_Aes(byte[] cipher, byte[] iv, byte[] key)
     {
         // Check arguments.
-        if (cipherText == null || cipherText.Length <= 0)
-            throw new ArgumentNullException(nameof(cipherText));
+        if (cipher == null || cipher.Length <= 0)
+            throw new ArgumentNullException(nameof(cipher));
+        if (iv == null || iv.Length <= 0)
+            throw new ArgumentNullException(nameof(iv));
         if (key == null || key.Length <= 0)
             throw new ArgumentNullException(nameof(key));
-        //if (iv is null || iv.Length <= 0)
-        //    throw new ArgumentNullException(nameof(iv));
 
-        // Declare the string used to hold
-        // the decrypted text.
         string plaintext = null;
 
         // Create an Aes object
@@ -107,14 +94,13 @@ public class EncryptionService : IEncryptionService
         using (Aes aesAlg = Aes.Create())
         {
             aesAlg.Key = key;
-
-            aesAlg.GenerateIV();
+            aesAlg.IV = iv;
 
             // Create a decryptor to perform the stream transform.
             ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
 
             // Create the streams used for decryption.
-            using MemoryStream msDecrypt = new MemoryStream(cipherText);
+            using MemoryStream msDecrypt = new MemoryStream(cipher);
             using CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
             using StreamReader srDecrypt = new StreamReader(csDecrypt);
 
