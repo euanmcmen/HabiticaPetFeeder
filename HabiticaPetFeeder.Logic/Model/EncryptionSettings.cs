@@ -6,4 +6,9 @@ using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Logic.Model;
 
-public record EncryptionSettings(string Secret);
+public class EncryptionSettings
+{
+    public const string AppSettingName = "Encryption";
+
+    public string Secret { get; set; }
+}

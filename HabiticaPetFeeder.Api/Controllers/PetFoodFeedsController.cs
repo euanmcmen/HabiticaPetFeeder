@@ -1,15 +1,16 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service.Data;
-using HabiticaPetFeeder.Logic.Service.HabiticaApi;
-using HabiticaPetFeeder.Logic.Service.PetFoodFeed;
-using HabiticaPetFeeder.Logic.Service.PetFoodPreferences;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Api.Controllers;
+
+/*
+ * The authentication header has no scheme.  The header value is the encrypted token.
+ */
 
 [Route("api/[controller]")]
 [ApiController]
@@ -17,12 +18,14 @@ public class PetFoodFeedsController : ControllerBase
 {
     private readonly ILogger<PetFoodFeedsController> logger;
     private readonly IHabiticaApiService habiticaApiService;
+    private readonly IAuthenticationService authenticationService;
     private readonly IDataService dataService;
     private readonly IPetFoodPreferenceService petFoodPreferenceService;
     private readonly IPetFoodFeedService petFoodFeedService;
 
     public PetFoodFeedsController(ILoggerFactory loggerFactory,
                               IHabiticaApiService habiticaApiService,
+                              IAuthenticationService authenticationService,
                               IDataService dataService,
                               IPetFoodPreferenceService petFoodPreferenceService,
                               IPetFoodFeedService petFoodFeedService)
@@ -30,17 +33,20 @@ public class PetFoodFeedsController : ControllerBase
         logger = loggerFactory.CreateLogger<PetFoodFeedsController>();
 
         this.habiticaApiService = habiticaApiService;
+        this.authenticationService = authenticationService;
         this.dataService = dataService;
         this.petFoodPreferenceService = petFoodPreferenceService;
         this.petFoodFeedService = petFoodFeedService;
     }
 
-    [HttpPost]
+    [HttpGet]
     [Route("fetch")]
-    public async Task<IActionResult> GetPetFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)
+    public async Task<IActionResult> GetPetFeedsForUserAsync()
     {
-        if (userApiAuthInfo is null) 
-            throw new ArgumentNullException(nameof(userApiAuthInfo));
+        var userApiAuthInfo = GetUserAuthFromRequestHeader(Request);
+
+        if (userApiAuthInfo is null)
+            return Unauthorized();
 
         List<PetFoodFeed> feeds = await BuildPetFoodFeedsForUserAsync(userApiAuthInfo);
 
@@ -51,19 +57,26 @@ public class PetFoodFeedsController : ControllerBase
 
     [HttpPost]
     [Route("feed")]
-    public async Task<IActionResult> FeedUserPetAsync(Model.FeedUserPetRequest feedUserPetRequest)
+    public async Task<IActionResult> FeedUserPetAsync(PetFoodFeed petFoodFeed)
     {
-        if (feedUserPetRequest is null)
-            throw new ArgumentNullException(nameof(feedUserPetRequest));
+        var userApiAuthInfo = GetUserAuthFromRequestHeader(Request);
 
-        var userApiAuthInfo = feedUserPetRequest.UserApiAuthInfo;
-        var petFoodFeed = feedUserPetRequest.PetFoodFeed;
+        if (userApiAuthInfo is null)
+            return Unauthorized();
 
         var feedResponse = await habiticaApiService.FeedPetFoodAsync(userApiAuthInfo, petFoodFeed);
 
         logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} | PetFeed Result: {(feedResponse.success ? "Successful" : "Unsuccessful")}.  Data: {feedResponse.data}");
 
         return Ok(feedResponse);
+    }
+
+    private UserApiAuthInfo GetUserAuthFromRequestHeader(HttpRequest httpRequest)
+    {
+        if (httpRequest.Headers.Authorization.Count != 1)
+            return null;
+
+        return authenticationService.GetUserAuthFromAuthenticationToken(httpRequest.Headers.Authorization[0]);
     }
 
     private async Task<List<PetFoodFeed>> BuildPetFoodFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)

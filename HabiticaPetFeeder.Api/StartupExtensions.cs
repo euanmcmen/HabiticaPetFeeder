@@ -1,10 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service.Authentication;
-using HabiticaPetFeeder.Logic.Service.Data;
-using HabiticaPetFeeder.Logic.Service.HabiticaApi;
-using HabiticaPetFeeder.Logic.Service.PetFoodFeed;
-using HabiticaPetFeeder.Logic.Service.PetFoodPreferences;
+using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,11 +11,12 @@ namespace HabiticaPetFeeder.Api
     {
         public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped(client => GetApiClient(false));
+            services.AddScoped(client => GetApiClient(configuration.GetValue<bool>("UseLiveEndpoint")));
 
-            services.Configure<EncryptionSettings>(configuration.GetSection("Encryption"));
+            services.Configure<EncryptionSettings>(configuration.GetSection(EncryptionSettings.AppSettingName));
 
             services.AddScoped<IHabiticaApiService, HabiticaApiService>();
+            services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IDataService, DataService>();
             services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();
             services.AddScoped<IPetFoodFeedService, PetFoodFeedService>();

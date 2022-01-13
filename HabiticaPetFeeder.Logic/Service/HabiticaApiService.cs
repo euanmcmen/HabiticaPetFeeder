@@ -3,6 +3,7 @@ using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.Logic.Service.HabiticaApi;
+namespace HabiticaPetFeeder.Logic.Service;
 
 public class HabiticaApiService : IHabiticaApiService
 {
@@ -36,7 +37,7 @@ public class HabiticaApiService : IHabiticaApiService
 
     public async Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, Model.PetFoodFeed petFoodFeed)
     {
-        if (petFoodFeed is null) 
+        if (petFoodFeed is null)
             throw new ArgumentNullException(nameof(petFoodFeed));
 
         await AuthenticateWithUserAuthInfo(userApiAuthInfo);

@@ -1,4 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -6,7 +7,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace HabiticaPetFeeder.Logic.Service.Encryption;
+namespace HabiticaPetFeeder.Logic.Service;
 
 public class EncryptionService : IEncryptionService
 {

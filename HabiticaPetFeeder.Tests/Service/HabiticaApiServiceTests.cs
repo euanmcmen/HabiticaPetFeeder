@@ -1,6 +1,6 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service.HabiticaApi;
+using HabiticaPetFeeder.Logic.Service;
 using Moq;
 using System;
 using System.Threading.Tasks;

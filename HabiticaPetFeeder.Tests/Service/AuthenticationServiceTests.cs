@@ -1,59 +1,58 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service.Authentication;
-using HabiticaPetFeeder.Logic.Service.Encryption;
+using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Moq;
 using Xunit;
 
-namespace HabiticaPetFeeder.Tests.Service
+namespace HabiticaPetFeeder.Tests.Service;
+
+public class AuthenticationServiceTests_Fixture
 {
-    public class AuthenticationServiceTests_Fixture
+    public IAuthenticationService AuthenticationService { get; private set; }
+
+    public Mock<IEncryptionService> MockEncryptionService { get; private set; }
+
+    public AuthenticationServiceTests_Fixture()
     {
-        public IAuthenticationService AuthenticationService { get; private set; }
+        MockEncryptionService = new Mock<IEncryptionService>();
 
-        public Mock<IEncryptionService> MockEncryptionService { get; private set; }
+        AuthenticationService = new AuthenticationService(TestHelpers.GetMockedLogFactoryForType<AuthenticationService>().Object, MockEncryptionService.Object);
+    }
+}
 
-        public AuthenticationServiceTests_Fixture()
-        {
-            MockEncryptionService = new Mock<IEncryptionService>();
+public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTests_Fixture>
+{
+    private readonly AuthenticationServiceTests_Fixture fixture;
 
-            AuthenticationService = new AuthenticationService(TestHelpers.GetMockedLogFactoryForType<AuthenticationService>().Object, MockEncryptionService.Object);
-        }
+    private readonly UserApiAuthInfo testAuthInfo = new UserApiAuthInfo("testUser", "testKey");
+
+    private const string PlainText = "testUser:testKey";
+    private const string Encrypted_PlainText = "encrypted";
+    private const string Encoded_Encrypted_PlainText = "ZW5jcnlwdGVk";
+
+
+
+    public AuthenticationServiceTests(AuthenticationServiceTests_Fixture fixture)
+    {
+        this.fixture = fixture;
+
+        fixture.MockEncryptionService.Setup(x => x.Encrypt(PlainText)).Returns(Encrypted_PlainText);
+        fixture.MockEncryptionService.Setup(x => x.Decrypt(Encrypted_PlainText)).Returns(PlainText);
     }
 
-    public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTests_Fixture>
+    [Fact]
+    public void GetAuthenticationTokenForUserAuth_ReturnsBase64EncodedUserIdAndKeyToken()
     {
-        private readonly AuthenticationServiceTests_Fixture fixture;
+        var actual = fixture.AuthenticationService.GetAuthenticationTokenForUserAuth(testAuthInfo);
 
-        private readonly UserApiAuthInfo testAuthInfo = new UserApiAuthInfo("testUser", "testKey");
+        Assert.Equal(Encoded_Encrypted_PlainText, actual);
+    }
 
-        private const string PlainText = "testUser:testKey";
-        private const string Encrypted_PlainText = "encrypted";
-        private const string Encoded_Encrypted_PlainText = "ZW5jcnlwdGVk";
+    [Fact]
+    public void GetUserAuthFromAuthenticationToken_ReturnsUserAuthFromToken()
+    {
+        var actual = fixture.AuthenticationService.GetUserAuthFromAuthenticationToken(Encoded_Encrypted_PlainText);
 
-
-
-        public AuthenticationServiceTests(AuthenticationServiceTests_Fixture fixture)
-        {
-            this.fixture = fixture;
-
-            fixture.MockEncryptionService.Setup(x => x.Encrypt(PlainText)).Returns(Encrypted_PlainText);
-            fixture.MockEncryptionService.Setup(x => x.Decrypt(Encrypted_PlainText)).Returns(PlainText);
-        }
-
-        [Fact]
-        public void GetAuthenticationTokenForUserAuth_ReturnsBase64EncodedUserIdAndKeyToken()
-        {
-            var actual = fixture.AuthenticationService.GetAuthenticationTokenForUserAuth(testAuthInfo);
-
-            Assert.Equal(Encoded_Encrypted_PlainText, actual);
-        }
-
-        [Fact]
-        public void GetUserAuthFromAuthenticationToken_ReturnsUserAuthFromToken()
-        {
-            var actual = fixture.AuthenticationService.GetUserAuthFromAuthenticationToken(Encoded_Encrypted_PlainText);
-
-            Assert.Equal(testAuthInfo, actual);
-        }
+        Assert.Equal(testAuthInfo, actual);
     }
 }

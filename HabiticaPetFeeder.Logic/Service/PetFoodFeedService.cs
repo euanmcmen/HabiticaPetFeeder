@@ -1,10 +1,11 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
 using HabiticaPetFeeder.Logic.Util;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HabiticaPetFeeder.Logic.Service.PetFoodFeed
+namespace HabiticaPetFeeder.Logic.Service
 {
     public class PetFoodFeedService : IPetFoodFeedService
     {

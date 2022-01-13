@@ -1,33 +1,33 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.UserResponse;
-using HabiticaPetFeeder.Logic.Service.Data;
+using HabiticaPetFeeder.Logic.Service;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace HabiticaPetFeeder.Tests.Service
+namespace HabiticaPetFeeder.Tests.Service;
+
+public class DataService_InputData_Fixture
 {
-    public class DataService_InputData_Fixture
+    public UserResponse TestClientDataUserResponse { get; }
+
+    public ContentResponse TestClientDataContentResponse { get; }
+
+    public DataService_InputData_Fixture()
     {
-        public UserResponse TestClientDataUserResponse { get; }
+        TestClientDataUserResponse = BuildTestUserResponse();
 
-        public ContentResponse TestClientDataContentResponse { get; }
+        TestClientDataContentResponse = BuildTestContentResponse();
+    }
 
-        public DataService_InputData_Fixture()
+    private static ContentResponse BuildTestContentResponse()
+    {
+        return new ContentResponse()
         {
-            TestClientDataUserResponse = BuildTestUserResponse();
-
-            TestClientDataContentResponse = BuildTestContentResponse();
-        }
-
-        private static ContentResponse BuildTestContentResponse()
-        {
-            return new ContentResponse()
+            data = new ContentResponseData()
             {
-                data = new ContentResponseData()
-                {
-                    food = new Dictionary<string, ContentResponseFoodInfo>()
+                food = new Dictionary<string, ContentResponseFoodInfo>()
                     {
                         {"Meat", new ContentResponseFoodInfo() { target = "Base" } },
                         {"Potatoe", new ContentResponseFoodInfo() { target = "Desert" } },
@@ -45,11 +45,11 @@ namespace HabiticaPetFeeder.Tests.Service
                         {"Pie_Base", new ContentResponseFoodInfo() { target = "Base" } },
                         {"Saddle", new ContentResponseFoodInfo() { target = null } }
                     },
-                    petInfo = new Dictionary<string, ContentResponsePetInfo>
-                    {
+                petInfo = new Dictionary<string, ContentResponsePetInfo>
+                {
 
-                    },
-                    pets = new Dictionary<string, string>
+                },
+                pets = new Dictionary<string, string>
                     {
                         { "Wolf-Base", "true" },
                         { "Wolf-White", "true" },
@@ -62,7 +62,7 @@ namespace HabiticaPetFeeder.Tests.Service
                         { "Dragon-Skeleton", "true" },
                         { "BearCub-Golden", "true" },
                     },
-                    premiumPets = new Dictionary<string, string>
+                premiumPets = new Dictionary<string, string>
                     {
                         { "Wolf-RoyalPurple", "true" },
                         { "Wolf-Cupid", "true" },
@@ -74,13 +74,13 @@ namespace HabiticaPetFeeder.Tests.Service
                         { "Dragon-RoyalPurple", "true" },
                         { "BearCub-RoyalPurple", "true" },
                     },
-                    questPets = new Dictionary<string, string>
+                questPets = new Dictionary<string, string>
                     {
                         { "Gryphon-Base", "true" },
                         { "Owl-Skeleton", "true" },
                         { "Robot-Golden", "true" },
                     },
-                    specialPets = new Dictionary<string, string>
+                specialPets = new Dictionary<string, string>
                     {
                         { "Wolf-Veteran", "veteranWolf" },
                         { "JackOLantern-Base", "jackolantern" },
@@ -88,25 +88,25 @@ namespace HabiticaPetFeeder.Tests.Service
                         { "Orca-Base", "orca" },
                         { "BearCub-Polar", "polarBearPup" },
                     },
-                    wackyPets = new Dictionary<string, string>
+                wackyPets = new Dictionary<string, string>
                     {
                         { "Wolf-Veggie", "true" },
                         { "Dragon-Dessert", "true" },
                         { "BearCub-Veggie", "true" },
                     }
-                }
-            };
-        }
+            }
+        };
+    }
 
-        private static UserResponse BuildTestUserResponse()
+    private static UserResponse BuildTestUserResponse()
+    {
+        return new UserResponse
         {
-            return new UserResponse
+            data = new UserResponseData
             {
-                data = new UserResponseData
+                items = new UserResponseDataItems()
                 {
-                    items = new UserResponseDataItems()
-                    {
-                        pets = new Dictionary<string, int>
+                    pets = new Dictionary<string, int>
                         {
                             { "LionCub-White", 20 },
                             { "Wolf-Base", 10 },
@@ -116,7 +116,7 @@ namespace HabiticaPetFeeder.Tests.Service
                             { "FlyingPig-RoyalPurple", -1 },
                             { "Orca-Base", 5 }
                         },
-                        food = new Dictionary<string, int>()
+                    food = new Dictionary<string, int>()
                         {
                             { "Potatoe", 207 },
                             { "Meat", 175 },
@@ -128,7 +128,7 @@ namespace HabiticaPetFeeder.Tests.Service
                             { "Pie_Base", 1 },
 
                         },
-                        mounts = new Dictionary<string, bool>()
+                    mounts = new Dictionary<string, bool>()
                         {
                             { "Dragon-Skeleton", true },
                             { "Dragon-White", true },
@@ -138,93 +138,92 @@ namespace HabiticaPetFeeder.Tests.Service
                             { "FlyingPig-RoyalPurple", true },
                             { "Aether-Invisible", true }
                         }
-                    }
                 }
-            };
-        }
+            }
+        };
+    }
+}
+
+public class DataServiceTests_Fixture
+{
+    public DataService DataService { get; }
+
+    public DataServiceTests_Fixture()
+    {
+        DataService = new DataService(TestHelpers.GetMockedLogFactoryForType<DataService>().Object);
     }
 
-    public class DataServiceTests_Fixture
+    public void Dispose()
     {
-        public DataService DataService { get; }
+    }
+}
 
-        public DataServiceTests_Fixture()
-        {
-            DataService = new DataService(TestHelpers.GetMockedLogFactoryForType<DataService>().Object);
-        }
+public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassFixture<DataService_InputData_Fixture>
+{
+    private readonly DataServiceTests_Fixture fixture;
+    private readonly DataService_InputData_Fixture testDataInputFixture;
 
-        public void Dispose()
-        {
-        }
+    private IEnumerable<Pet> GetPets()
+    {
+        return fixture.DataService.GetPets(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
     }
 
-    public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassFixture<DataService_InputData_Fixture>
+    private IEnumerable<Food> GetFoods()
     {
-        private readonly DataServiceTests_Fixture fixture;
-        private readonly DataService_InputData_Fixture testDataInputFixture;
-
-        private IEnumerable<Pet> GetPets()
-        {
-            return fixture.DataService.GetPets(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
-        }
-
-        private IEnumerable<Food> GetFoods()
-        {
-            return fixture.DataService.GetFoods(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
-        }
+        return fixture.DataService.GetFoods(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
+    }
 
 
-        public DataServiceTests(DataServiceTests_Fixture fixture, DataService_InputData_Fixture testDataInputFixture)
-        {
-            this.fixture = fixture;
-            this.testDataInputFixture = testDataInputFixture;
-        }
+    public DataServiceTests(DataServiceTests_Fixture fixture, DataService_InputData_Fixture testDataInputFixture)
+    {
+        this.fixture = fixture;
+        this.testDataInputFixture = testDataInputFixture;
+    }
 
-        [Fact]
-        public void GetPets_ReturnsFeedablePets()
-        {
-            var result = GetPets();
+    [Fact]
+    public void GetPets_ReturnsFeedablePets()
+    {
+        var result = GetPets();
 
-            //The LionCub White and the Wolf Base are basic pets which have not been raised to a mount.
-            Assert.Equal("LionCub-White", result.ElementAt(0).FullName);
-            Assert.Equal("Wolf-Base", result.ElementAt(1).FullName);
+        //The LionCub White and the Wolf Base are basic pets which have not been raised to a mount.
+        Assert.Equal("LionCub-White", result.ElementAt(0).FullName);
+        Assert.Equal("Wolf-Base", result.ElementAt(1).FullName);
 
-            //The Tiger Royal Purple is a premium pet which has not been raised into a mount.
-            Assert.Equal("TigerCub-RoyalPurple", result.ElementAt(2).FullName);
+        //The Tiger Royal Purple is a premium pet which has not been raised into a mount.
+        Assert.Equal("TigerCub-RoyalPurple", result.ElementAt(2).FullName);
 
-            //There should be no other pets (unless I add more...)
-            Assert.Equal(3, result.Count());
-        }
+        //There should be no other pets (unless I add more...)
+        Assert.Equal(3, result.Count());
+    }
 
-        [Fact]
-        public void GetPets_ExcludesNonFeedablePets()
-        {
-            var result = GetPets();
+    [Fact]
+    public void GetPets_ExcludesNonFeedablePets()
+    {
+        var result = GetPets();
 
-            //The Dragon Skeleton, while also being a basic pet with a positive fed points value, has been turned into a mount and cannot be fed.
-            Assert.DoesNotContain(result, x => x.FullName == "Dragon-Skeleton");
+        //The Dragon Skeleton, while also being a basic pet with a positive fed points value, has been turned into a mount and cannot be fed.
+        Assert.DoesNotContain(result, x => x.FullName == "Dragon-Skeleton");
 
-            //The Dragon RoyalPurple has not been hatched and cannot be fed.  It is also a mount.
-            Assert.DoesNotContain(result, x => x.FullName == "Dragon-RoyalPurple");
+        //The Dragon RoyalPurple has not been hatched and cannot be fed.  It is also a mount.
+        Assert.DoesNotContain(result, x => x.FullName == "Dragon-RoyalPurple");
 
-            //The Orca is a special pet and cannot be fed.
-            Assert.DoesNotContain(result, x => x.FullName == "Orca-Base");
-        }
+        //The Orca is a special pet and cannot be fed.
+        Assert.DoesNotContain(result, x => x.FullName == "Orca-Base");
+    }
 
-        [Fact]
-        public void GetFood_ReturnsUsableFood()
-        {
-            var result = GetFoods();
+    [Fact]
+    public void GetFood_ReturnsUsableFood()
+    {
+        var result = GetFoods();
 
-            Assert.Equal(7, result.Count());
-        }
+        Assert.Equal(7, result.Count());
+    }
 
-        [Fact]
-        public void GetFood_ExcludesSaddle()
-        {
-            var result = GetFoods();
+    [Fact]
+    public void GetFood_ExcludesSaddle()
+    {
+        var result = GetFoods();
 
-            Assert.DoesNotContain(result, x => x.FullName == "Saddle");
-        }
+        Assert.DoesNotContain(result, x => x.FullName == "Saddle");
     }
 }
