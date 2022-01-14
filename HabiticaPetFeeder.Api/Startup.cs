@@ -24,6 +24,7 @@ namespace HabiticaPetFeeder.Api
             services.AddCors();
 
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "HabiticaPetFeeder.Api", Version = "v1" });
