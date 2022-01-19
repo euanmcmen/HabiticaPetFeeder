@@ -1,9 +1,12 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.ApiModel;
+using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
-using HabiticaPetFeeder.Logic.Model.UserResponse;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -39,31 +42,31 @@ public class HabiticaApiClient : IHabiticaApiClient
         return Task.CompletedTask;
     }
 
-    public async Task<ContentResponse> GetContentAsync()
+    public async Task<RateLimitedApiResponse<ContentResponse>> GetContentAsync()
     {
         return await GetData<ContentResponse>(contentEndpoint);
     }
 
-    public async Task<UserResponse> GetUserAsync()
+    public async Task<RateLimitedApiResponse<UserResponse>> GetUserAsync()
     {
         return await GetData<UserResponse>(userEndpoint);
     }
 
-    public async Task<FeedResponse> FeedPetFoodAsync(PetFoodFeed petFoodFeed)
+    public async Task<RateLimitedApiResponse<FeedResponse>> FeedPetFoodAsync(PetFoodFeed petFoodFeed)
     {
         var petFoodFeedObjectArray = new object[] { petFoodFeed.PetFullName, petFoodFeed.FoodFullName, petFoodFeed.FeedQuantity };
 
         return await PostData<FeedResponse>(feedPetEndpoint, petFoodFeedObjectArray);
     }
 
-    private async Task<T> GetData<T>(string url)
+    private async Task<RateLimitedApiResponse<T>> GetData<T>(string url)
     {
         var response = await httpClient.GetAsync(url);
 
         return await ParseResponse<T>(response);
     }
 
-    private async Task<T> PostData<T>(string patternUrl, object[] urlParameters)
+    private async Task<RateLimitedApiResponse<T>> PostData<T>(string patternUrl, object[] urlParameters)
     {
         var url = string.Format(patternUrl, urlParameters);        
 
@@ -72,14 +75,24 @@ public class HabiticaApiClient : IHabiticaApiClient
         return await ParseResponse<T>(response);
     }
 
-    private async static Task<T> ParseResponse<T>(HttpResponseMessage response)
+    private async static Task<RateLimitedApiResponse<T>> ParseResponse<T>(HttpResponseMessage response)
     {
-        response.EnsureSuccessStatusCode();
+        var content = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
 
-        var responseText = await response.Content.ReadAsStringAsync();
+        var rateLimitedResponse = new RateLimitedApiResponse<T>(content);
 
-        var result = JsonConvert.DeserializeObject<T>(responseText);
+        if (response.Headers.TryGetValues("X-RateLimit-Remaining", out IEnumerable<string> rateLimitRemainingHeader))
+        {
+            rateLimitedResponse.RateLimitRemaining = int.Parse(rateLimitRemainingHeader.Single());
+        }
 
-        return result;
+        if (response.Headers.TryGetValues("X-RateLimit-Reset", out IEnumerable<string> rateLimitResetHeader))
+        {
+            //"Wed Jan 19 2022 08:01:54 GMT+0000 (Coordinated Universal Time)";
+            var headerValue = rateLimitResetHeader.Single();
+            rateLimitedResponse.RateLimitReset = DateTime.ParseExact(headerValue[..24], "ddd MMM dd yyyy hh:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        return rateLimitedResponse;
     }
 }

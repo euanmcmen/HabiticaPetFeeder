@@ -1,8 +1,8 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
-using HabiticaPetFeeder.Logic.Model.UserResponse;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,19 +32,22 @@ public class HabiticaApiService : IHabiticaApiService
 
         var contentResponse = await habiticaApiClient.GetContentAsync();
 
-        return (userResponse, contentResponse);
+        return (userResponse.Response, contentResponse.Response);
     }
 
-    public async Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, Model.PetFoodFeed petFoodFeed)
+    public async Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed)
     {
         if (petFoodFeed is null)
             throw new ArgumentNullException(nameof(petFoodFeed));
 
         await AuthenticateWithUserAuthInfo(userApiAuthInfo);
 
+        //Adjust for rate limiting.
+        await Task.Delay(3000);
+
         var feedResponse = await habiticaApiClient.FeedPetFoodAsync(petFoodFeed);
 
-        return feedResponse;
+        return feedResponse.Response;
     }
 
     private async Task AuthenticateWithUserAuthInfo(UserApiAuthInfo userApiAuthInfo)

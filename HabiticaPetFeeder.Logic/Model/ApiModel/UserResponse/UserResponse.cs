@@ -1,4 +1,4 @@
-﻿namespace HabiticaPetFeeder.Logic.Model.UserResponse
+﻿namespace HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse
 {
     public class UserResponse
     {

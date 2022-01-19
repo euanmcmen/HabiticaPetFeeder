@@ -1,8 +1,10 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.ApiModel;
+using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
-using HabiticaPetFeeder.Logic.Model.UserResponse;
 using Newtonsoft.Json;
+using System;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Logic.Client;
@@ -14,31 +16,40 @@ public class DummyHabiticaApiClient : IHabiticaApiClient
         await Task.CompletedTask;
     }
 
-    public async Task<UserResponse> GetUserAsync()
+    public async Task<RateLimitedApiResponse<UserResponse>> GetUserAsync()
     {
         await Task.CompletedTask;
 
         var result = JsonConvert.DeserializeObject<UserResponse>(UserResponseTest);
 
-        return result;
+        return CreateRateLimitedResponseWithRandomRateLimit(result);
     }
 
-    public async Task<ContentResponse> GetContentAsync()
+    public async Task<RateLimitedApiResponse<ContentResponse>> GetContentAsync()
     {
         await Task.CompletedTask;
 
         var result = JsonConvert.DeserializeObject<ContentResponse>(ContentResponseTest);
 
-        return result;
+        return CreateRateLimitedResponseWithRandomRateLimit(result);
     }
 
-    public async Task<FeedResponse> FeedPetFoodAsync(PetFoodFeed petFoodFeed)
+    public async Task<RateLimitedApiResponse<FeedResponse>> FeedPetFoodAsync(PetFoodFeed petFoodFeed)
     {
         await Task.CompletedTask;
 
         var result = JsonConvert.DeserializeObject<FeedResponse>(FeedResponseTest);
 
-        return result;
+        return CreateRateLimitedResponseWithRandomRateLimit(result);
+    }
+
+    private RateLimitedApiResponse<T> CreateRateLimitedResponseWithRandomRateLimit<T>(T content)
+    {
+        var randomRateLimit = new Random().Next(0, 30);
+
+        var response = new RateLimitedApiResponse<T>(content);
+        response.RateLimitRemaining = randomRateLimit;
+        return response;
     }
 
     private static string FeedResponseTest =

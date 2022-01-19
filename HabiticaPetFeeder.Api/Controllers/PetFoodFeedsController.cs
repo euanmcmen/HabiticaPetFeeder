@@ -48,7 +48,17 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        List<PetFoodFeed> feeds = await BuildPetFoodFeedsForUserAsync(userApiAuthInfo);
+        var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(userApiAuthInfo);
+
+        var allPets = dataService.GetPets(userResult, contentResult);
+
+        var allFoods = dataService.GetFoods(userResult, contentResult);
+
+        var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
+
+        List<PetFoodFeed> feeds = new();
+        feeds.AddRange(petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences));
+        feeds.AddRange(petFoodFeedService.GetFoodFeeds(allPets, allFoods));
 
         logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Number of pet food feeds calculated: {feeds.Count}");
 
@@ -77,21 +87,5 @@ public class PetFoodFeedsController : ControllerBase
             return null;
 
         return authenticationService.GetUserAuthFromAuthenticationToken(httpRequest.Headers.Authorization[0]);
-    }
-
-    private async Task<List<PetFoodFeed>> BuildPetFoodFeedsForUserAsync(UserApiAuthInfo userApiAuthInfo)
-    {
-        var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(userApiAuthInfo);
-
-        var allPets = dataService.GetPets(userResult, contentResult);
-
-        var allFoods = dataService.GetFoods(userResult, contentResult);
-
-        var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
-
-        List<PetFoodFeed> feeds = new();
-        feeds.AddRange(petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences));
-        feeds.AddRange(petFoodFeedService.GetFoodFeeds(allPets, allFoods));
-        return feeds;
     }
 }
