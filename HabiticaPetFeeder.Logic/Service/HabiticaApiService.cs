@@ -1,14 +1,8 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
-using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
-using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Logic.Service;
@@ -24,37 +18,46 @@ public class HabiticaApiService : IHabiticaApiService
         this.habiticaApiClient = habiticaApiClient;
     }
 
-    public async Task<(UserResponse userResponse, ContentResponse contentResponse)> GetHabiticaUserAsync(UserApiAuthInfo userApiAuthInfo)
+    public async Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedRateLimitedApiRequest apiRequest)
     {
-        await AuthenticateWithUserAuthInfo(userApiAuthInfo);
+        await habiticaApiClient.AuthenticateAsync(apiRequest.UserApiAuthInfo);
+
+        await AllowForRateLimitingAsync(apiRequest);
 
         var userResponse = await habiticaApiClient.GetUserAsync();
-
         var contentResponse = await habiticaApiClient.GetContentAsync();
+        
+        var userPetFoodInfo = new UserPetFoodInfo() { User = userResponse.Response, Content = contentResponse.Response };
 
-        return (userResponse.Response, contentResponse.Response);
+        var newMinRateLimit = Math.Min(userResponse.RateLimitRemaining.Value, contentResponse.RateLimitRemaining.Value);
+
+        var rateLimitedResponse = new RateLimitedApiResponse<UserPetFoodInfo> {  RateLimitRemaining = newMinRateLimit, Response = userPetFoodInfo };
+
+        return rateLimitedResponse;
     }
 
-    public async Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed)
+    public async Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest)
     {
-        if (petFoodFeed is null)
-            throw new ArgumentNullException(nameof(petFoodFeed));
+        await habiticaApiClient.AuthenticateAsync(apiPetFoodFeedRequest.UserApiAuthInfo);
 
-        await AuthenticateWithUserAuthInfo(userApiAuthInfo);
+        await AllowForRateLimitingAsync(apiPetFoodFeedRequest);
 
-        //Adjust for rate limiting.
+        var feedResponse = await habiticaApiClient.FeedPetFoodAsync(apiPetFoodFeedRequest.Request);
+
+        var newRateLimit = feedResponse.RateLimitRemaining;
+
+        var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitRemaining = newRateLimit };
+
+        return rateLimitedResponse;
+    }
+
+    private async Task AllowForRateLimitingAsync(RateLimitedApiOperation apiOperation)
+    {
+        if (apiOperation.RateLimitRemaining > 20)
+        {
+            return;
+        }
+
         await Task.Delay(3000);
-
-        var feedResponse = await habiticaApiClient.FeedPetFoodAsync(petFoodFeed);
-
-        return feedResponse.Response;
-    }
-
-    private async Task AuthenticateWithUserAuthInfo(UserApiAuthInfo userApiAuthInfo)
-    {
-        if (userApiAuthInfo is null || string.IsNullOrEmpty(userApiAuthInfo.ApiUserId) || string.IsNullOrEmpty(userApiAuthInfo.ApiUserKey))
-            throw new ArgumentNullException(nameof(userApiAuthInfo));
-
-        await habiticaApiClient.AuthenticateAsync(userApiAuthInfo);
     }
 }

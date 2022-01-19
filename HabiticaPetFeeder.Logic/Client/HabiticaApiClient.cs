@@ -1,5 +1,4 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ApiModel;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
@@ -32,8 +31,6 @@ public class HabiticaApiClient : IHabiticaApiClient
 
     public Task AuthenticateAsync(UserApiAuthInfo userApiAuthInfo)
     {
-        if (userApiAuthInfo is null) throw new ArgumentNullException(nameof(userApiAuthInfo));
-
         httpClient.DefaultRequestHeaders.Clear();
         httpClient.DefaultRequestHeaders.Add("x-client", $"{MyApiUserId}-{MyAppName}");
         httpClient.DefaultRequestHeaders.Add("x-api-user", userApiAuthInfo.ApiUserId);
@@ -79,18 +76,11 @@ public class HabiticaApiClient : IHabiticaApiClient
     {
         var content = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
 
-        var rateLimitedResponse = new RateLimitedApiResponse<T>(content);
+        var rateLimitedResponse = new RateLimitedApiResponse<T> { Response = content};
 
         if (response.Headers.TryGetValues("X-RateLimit-Remaining", out IEnumerable<string> rateLimitRemainingHeader))
         {
             rateLimitedResponse.RateLimitRemaining = int.Parse(rateLimitRemainingHeader.Single());
-        }
-
-        if (response.Headers.TryGetValues("X-RateLimit-Reset", out IEnumerable<string> rateLimitResetHeader))
-        {
-            //"Wed Jan 19 2022 08:01:54 GMT+0000 (Coordinated Universal Time)";
-            var headerValue = rateLimitResetHeader.Single();
-            rateLimitedResponse.RateLimitReset = DateTime.ParseExact(headerValue[..24], "ddd MMM dd yyyy hh:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
         }
 
         return rateLimitedResponse;

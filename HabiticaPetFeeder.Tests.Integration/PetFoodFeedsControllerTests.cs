@@ -1,6 +1,7 @@
 using HabiticaPetFeeder.Logic.Model;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -28,15 +29,17 @@ public class PetFoodFeedsControllerTests : IClassFixture<WebApplicationFactory<A
     [Fact]
     public async Task GetPetFeedsForUserAsync_ReturnsPetFoodFeeds()
     {
-        _client.DefaultRequestHeaders.Add("Authorization", authHeader);
+        _client.DefaultRequestHeaders.Add("X-Auth-Token", authHeader);
 
         var response = await _client.GetAsync("/api/petfoodfeeds/fetch");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var petFoodFeeds = JsonConvert.DeserializeObject<PetFoodFeed[]>(await response.Content.ReadAsStringAsync());
+        var petFoodFeeds = JsonConvert.DeserializeObject<RateLimitedApiResponse<List<PetFoodFeed>>>(await response.Content.ReadAsStringAsync());
 
-        Assert.True(petFoodFeeds.Length > 0);
+        Assert.True(petFoodFeeds.Response.Count > 0);
+
+        Assert.True(petFoodFeeds.RateLimitRemaining > 0);
     }
 
     //Test the auth controller with a different test.

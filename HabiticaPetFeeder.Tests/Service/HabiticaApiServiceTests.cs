@@ -1,12 +1,10 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ApiModel;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using HabiticaPetFeeder.Logic.Service;
 using Moq;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -38,47 +36,36 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
     [Fact]
     public async Task GetHabiticaUserAsync_ReturnsUserAndContentData()
     {
-        fixture.MockApiClient.Setup(x => x.GetUserAsync()).ReturnsAsync(new RateLimitedApiResponse<UserResponse>(new UserResponse() { success = true }));
+        var request = new AuthenticatedRateLimitedApiRequest() { RateLimitRemaining = 30, UserApiAuthInfo = new UserApiAuthInfo("test-key", "test-id") };
 
-        fixture.MockApiClient.Setup(x => x.GetContentAsync()).ReturnsAsync(new RateLimitedApiResponse<ContentResponse>(new ContentResponse() { success = true }));
+        fixture.MockApiClient.Setup(x => x.GetUserAsync())
+            .ReturnsAsync(new RateLimitedApiResponse<UserResponse>() { Response = new UserResponse() { success = true }, RateLimitRemaining = 30 });
 
-        var (userResult, contentresult) = 
-            await fixture.HabiticaApiService.GetHabiticaUserAsync(new UserApiAuthInfo("test-key", "test-id"));
+        fixture.MockApiClient.Setup(x => x.GetContentAsync())
+            .ReturnsAsync(new RateLimitedApiResponse<ContentResponse> { Response = new ContentResponse() { success = true }, RateLimitRemaining = 29 });
 
-        Assert.True(userResult.success);
-        Assert.True(contentresult.success);
+        var result = await fixture.HabiticaApiService.GetHabiticaUserAsync(request);
+
+        Assert.True(result.Response.User.success);
+        Assert.True(result.Response.Content.success);
+        Assert.Equal(29, result.RateLimitRemaining.Value);
     }
 
     [Fact]
     public async Task FeedPetFoodAsync_ReturnsFeedResult()
     {
-        fixture.MockApiClient.Setup(x => x.FeedPetFoodAsync(It.IsAny<PetFoodFeed>())).ReturnsAsync(new RateLimitedApiResponse<FeedResponse>(new FeedResponse() { success = true }));
+        var request = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>
+        {
+            RateLimitRemaining = 25,
+            Request = new PetFoodFeed("test-pet-name", "test-food-name", 1, false),
+            UserApiAuthInfo = new UserApiAuthInfo("test-key", "test-id")
+        };
 
-        var feedResult = await fixture.HabiticaApiService.FeedPetFoodAsync(
-            new UserApiAuthInfo("test-key", "test-id"),
-            new PetFoodFeed("test-pet-name", "test-food-name", 1, false));
+        fixture.MockApiClient.Setup(x => x.FeedPetFoodAsync(It.IsAny<PetFoodFeed>()))
+            .ReturnsAsync(new RateLimitedApiResponse<FeedResponse>() { Response = new FeedResponse() { success = true }, RateLimitRemaining = 24 });
 
-        Assert.True(feedResult.success);
-    }
+        var response = await fixture.HabiticaApiService.FeedPetFoodAsync(request);
 
-    [Fact]
-    public async Task GetHabiticaUserAsync_ThrowsExceptionOnNullCredentials()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => fixture.HabiticaApiService.GetHabiticaUserAsync(null));
-    }
-
-    [Fact]
-    public async Task FeedPetFoodAsync_ThrowsExceptionOnNullCredentials()
-    {
-
-        await Assert.ThrowsAsync<ArgumentNullException>(() => 
-        fixture.HabiticaApiService.FeedPetFoodAsync(null, new PetFoodFeed("test-pet-name", "test-food-name", 1, false)));
-    }
-
-    [Fact]
-    public async Task FeedPetFoodAsync_ThrowsExceptionOnNullPetFoodFeed()
-    {
-        await Assert.ThrowsAsync<ArgumentNullException>(() => 
-        fixture.HabiticaApiService.FeedPetFoodAsync(new UserApiAuthInfo("test-key", "test-id"), null));
+        Assert.Equal(24, response.RateLimitRemaining);
     }
 }

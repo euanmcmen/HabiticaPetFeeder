@@ -1,14 +1,11 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
-using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
-using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Logic.Service.Interfaces;
 
 public interface IHabiticaApiService
 {
-    Task<(UserResponse userResponse, ContentResponse contentResponse)> GetHabiticaUserAsync(UserApiAuthInfo userApiAuthInfo);
+    Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedRateLimitedApiRequest apiRequest);
 
-    Task<FeedResponse> FeedPetFoodAsync(UserApiAuthInfo userApiAuthInfo, PetFoodFeed petFoodFeed);
+    Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest);
 }

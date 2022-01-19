@@ -48,11 +48,61 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        var (userResult, contentResult) = await habiticaApiService.GetHabiticaUserAsync(userApiAuthInfo);
+        var rateLimitRemaining = GetRateLimitFromRequestHeader(Request);
 
-        var allPets = dataService.GetPets(userResult, contentResult);
+        if (rateLimitRemaining == 0)
+            return Unauthorized();
 
-        var allFoods = dataService.GetFoods(userResult, contentResult);
+        var userInfoApiRequest = new AuthenticatedRateLimitedApiRequest() { RateLimitRemaining = rateLimitRemaining, UserApiAuthInfo = userApiAuthInfo };
+
+        var userInfoResponse = await habiticaApiService.GetHabiticaUserAsync(userInfoApiRequest);
+
+        var feeds = GetPetFoodFeedsFromUserPetFoodInfo(userInfoResponse.Response);
+
+        var petFeedsResponse =
+            new RateLimitedApiResponse<List<PetFoodFeed>>()
+            {
+                RateLimitRemaining = userInfoResponse.RateLimitRemaining,
+                Response = feeds
+            };
+
+        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Requests Remaining: {userInfoResponse.RateLimitRemaining} " +
+            $"| Number of pet food feeds calculated: {feeds.Count}");
+
+        return Ok(petFeedsResponse);
+    }
+
+    [HttpPost]
+    [Route("feed")]
+    public async Task<IActionResult> FeedUserPetAsync(PetFoodFeed petFoodFeed)
+    {
+        if (petFoodFeed is null)
+            return BadRequest();
+
+        var userApiAuthInfo = GetUserAuthFromRequestHeader(Request);
+
+        if (userApiAuthInfo is null)
+            return Unauthorized();
+
+        var rateLimitRemaining = GetRateLimitFromRequestHeader(Request);
+
+        if (rateLimitRemaining == 0)
+            return Unauthorized();
+
+        var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Request = petFoodFeed, RateLimitRemaining = rateLimitRemaining, UserApiAuthInfo = userApiAuthInfo };
+
+        var apiResponse = await habiticaApiService.FeedPetFoodAsync(apiRequest);
+
+        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Requests Remaining: {apiRequest.RateLimitRemaining} " +
+            $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} ");
+
+        return Ok(apiResponse);
+    }
+
+    private List<PetFoodFeed> GetPetFoodFeedsFromUserPetFoodInfo(UserPetFoodInfo userPetFoodInfo)
+    {
+        var allPets = dataService.GetPets(userPetFoodInfo.User, userPetFoodInfo.Content);
+        var allFoods = dataService.GetFoods(userPetFoodInfo.User, userPetFoodInfo.Content);
 
         var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
 
@@ -60,32 +110,30 @@ public class PetFoodFeedsController : ControllerBase
         feeds.AddRange(petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences));
         feeds.AddRange(petFoodFeedService.GetFoodFeeds(allPets, allFoods));
 
-        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Number of pet food feeds calculated: {feeds.Count}");
-
-        return Ok(feeds);
-    }
-
-    [HttpPost]
-    [Route("feed")]
-    public async Task<IActionResult> FeedUserPetAsync(PetFoodFeed petFoodFeed)
-    {
-        var userApiAuthInfo = GetUserAuthFromRequestHeader(Request);
-
-        if (userApiAuthInfo is null)
-            return Unauthorized();
-
-        var feedResponse = await habiticaApiService.FeedPetFoodAsync(userApiAuthInfo, petFoodFeed);
-
-        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} | PetFeed Result: {(feedResponse.success ? "Successful" : "Unsuccessful")}.  Data: {feedResponse.data}");
-
-        return Ok(feedResponse);
+        return feeds;
     }
 
     private UserApiAuthInfo GetUserAuthFromRequestHeader(HttpRequest httpRequest)
     {
-        if (httpRequest.Headers.Authorization.Count != 1)
+        var headerValue = httpRequest.Headers["X-Auth-Token"];
+
+        if (headerValue.Count != 1)
             return null;
 
-        return authenticationService.GetUserAuthFromAuthenticationToken(httpRequest.Headers.Authorization[0]);
+        var userAuthResult = authenticationService.GetUserAuthFromAuthenticationToken(headerValue[0]);
+
+        return (userAuthResult is null || string.IsNullOrEmpty(userAuthResult.ApiUserId) || string.IsNullOrEmpty(userAuthResult.ApiUserKey))
+            ? null
+            : userAuthResult;
+    }
+
+    private int GetRateLimitFromRequestHeader(HttpRequest httpRequest)
+    {
+        var headerValue = httpRequest.Headers["X-Rate-Remaining"];
+
+        if (headerValue.Count != 1)
+            return 30;
+
+        return int.Parse(headerValue[0]);
     }
 }
