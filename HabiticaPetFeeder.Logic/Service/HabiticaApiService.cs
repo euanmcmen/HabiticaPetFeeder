@@ -42,9 +42,10 @@ public class HabiticaApiService : IHabiticaApiService
 
         await AllowForRateLimitingAsync(apiPetFoodFeedRequest);
 
-        var feedResponse = await habiticaApiClient.FeedPetFoodAsync(apiPetFoodFeedRequest.Request);
+        //var feedResponse = await habiticaApiClient.FeedPetFoodAsync(apiPetFoodFeedRequest.Request);
+        //var newRateLimit = feedResponse.RateLimitRemaining;
 
-        var newRateLimit = feedResponse.RateLimitRemaining;
+        var newRateLimit = apiPetFoodFeedRequest.RateLimitRemaining - 1;
 
         var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitRemaining = newRateLimit };
 

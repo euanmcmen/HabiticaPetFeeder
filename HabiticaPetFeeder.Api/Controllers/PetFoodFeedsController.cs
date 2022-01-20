@@ -132,7 +132,7 @@ public class PetFoodFeedsController : ControllerBase
         var headerValue = httpRequest.Headers["X-Rate-Remaining"];
 
         if (headerValue.Count != 1)
-            return 30;
+            return 0;
 
         return int.Parse(headerValue[0]);
     }
