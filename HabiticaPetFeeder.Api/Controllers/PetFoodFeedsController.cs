@@ -1,4 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,25 +49,25 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        var rateLimitRemaining = GetRateLimitFromRequestHeader(Request);
+        //var rateLimitInfo = GetRateLimitFromRequestHeader(Request);
 
-        if (rateLimitRemaining == 0)
-            return Unauthorized();
+        //if (rateLimitInfo is null)
+        //    return Unauthorized();
 
-        var userInfoApiRequest = new AuthenticatedRateLimitedApiRequest() { RateLimitRemaining = rateLimitRemaining, UserApiAuthInfo = userApiAuthInfo };
+        var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
 
         var userInfoResponse = await habiticaApiService.GetHabiticaUserAsync(userInfoApiRequest);
 
-        var feeds = GetPetFoodFeedsFromUserPetFoodInfo(userInfoResponse.Response);
+        var feeds = GetPetFoodFeedsFromUserPetFoodInfo(userInfoResponse.Body);
 
         var petFeedsResponse =
             new RateLimitedApiResponse<List<PetFoodFeed>>()
             {
-                RateLimitRemaining = userInfoResponse.RateLimitRemaining,
-                Response = feeds
+                RateLimitInfo = userInfoResponse.RateLimitInfo,
+                Body = feeds
             };
 
-        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Requests Remaining: {userInfoResponse.RateLimitRemaining} " +
+        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
             $"| Number of pet food feeds calculated: {feeds.Count}");
 
         return Ok(petFeedsResponse);
@@ -84,16 +85,16 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        var rateLimitRemaining = GetRateLimitFromRequestHeader(Request);
+        var rateLimitInfo = GetRateLimitFromRequestHeader(Request);
 
-        if (rateLimitRemaining == 0)
+        if (rateLimitInfo is null)
             return Unauthorized();
 
-        var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Request = petFoodFeed, RateLimitRemaining = rateLimitRemaining, UserApiAuthInfo = userApiAuthInfo };
+        var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Body = petFoodFeed, RateLimitInfo = rateLimitInfo, UserApiAuthInfo = userApiAuthInfo };
 
         var apiResponse = await habiticaApiService.FeedPetFoodAsync(apiRequest);
 
-        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Requests Remaining: {apiRequest.RateLimitRemaining} " +
+        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
             $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} ");
 
         return Ok(apiResponse);
@@ -127,13 +128,14 @@ public class PetFoodFeedsController : ControllerBase
             : userAuthResult;
     }
 
-    private int GetRateLimitFromRequestHeader(HttpRequest httpRequest)
+    private RateLimitInfo GetRateLimitFromRequestHeader(HttpRequest httpRequest)
     {
-        var headerValue = httpRequest.Headers["X-Rate-Remaining"];
+        var remainingHeaderValue = httpRequest.Headers["X-Rate-Remaining"];
+        var resetHeaderValue = httpRequest.Headers["X-Rate-Reset"];
 
-        if (headerValue.Count != 1)
-            return 0;
+        if (remainingHeaderValue.Count != 1 || resetHeaderValue.Count != 1)
+            return null;
 
-        return int.Parse(headerValue[0]);
+        return new RateLimitInfo() { RateLimitRemaining = int.Parse(remainingHeaderValue[0]), RateLimitReset = resetHeaderValue[0] };
     }
 }

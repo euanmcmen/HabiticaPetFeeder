@@ -1,7 +1,9 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
+using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
+using HabiticaPetFeeder.Logic.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -76,11 +78,17 @@ public class HabiticaApiClient : IHabiticaApiClient
     {
         var content = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
 
-        var rateLimitedResponse = new RateLimitedApiResponse<T> { Response = content};
+        var rateLimitedResponse = new RateLimitedApiResponse<T> { Body = content, RateLimitInfo = new RateLimitInfo() };
 
         if (response.Headers.TryGetValues("X-RateLimit-Remaining", out IEnumerable<string> rateLimitRemainingHeader))
         {
-            rateLimitedResponse.RateLimitRemaining = int.Parse(rateLimitRemainingHeader.Single());
+            rateLimitedResponse.RateLimitInfo.RateLimitRemaining = int.Parse(rateLimitRemainingHeader.Single());
+        }
+
+        if (response.Headers.TryGetValues("X-RateLimit-Reset", out IEnumerable<string> rateLimitResetHeader))
+        {
+            //"Wed Jan 19 2022 08:01:54 GMT+0000 (Coordinated Universal Time)";
+            rateLimitedResponse.RateLimitInfo.RateLimitReset = rateLimitResetHeader.Single();
         }
 
         return rateLimitedResponse;

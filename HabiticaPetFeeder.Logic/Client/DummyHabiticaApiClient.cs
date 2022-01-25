@@ -1,6 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
+using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using Newtonsoft.Json;
 using System;
@@ -46,8 +47,8 @@ public class DummyHabiticaApiClient : IHabiticaApiClient
     {
         var randomRateLimit = new Random().Next(0, 30);
 
-        var response = new RateLimitedApiResponse<T> { Response = content};
-        response.RateLimitRemaining = randomRateLimit;
+        var response = new RateLimitedApiResponse<T> { Body = content};
+        response.RateLimitInfo = new RateLimitInfo() {  RateLimitRemaining = randomRateLimit};
         return response;
     }
 

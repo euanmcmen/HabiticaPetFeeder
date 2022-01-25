@@ -2,5 +2,5 @@
 
 public abstract class RateLimitedApiOperation
 {
-    public int? RateLimitRemaining { get; set; }
+    public RateLimitInfo RateLimitInfo { get; set; }
 }

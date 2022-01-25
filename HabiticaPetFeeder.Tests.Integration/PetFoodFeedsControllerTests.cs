@@ -1,4 +1,5 @@
 using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -37,9 +38,9 @@ public class PetFoodFeedsControllerTests : IClassFixture<WebApplicationFactory<A
 
         var petFoodFeeds = JsonConvert.DeserializeObject<RateLimitedApiResponse<List<PetFoodFeed>>>(await response.Content.ReadAsStringAsync());
 
-        Assert.True(petFoodFeeds.Response.Count > 0);
+        Assert.True(petFoodFeeds.Body.Count > 0);
 
-        Assert.True(petFoodFeeds.RateLimitRemaining > 0);
+        Assert.True(petFoodFeeds.RateLimitInfo.RateLimitRemaining > 0);
     }
 
     //Test the auth controller with a different test.

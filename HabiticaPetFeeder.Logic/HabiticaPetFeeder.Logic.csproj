@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Model\ApiOperations\RateLimitedApiOperation.cs" />
     <Compile Remove="StartupHelper.cs" />
   </ItemGroup>
 

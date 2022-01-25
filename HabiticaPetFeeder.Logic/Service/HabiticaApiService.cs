@@ -1,6 +1,8 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
 using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
+using HabiticaPetFeeder.Logic.Util;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -18,20 +20,25 @@ public class HabiticaApiService : IHabiticaApiService
         this.habiticaApiClient = habiticaApiClient;
     }
 
-    public async Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedRateLimitedApiRequest apiRequest)
+    public async Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedApiRequest apiRequest)
     {
         await habiticaApiClient.AuthenticateAsync(apiRequest.UserApiAuthInfo);
 
-        await AllowForRateLimitingAsync(apiRequest);
+        //if (apiRequest.RateLimitInfo.RateLimitRemaining < 20)
+        //{
+        //    await Task.Delay(3000);
+        //}
 
         var userResponse = await habiticaApiClient.GetUserAsync();
         var contentResponse = await habiticaApiClient.GetContentAsync();
         
-        var userPetFoodInfo = new UserPetFoodInfo() { User = userResponse.Response, Content = contentResponse.Response };
+        var userPetFoodInfo = new UserPetFoodInfo() { User = userResponse.Body, Content = contentResponse.Body };
 
-        var newMinRateLimit = Math.Min(userResponse.RateLimitRemaining.Value, contentResponse.RateLimitRemaining.Value);
+        var minRateLimitInfo = userResponse.RateLimitInfo.RateLimitRemaining < contentResponse.RateLimitInfo.RateLimitRemaining 
+            ? userResponse.RateLimitInfo 
+            : contentResponse.RateLimitInfo;
 
-        var rateLimitedResponse = new RateLimitedApiResponse<UserPetFoodInfo> {  RateLimitRemaining = newMinRateLimit, Response = userPetFoodInfo };
+        var rateLimitedResponse = new RateLimitedApiResponse<UserPetFoodInfo> {  RateLimitInfo = minRateLimitInfo, Body = userPetFoodInfo };
 
         return rateLimitedResponse;
     }
@@ -40,25 +47,26 @@ public class HabiticaApiService : IHabiticaApiService
     {
         await habiticaApiClient.AuthenticateAsync(apiPetFoodFeedRequest.UserApiAuthInfo);
 
-        await AllowForRateLimitingAsync(apiPetFoodFeedRequest);
-
-        //var feedResponse = await habiticaApiClient.FeedPetFoodAsync(apiPetFoodFeedRequest.Request);
-        //var newRateLimit = feedResponse.RateLimitRemaining;
-
-        var newRateLimit = apiPetFoodFeedRequest.RateLimitRemaining - 1;
-
-        var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitRemaining = newRateLimit };
-
-        return rateLimitedResponse;
-    }
-
-    private async Task AllowForRateLimitingAsync(RateLimitedApiOperation apiOperation)
-    {
-        if (apiOperation.RateLimitRemaining > 20)
+        if (apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining < 20)
         {
-            return;
+            await Task.Delay(3000);
         }
 
-        await Task.Delay(3000);
+        var resetDate = DateTimeHelper.StringToDate(apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset);
+        var responseRateLimitInfo = resetDate < DateTime.UtcNow
+            ? new RateLimitInfo()
+            {
+                RateLimitRemaining = 29,
+                RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow.AddMinutes(1))
+            }
+            : new RateLimitInfo()
+            {
+                RateLimitRemaining = apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining - 1,
+                RateLimitReset = apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset
+            };
+
+        var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitInfo = responseRateLimitInfo };
+
+        return rateLimitedResponse;
     }
 }
