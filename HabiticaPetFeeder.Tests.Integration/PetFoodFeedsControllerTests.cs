@@ -1,10 +1,14 @@
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
+using HabiticaPetFeeder.Logic.Util;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -36,11 +40,30 @@ public class PetFoodFeedsControllerTests : IClassFixture<WebApplicationFactory<A
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var petFoodFeeds = JsonConvert.DeserializeObject<RateLimitedApiResponse<List<PetFoodFeed>>>(await response.Content.ReadAsStringAsync());
+        var responseContent = JsonConvert.DeserializeObject<RateLimitedApiResponse<List<PetFoodFeed>>>(await response.Content.ReadAsStringAsync());
 
-        Assert.True(petFoodFeeds.Body.Count > 0);
+        Assert.True(responseContent.Body.Count > 0);
 
-        Assert.True(petFoodFeeds.RateLimitInfo.RateLimitRemaining > 0);
+        Assert.True(responseContent.RateLimitInfo.RateLimitRemaining > 0);
+    }
+
+    [Fact]
+    public async Task FeedUserPetAsync_FeedsPet()
+    {
+        const int requestRateLimit = 15;
+
+        _client.DefaultRequestHeaders.Add("X-Auth-Token", authHeader);
+        _client.DefaultRequestHeaders.Add("X-Rate-Remaining", requestRateLimit.ToString());
+        _client.DefaultRequestHeaders.Add("X-Rate-Reset", DateTimeHelper.DateToString(DateTime.UtcNow.AddSeconds(30)));
+
+        var response = await _client.PostAsync("/api/petfoodfeeds/feed", 
+            new StringContent(JsonConvert.SerializeObject(new PetFoodFeed("Base_TestPet", "TestFood", 1, false)), Encoding.UTF8, "application/json"));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var responseContent = JsonConvert.DeserializeObject<RateLimitedApiResponse>(await response.Content.ReadAsStringAsync());
+
+        Assert.True(responseContent.RateLimitInfo.RateLimitRemaining == requestRateLimit - 1);
     }
 
     //Test the auth controller with a different test.

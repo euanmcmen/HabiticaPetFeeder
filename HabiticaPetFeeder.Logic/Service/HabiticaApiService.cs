@@ -2,8 +2,8 @@
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
-using HabiticaPetFeeder.Logic.Util;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -13,11 +13,13 @@ public class HabiticaApiService : IHabiticaApiService
 {
     private readonly ILogger<HabiticaApiService> logger;
     private readonly IHabiticaApiClient habiticaApiClient;
+    private readonly HabiticaApiSettings habiticaApiSettings;
 
-    public HabiticaApiService(ILoggerFactory loggerFactory, IHabiticaApiClient habiticaApiClient)
+    public HabiticaApiService(ILoggerFactory loggerFactory, IHabiticaApiClient habiticaApiClient, IOptions<HabiticaApiSettings> habiticaApiSettingsOptions)
     {
         logger = loggerFactory.CreateLogger<HabiticaApiService>();
         this.habiticaApiClient = habiticaApiClient;
+        habiticaApiSettings = habiticaApiSettingsOptions.Value;
     }
 
     public async Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedApiRequest apiRequest)
@@ -45,28 +47,30 @@ public class HabiticaApiService : IHabiticaApiService
 
     public async Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest)
     {
-        await habiticaApiClient.AuthenticateAsync(apiPetFoodFeedRequest.UserApiAuthInfo);
+        throw new NotImplementedException("Not ready for live.");
 
-        if (apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining < 20)
-        {
-            await Task.Delay(3000);
-        }
+        //await habiticaApiClient.AuthenticateAsync(apiPetFoodFeedRequest.UserApiAuthInfo);
 
-        var resetDate = DateTimeHelper.StringToDate(apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset);
-        var responseRateLimitInfo = resetDate < DateTime.UtcNow
-            ? new RateLimitInfo()
-            {
-                RateLimitRemaining = 29,
-                RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow.AddMinutes(1))
-            }
-            : new RateLimitInfo()
-            {
-                RateLimitRemaining = apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining - 1,
-                RateLimitReset = apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset
-            };
+        //if (apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining < 20)
+        //{
+        //    await Task.Delay(3000);
+        //}
 
-        var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitInfo = responseRateLimitInfo };
+        //var resetDate = DateTimeHelper.StringToDate(apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset);
+        //var responseRateLimitInfo = resetDate < DateTime.UtcNow
+        //    ? new RateLimitInfo()
+        //    {
+        //        RateLimitRemaining = 29,
+        //        RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow.AddMinutes(1))
+        //    }
+        //    : new RateLimitInfo()
+        //    {
+        //        RateLimitRemaining = apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining - 1,
+        //        RateLimitReset = apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset
+        //    };
 
-        return rateLimitedResponse;
+        //var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitInfo = responseRateLimitInfo };
+
+        //return rateLimitedResponse;
     }
 }

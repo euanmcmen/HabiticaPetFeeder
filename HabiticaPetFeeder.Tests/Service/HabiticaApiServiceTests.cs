@@ -3,9 +3,8 @@ using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
-using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using HabiticaPetFeeder.Logic.Service;
-using HabiticaPetFeeder.Logic.Util;
+using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Threading.Tasks;
@@ -23,7 +22,11 @@ public class HabiticaApiServiceTests_Fixture
     {
         MockApiClient = new Mock<IHabiticaApiClient>();
 
-        HabiticaApiService = new HabiticaApiService(TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object, MockApiClient.Object);
+        HabiticaApiService = new HabiticaApiService(
+            TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object, 
+            MockApiClient.Object, 
+            Options.Create(new HabiticaApiSettings() { RateLimitThrottleThreshold = 20, UseLiveEndpoint = false, RateLimitThrottleDurationSeconds = 3 })
+        );
     }
 }
 
@@ -67,74 +70,10 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
         Assert.True(result.Body.Content.success);
         Assert.Equal(29, result.RateLimitInfo.RateLimitRemaining);
     }
-    
-    public class FeedPetFoodAsyncTests : HabiticaApiServiceTests, IClassFixture<HabiticaApiServiceTests_Fixture>
+
+    [Fact]
+    public async Task FeedPetFoodAsync_ThrowsNotImplementedException()
     {
-        private readonly PetFoodFeed petFoodFeed;
-        private readonly UserApiAuthInfo userApiAuthInfo;
-
-        public FeedPetFoodAsyncTests(HabiticaApiServiceTests_Fixture fixture) : base(fixture)
-        {
-            petFoodFeed = new PetFoodFeed("test-pet-name", "test-food-name", 1, false);
-            userApiAuthInfo = new UserApiAuthInfo("test-key", "test-id");
-        }
-
-        [Fact]
-        public async Task FeedPetFoodAsync_WithPastResetDate_ReturnsFeedResult_AndResetsRateLimitRemaining()
-        {
-            //fixture.MockApiClient.Setup(x => x.FeedPetFoodAsync(It.IsAny<PetFoodFeed>()))
-            //    .ReturnsAsync(new RateLimitedApiResponse<FeedResponse>()
-            //    {
-            //        Response = new FeedResponse() { success = true },
-            //        RateLimitInfo = new RateLimitInfo() { RateLimitRemaining = 24 }
-            //    });
-
-            var input = new RateLimitInfo()
-            {
-                RateLimitRemaining = 21,
-                RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow.AddSeconds(-30))
-            };
-
-            var response = await GetTestResultAsync(input);
-
-            Assert.Equal(29, response.RateLimitInfo.RateLimitRemaining);
-        }
-
-        [Fact]
-        public async Task FeedPetFoodAsync_WithFutureResetDate_ReturnsFeedResult()
-        {
-            //fixture.MockApiClient.Setup(x => x.FeedPetFoodAsync(It.IsAny<PetFoodFeed>()))
-            //    .ReturnsAsync(new RateLimitedApiResponse<FeedResponse>()
-            //    {
-            //        Response = new FeedResponse() { success = true },
-            //        RateLimitInfo = new RateLimitInfo() { RateLimitRemaining = 24 }
-            //    });
-
-            var input = new RateLimitInfo()
-            {
-                RateLimitRemaining = 25,
-                RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow.AddSeconds(30))
-            };
-
-            var response = await GetTestResultAsync(input);
-
-            Assert.Equal(24, response.RateLimitInfo.RateLimitRemaining);
-        }
-
-        private async Task<RateLimitedApiResponse> GetTestResultAsync(RateLimitInfo rateLimitInfo)
-        {
-            var request = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>
-            {
-                RateLimitInfo = rateLimitInfo,
-                Body = petFoodFeed,
-                UserApiAuthInfo = userApiAuthInfo
-            };
-
-            fixture.MockApiClient.Verify(x => x.FeedPetFoodAsync(It.IsAny<PetFoodFeed>()), Times.Never());
-
-            return await fixture.HabiticaApiService.FeedPetFoodAsync(request);
-        }
+        await Assert.ThrowsAsync<NotImplementedException>(() => fixture.HabiticaApiService.FeedPetFoodAsync(null));
     }
-
-    
 }

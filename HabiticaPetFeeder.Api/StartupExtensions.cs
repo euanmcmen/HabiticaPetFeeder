@@ -11,21 +11,29 @@ namespace HabiticaPetFeeder.Api
     {
         public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped(client => GetApiClient(configuration.GetValue<bool>("UseLiveEndpoint")));
+            var useLiveEndpoint = configuration
+                .GetSection(HabiticaApiSettings.AppSettingName)
+                .GetValue<bool>(nameof(HabiticaApiSettings.UseLiveEndpoint));
+
+            if (useLiveEndpoint)
+            {
+                services.AddScoped<IHabiticaApiClient>((sp) => new HabiticaApiClient(new System.Net.Http.HttpClient()));
+                services.AddScoped<IHabiticaApiService, HabiticaApiService>();
+            }
+            else
+            {
+                services.AddScoped<IHabiticaApiService, DummyHabiticaApiService>();
+            }
+
+            services.Configure<HabiticaApiSettings>(configuration.GetSection(HabiticaApiSettings.AppSettingName));
 
             services.Configure<EncryptionSettings>(configuration.GetSection(EncryptionSettings.AppSettingName));
 
-            services.AddScoped<IHabiticaApiService, HabiticaApiService>();
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IDataService, DataService>();
             services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();
             services.AddScoped<IPetFoodFeedService, PetFoodFeedService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-        }
-
-        private static IHabiticaApiClient GetApiClient(bool useLiveEndpoint)
-        {
-            return useLiveEndpoint ? new HabiticaApiClient(new System.Net.Http.HttpClient()) : new DummyHabiticaApiClient();
         }
     }
 }

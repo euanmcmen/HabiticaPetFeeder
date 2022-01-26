@@ -2,61 +2,78 @@
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
-using HabiticaPetFeeder.Logic.Model.FeedResponse;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
+using HabiticaPetFeeder.Logic.Util;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.Logic.Client;
+namespace HabiticaPetFeeder.Logic.Service;
 
-public class DummyHabiticaApiClient : IHabiticaApiClient
+public class DummyHabiticaApiService : IHabiticaApiService
 {
-    public async Task AuthenticateAsync(UserApiAuthInfo userApiAuthInfo)
+    private readonly ILogger<DummyHabiticaApiService> logger;
+    private readonly HabiticaApiSettings habiticaApiSettings;
+
+    public DummyHabiticaApiService(ILoggerFactory loggerFactory, IOptions<HabiticaApiSettings> habiticaApiSettingsOptions)
     {
-        await Task.CompletedTask;
+        logger = loggerFactory.CreateLogger<DummyHabiticaApiService>();
+        habiticaApiSettings = habiticaApiSettingsOptions.Value;
     }
 
-    public async Task<RateLimitedApiResponse<UserResponse>> GetUserAsync()
-    {
-        await Task.CompletedTask;
-
-        var result = JsonConvert.DeserializeObject<UserResponse>(UserResponseTest);
-
-        return CreateRateLimitedResponseWithRandomRateLimit(result);
-    }
-
-    public async Task<RateLimitedApiResponse<ContentResponse>> GetContentAsync()
+    public async Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedApiRequest apiRequest)
     {
         await Task.CompletedTask;
 
-        var result = JsonConvert.DeserializeObject<ContentResponse>(ContentResponseTest);
+        var userResponse = JsonConvert.DeserializeObject<UserResponse>(DummyHabiticaApiServiceConstants.UserResponse);
+        var contentResponse = JsonConvert.DeserializeObject<ContentResponse>(DummyHabiticaApiServiceConstants.ContentResponse);
 
-        return CreateRateLimitedResponseWithRandomRateLimit(result);
+        var userPetFoodInfo = new UserPetFoodInfo() { User = userResponse, Content = contentResponse };
+
+        var responseRateInfo = new RateLimitInfo { RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow), RateLimitRemaining = 28 };
+
+        var rateLimitedResponse = new RateLimitedApiResponse<UserPetFoodInfo> { RateLimitInfo = responseRateInfo, Body = userPetFoodInfo };
+
+        return rateLimitedResponse;
     }
 
-    public async Task<RateLimitedApiResponse<FeedResponse>> FeedPetFoodAsync(PetFoodFeed petFoodFeed)
+    public async Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest)
     {
-        await Task.CompletedTask;
+        if (apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining < habiticaApiSettings.RateLimitThrottleThreshold)
+        {
+            await Task.Delay(habiticaApiSettings.RateLimitThrottleDurationSeconds * 1000);
+        }
 
-        var result = JsonConvert.DeserializeObject<FeedResponse>(FeedResponseTest);
+        var resetDate = DateTimeHelper.StringToDate(apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset);
+        var responseRateLimitInfo = resetDate < DateTime.UtcNow
+            ? new RateLimitInfo()
+            {
+                RateLimitRemaining = 29,
+                RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow.AddMinutes(1))
+            }
+            : new RateLimitInfo()
+            {
+                RateLimitRemaining = apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining - 1,
+                RateLimitReset = apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset
+            };
 
-        return CreateRateLimitedResponseWithRandomRateLimit(result);
+        var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitInfo = responseRateLimitInfo };
+
+        return rateLimitedResponse;
     }
 
-    private RateLimitedApiResponse<T> CreateRateLimitedResponseWithRandomRateLimit<T>(T content)
+    private static class DummyHabiticaApiServiceConstants
     {
-        var randomRateLimit = new Random().Next(0, 30);
-
-        var response = new RateLimitedApiResponse<T> { Body = content};
-        response.RateLimitInfo = new RateLimitInfo() {  RateLimitRemaining = randomRateLimit};
-        return response;
-    }
-
-    private static string FeedResponseTest =
+        public static string FeedResponse =
 @"{'success':true,'data':10,'message':'Shade Armadillo really likes the Chocolate!','notifications':[]} ";
 
-    private static readonly string UserResponseTest =
-@"
+        public static readonly string UserResponse =
+    @"
 
 {
   'success': true,
@@ -242,8 +259,8 @@ public class DummyHabiticaApiClient : IHabiticaApiClient
 ";
 
 
-    private static readonly string ContentResponseTest =
-@"
+        public static readonly string ContentResponse =
+    @"
 
 {
     'success': true,
@@ -8883,4 +8900,5 @@ public class DummyHabiticaApiClient : IHabiticaApiClient
 }
 
 ";
+    }
 }
