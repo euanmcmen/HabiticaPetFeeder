@@ -4,6 +4,7 @@ using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace HabiticaPetFeeder.Api
 {
@@ -11,6 +12,8 @@ namespace HabiticaPetFeeder.Api
     {
         public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services, IConfiguration configuration)
         {
+            //Configure clients
+
             var useLiveEndpoint = configuration
                 .GetSection(HabiticaApiSettings.AppSettingName)
                 .GetValue<bool>(nameof(HabiticaApiSettings.UseLiveEndpoint));
@@ -22,13 +25,18 @@ namespace HabiticaPetFeeder.Api
             }
             else
             {
+                var mongoClient = new MongoClient(configuration.GetConnectionString("MongoDbConnectionString"));
+                services.AddSingleton<IMongoClient>(mongoClient);
+
+                services.AddScoped<IMongoDbService, MongoDbService>();
                 services.AddScoped<IHabiticaApiService, DummyHabiticaApiService>();
             }
 
+            //Configure Options
             services.Configure<HabiticaApiSettings>(configuration.GetSection(HabiticaApiSettings.AppSettingName));
-
             services.Configure<EncryptionSettings>(configuration.GetSection(EncryptionSettings.AppSettingName));
 
+            //Configure app services.
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IDataService, DataService>();
             services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();

@@ -1,8 +1,12 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
+using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Logic.Service.Interfaces;
 using HabiticaPetFeeder.Logic.Util;
 using Microsoft.Extensions.Options;
+using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -13,10 +17,15 @@ public class DummyHabiticaApiServiceTests_Fixture
 {
     public DummyHabiticaApiService DummyHabiticaApiService { get; private set; }
 
+    public Mock<IMongoDbService> MockMongoDbService { get; private set; }
+
     public DummyHabiticaApiServiceTests_Fixture()
     {
+        MockMongoDbService = new Mock<IMongoDbService>();
+
         DummyHabiticaApiService = new DummyHabiticaApiService(
             TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object,
+            MockMongoDbService.Object,
             Options.Create(new HabiticaApiSettings() { RateLimitThrottleThreshold = 20, UseLiveEndpoint = false, RateLimitThrottleDurationSeconds = 3 })
         );
     }
@@ -39,6 +48,12 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
         {
             UserApiAuthInfo = new UserApiAuthInfo("test-key", "test-id")
         };
+
+        fixture.MockMongoDbService.Setup(x => x.GetDummyRecordByFriendlyNameAsync<UserResponse>("UserResponse"))
+            .ReturnsAsync(new UserResponse() { success = true });
+
+        fixture.MockMongoDbService.Setup(x => x.GetDummyRecordByFriendlyNameAsync<ContentResponse>("ContentResponse"))
+            .ReturnsAsync(new ContentResponse() { success = true });
 
         var result = await fixture.DummyHabiticaApiService.GetHabiticaUserAsync(request);
 
