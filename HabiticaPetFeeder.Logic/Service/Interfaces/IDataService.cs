@@ -9,4 +9,5 @@ public interface IDataService
 {
     IEnumerable<Food> GetFoods(UserResponse userResponse, ContentResponse contentResponse);
     IEnumerable<Pet> GetPets(UserResponse userResponse, ContentResponse contentResponse);
+    string GetUserName(UserResponse userResponse);
 }

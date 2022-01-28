@@ -49,26 +49,21 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        //var rateLimitInfo = GetRateLimitFromRequestHeader(Request);
-
-        //if (rateLimitInfo is null)
-        //    return Unauthorized();
-
         var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
 
         var userInfoResponse = await habiticaApiService.GetHabiticaUserAsync(userInfoApiRequest);
 
-        var feeds = GetPetFoodFeedsFromUserPetFoodInfo(userInfoResponse.Body);
+        var userPetFoodFeeds = GetUserPetFoodFeeds(userInfoResponse.Body);
 
         var petFeedsResponse =
-            new RateLimitedApiResponse<List<PetFoodFeed>>()
+            new RateLimitedApiResponse<UserPetFoodFeeds>()
             {
                 RateLimitInfo = userInfoResponse.RateLimitInfo,
-                Body = feeds
+                Body = userPetFoodFeeds
             };
 
         logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
-            $"| Number of pet food feeds calculated: {feeds.Count}");
+            $"| Number of pet food feeds calculated: {userPetFoodFeeds.PetFoodFeeds.Count}");
 
         return Ok(petFeedsResponse);
     }
@@ -100,10 +95,11 @@ public class PetFoodFeedsController : ControllerBase
         return Ok(apiResponse);
     }
 
-    private List<PetFoodFeed> GetPetFoodFeedsFromUserPetFoodInfo(UserPetFoodInfo userPetFoodInfo)
+    private UserPetFoodFeeds GetUserPetFoodFeeds(UserContentPair userContentPair)
     {
-        var allPets = dataService.GetPets(userPetFoodInfo.User, userPetFoodInfo.Content);
-        var allFoods = dataService.GetFoods(userPetFoodInfo.User, userPetFoodInfo.Content);
+        var userName = dataService.GetUserName(userContentPair.User);
+        var allPets = dataService.GetPets(userContentPair.User, userContentPair.Content);
+        var allFoods = dataService.GetFoods(userContentPair.User, userContentPair.Content);
 
         var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
 
@@ -111,7 +107,13 @@ public class PetFoodFeedsController : ControllerBase
         feeds.AddRange(petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences));
         feeds.AddRange(petFoodFeedService.GetFoodFeeds(allPets, allFoods));
 
-        return feeds;
+        var userPetFoodFeeds = new UserPetFoodFeeds()
+        {
+            UserName = userName,
+            PetFoodFeeds = feeds
+        };
+
+        return userPetFoodFeeds;
     }
 
     private UserApiAuthInfo GetUserAuthFromRequestHeader(HttpRequest httpRequest)

@@ -24,17 +24,17 @@ public class DummyHabiticaApiService : IHabiticaApiService
         this.mongoDbService = mongoDbService;
     }
 
-    public async Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedApiRequest apiRequest)
+    public async Task<RateLimitedApiResponse<UserContentPair>> GetHabiticaUserAsync(AuthenticatedApiRequest apiRequest)
     {
         var userResponse = await mongoDbService.GetDummyRecordByFriendlyNameAsync<UserResponse>("UserResponse");
 
         var contentResponse = await mongoDbService.GetDummyRecordByFriendlyNameAsync<ContentResponse>("ContentResponse");
 
-        var userPetFoodInfo = new UserPetFoodInfo() { User = userResponse, Content = contentResponse };
+        var userPetFoodInfo = new UserContentPair() { User = userResponse, Content = contentResponse };
 
         var responseRateInfo = new RateLimitInfo { RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow), RateLimitRemaining = 28 };
 
-        var rateLimitedResponse = new RateLimitedApiResponse<UserPetFoodInfo> { RateLimitInfo = responseRateInfo, Body = userPetFoodInfo };
+        var rateLimitedResponse = new RateLimitedApiResponse<UserContentPair> { RateLimitInfo = responseRateInfo, Body = userPetFoodInfo };
 
         return rateLimitedResponse;
     }

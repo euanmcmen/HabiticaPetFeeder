@@ -17,6 +17,11 @@ public class DataService : IDataService
         logger = loggerFactory.CreateLogger<DataService>();
     }
 
+    public string GetUserName(UserResponse userResponse)
+    {
+        return userResponse.data.auth.local.username;
+    }
+
     public IEnumerable<Pet> GetPets(UserResponse userResponse, ContentResponse contentResponse)
     {
         var basicPetNames = contentResponse.data.pets.Select(x => x.Key).ToHashSet();

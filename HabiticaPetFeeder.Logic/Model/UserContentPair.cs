@@ -3,7 +3,7 @@ using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 
 namespace HabiticaPetFeeder.Logic.Model;
 
-public class UserPetFoodInfo
+public class UserContentPair
 {
     public ContentResponse Content { get; set; }
 

@@ -138,6 +138,13 @@ public class DataService_InputData_Fixture
                             { "FlyingPig-RoyalPurple", true },
                             { "Aether-Invisible", true }
                         }
+                },
+                auth = new UserResponseDataAuth()
+                {
+                    local = new UserResponseDataAuthLocal()
+                    {
+                        username = "DressingFrown"
+                    }
                 }
             }
         };
@@ -163,6 +170,11 @@ public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassF
     private readonly DataServiceTests_Fixture fixture;
     private readonly DataService_InputData_Fixture testDataInputFixture;
 
+    private string GetUserName()
+    {
+        return fixture.DataService.GetUserName(testDataInputFixture.TestClientDataUserResponse);
+    }
+
     private IEnumerable<Pet> GetPets()
     {
         return fixture.DataService.GetPets(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
@@ -173,11 +185,19 @@ public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassF
         return fixture.DataService.GetFoods(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
     }
 
-
     public DataServiceTests(DataServiceTests_Fixture fixture, DataService_InputData_Fixture testDataInputFixture)
     {
         this.fixture = fixture;
         this.testDataInputFixture = testDataInputFixture;
+    }
+
+    [Fact]
+    public void GetUserName_ReturnsUserLocalAuthUserName()
+    {
+        var result = GetUserName();
+
+        Assert.Equal(testDataInputFixture.TestClientDataUserResponse.data.auth.local.username, result);
+        Assert.Equal("DressingFrown", result);
     }
 
     [Fact]

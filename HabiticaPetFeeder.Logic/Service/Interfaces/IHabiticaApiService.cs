@@ -6,7 +6,7 @@ namespace HabiticaPetFeeder.Logic.Service.Interfaces;
 
 public interface IHabiticaApiService
 {
-    Task<RateLimitedApiResponse<UserPetFoodInfo>> GetHabiticaUserAsync(AuthenticatedApiRequest apiRequest);
+    Task<RateLimitedApiResponse<UserContentPair>> GetHabiticaUserAsync(AuthenticatedApiRequest apiRequest);
 
     Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest);
 }
