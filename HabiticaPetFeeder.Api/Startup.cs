@@ -41,7 +41,12 @@ namespace HabiticaPetFeeder.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HabiticaPetFeeder.Api v1"));
             }
 
-            app.UseCors(options => options.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(options => options
+            .WithOrigins(
+                "http://localhost:3000",                                            // Local Dev
+                "https://agreeable-flower-05238b103.1.azurestaticapps.net"          // Initial deployment site on Azure
+            )
+            .AllowAnyMethod().AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
