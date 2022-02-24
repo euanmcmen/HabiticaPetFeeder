@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,21 +16,25 @@ namespace HabiticaPetFeeder.Tests.Integration;
 public class PetFoodFeedsControllerTests : IClassFixture<WebApplicationFactory<Api.Startup>>
 {
     private readonly HttpClient _client;
-    private const string authHeader = 
-        @"bmlZWVJKNTBYcTJuSzljb2hhSDBsZz09SUcwWWpRRFExN2dLRUd0eC9sVWI3RzNtSGFQc2hXUStwSXhCMEdhQlZIZzlmMWpDbzQrdndQUDNDUzQyaStSYXBOaDNoQUo0WC9iSGZwM21JQUVTeDdnQm5BOG5GcTVZQTRWNmZzem8yalk9";
+    private const string authHeader = @"INSERT FROM SECRETS";
+
+
+    /*
+     * I've changed the auth header so the previous value won't work.
+     * Going forwards, I'd like to move the new auth value into a secrets file to protect myself.
+     */
+
     public PetFoodFeedsControllerTests(WebApplicationFactory<Api.Startup> fixture)
     {
         _client = fixture.CreateClient();
     }
 
-    [Fact]
     public async Task GetPetFeedsForUserAsync_RejectsRequestWithoutAuthHeader()
     {
         var response = await _client.GetAsync("/api/petfoodfeeds/fetch");
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    [Fact]
     public async Task GetPetFeedsForUserAsync_ReturnsPetFoodFeeds()
     {
         _client.DefaultRequestHeaders.Add("X-Auth-Token", authHeader);
@@ -47,7 +50,6 @@ public class PetFoodFeedsControllerTests : IClassFixture<WebApplicationFactory<A
         Assert.True(responseContent.RateLimitInfo.RateLimitRemaining > 0);
     }
 
-    [Fact]
     public async Task FeedUserPetAsync_FeedsPet()
     {
         const int requestRateLimit = 15;

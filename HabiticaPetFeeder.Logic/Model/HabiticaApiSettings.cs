@@ -6,6 +6,8 @@ public class HabiticaApiSettings
 
     public bool UseLiveEndpoint { get; set; }
 
+    public int RateLimitStandardDurationSeconds { get; set; }
+
     public int RateLimitThrottleThreshold { get; set; }
 
     public int RateLimitThrottleDurationSeconds { get; set; }

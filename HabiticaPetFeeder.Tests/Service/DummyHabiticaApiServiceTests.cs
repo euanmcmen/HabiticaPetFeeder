@@ -19,15 +19,18 @@ public class DummyHabiticaApiServiceTests_Fixture
 
     public Mock<IMongoDbService> MockMongoDbService { get; private set; }
 
+    public Mock<IRateLimitingService> MockRateLimitingService { get; private set; }
+
     public DummyHabiticaApiServiceTests_Fixture()
     {
         MockMongoDbService = new Mock<IMongoDbService>();
 
-        DummyHabiticaApiService = new DummyHabiticaApiService(
-            TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object,
-            MockMongoDbService.Object,
-            Options.Create(new HabiticaApiSettings() { RateLimitThrottleThreshold = 20, UseLiveEndpoint = false, RateLimitThrottleDurationSeconds = 3 })
-        );
+        MockRateLimitingService = new Mock<IRateLimitingService>();
+
+        DummyHabiticaApiService = 
+            new DummyHabiticaApiService(TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object, 
+                MockRateLimitingService.Object, 
+                MockMongoDbService.Object);
     }
 }
 
@@ -71,6 +74,20 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
         {
             petFoodFeed = new PetFoodFeed("test-pet-name", "test-food-name", 1, false);
             userApiAuthInfo = new UserApiAuthInfo("test-key", "test-id");
+        }
+
+        [Fact]
+        public async Task FeedPetFoodAsync_ShouldCallRateLimiting()
+        {
+            var input = new RateLimitInfo()
+            {
+                RateLimitRemaining = 25,
+                RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow.AddSeconds(30))
+            };
+
+            var response = await GetTestResultAsync(input);
+
+            fixture.MockRateLimitingService.Verify(x => x.WaitForRateLimitDelay(input), Times.Once());
         }
 
         [Fact]

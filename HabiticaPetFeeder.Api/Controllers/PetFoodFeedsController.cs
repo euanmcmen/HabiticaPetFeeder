@@ -83,7 +83,7 @@ public class PetFoodFeedsController : ControllerBase
         var rateLimitInfo = GetRateLimitFromRequestHeader(Request);
 
         if (rateLimitInfo is null)
-            return Unauthorized();
+            return Forbid();
 
         var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Body = petFoodFeed, RateLimitInfo = rateLimitInfo, UserApiAuthInfo = userApiAuthInfo };
 

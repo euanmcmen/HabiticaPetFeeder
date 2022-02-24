@@ -37,6 +37,7 @@ namespace HabiticaPetFeeder.Api
             services.Configure<EncryptionSettings>(configuration.GetSection(EncryptionSettings.AppSettingName));
 
             //Configure app services.
+            services.AddScoped<IRateLimitingService, RateLimitingService>();
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IDataService, DataService>();
             services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();

@@ -5,7 +5,6 @@ using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using HabiticaPetFeeder.Logic.Util;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -14,13 +13,13 @@ namespace HabiticaPetFeeder.Logic.Service;
 public class DummyHabiticaApiService : IHabiticaApiService
 {
     private readonly ILogger<DummyHabiticaApiService> logger;
-    private readonly HabiticaApiSettings habiticaApiSettings;
+    private readonly IRateLimitingService rateLimitingService;
     private readonly IMongoDbService mongoDbService;
 
-    public DummyHabiticaApiService(ILoggerFactory loggerFactory, IMongoDbService mongoDbService, IOptions<HabiticaApiSettings> habiticaApiSettingsOptions)
+    public DummyHabiticaApiService(ILoggerFactory loggerFactory, IRateLimitingService rateLimitingService, IMongoDbService mongoDbService)
     {
         logger = loggerFactory.CreateLogger<DummyHabiticaApiService>();
-        habiticaApiSettings = habiticaApiSettingsOptions.Value;
+        this.rateLimitingService = rateLimitingService;
         this.mongoDbService = mongoDbService;
     }
 
@@ -41,10 +40,7 @@ public class DummyHabiticaApiService : IHabiticaApiService
 
     public async Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest)
     {
-        if (apiPetFoodFeedRequest.RateLimitInfo.RateLimitRemaining < habiticaApiSettings.RateLimitThrottleThreshold)
-        {
-            await Task.Delay(habiticaApiSettings.RateLimitThrottleDurationSeconds * 1000);
-        }
+        await rateLimitingService.WaitForRateLimitDelay(apiPetFoodFeedRequest.RateLimitInfo);
 
         var resetDate = DateTimeHelper.StringToDate(apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset);
         var responseRateLimitInfo = resetDate < DateTime.UtcNow
