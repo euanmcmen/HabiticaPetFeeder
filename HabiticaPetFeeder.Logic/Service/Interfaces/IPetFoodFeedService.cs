@@ -5,7 +5,9 @@ namespace HabiticaPetFeeder.Logic.Service.Interfaces;
 
 public interface IPetFoodFeedService
 {
-    IEnumerable<PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, PetFoodPreferences petFoodPreferences);
+    List<PetFoodFeed> GetPetFoodFeedsWithConfiguredPreferences(IEnumerable<Pet> pets, IEnumerable<Food> foods);
 
-    IEnumerable<PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods);
+    //IEnumerable<PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, PetFoodPreferences petFoodPreferences);
+
+    //IEnumerable<PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods);
 }

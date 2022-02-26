@@ -26,7 +26,7 @@ public class RateLimitingService : IRateLimitingService
         }
         else
         {
-            await Task.Delay(1000);
+            await Task.Delay(habiticaApiSettings.RateLimitStandardDurationSeconds * 1000);
         }
     }
 }
