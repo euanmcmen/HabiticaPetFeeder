@@ -5,7 +5,7 @@ using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
 using System.Threading.Tasks;
 
-namespace HabiticaPetFeeder.Logic.Client;
+namespace HabiticaPetFeeder.Logic.Client.Interface;
 
 public interface IHabiticaApiClient
 {

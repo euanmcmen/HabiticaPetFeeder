@@ -1,5 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service.Interfaces;
+using HabiticaPetFeeder.Logic.Proxy.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -7,16 +7,16 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace HabiticaPetFeeder.Logic.Service;
+namespace HabiticaPetFeeder.Logic.Proxy;
 
-public class EncryptionService : IEncryptionService
+public class EncryptionProxy : IEncryptionService
 {
-    private readonly ILogger<EncryptionService> logger;
+    private readonly ILogger<EncryptionProxy> logger;
     private readonly EncryptionSettings encryptionSettings;
 
-    public EncryptionService(ILoggerFactory loggerFactory, IOptions<EncryptionSettings> encryptionSettingsOptions)
+    public EncryptionProxy(ILoggerFactory loggerFactory, IOptions<EncryptionSettings> encryptionSettingsOptions)
     {
-        logger = loggerFactory.CreateLogger<EncryptionService>();
+        logger = loggerFactory.CreateLogger<EncryptionProxy>();
 
         encryptionSettings = encryptionSettingsOptions.Value;
     }

@@ -1,4 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Proxy.Interface;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Moq;

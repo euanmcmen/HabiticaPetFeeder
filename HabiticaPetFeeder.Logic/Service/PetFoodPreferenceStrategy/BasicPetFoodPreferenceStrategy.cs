@@ -1,9 +1,9 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service.Interfaces;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HabiticaPetFeeder.Logic.Service;
+namespace HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy;
 
 public class BasicPetFoodPreferenceStrategy : IPetFoodPreferenceStrategy
 {

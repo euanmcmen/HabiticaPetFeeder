@@ -1,5 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Service;
-using HabiticaPetFeeder.Logic.Service.Interfaces;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;

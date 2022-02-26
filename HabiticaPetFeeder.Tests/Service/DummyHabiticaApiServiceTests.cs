@@ -43,7 +43,6 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
         this.fixture = fixture;
     }
 
-
     [Fact]
     public async Task GetHabiticaUserAsync_ReturnsUserAndContentData()
     {
@@ -87,7 +86,7 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
 
             var response = await GetTestResultAsync(input);
 
-            fixture.MockRateLimitingService.Verify(x => x.WaitForRateLimitDelay(input), Times.Once());
+            fixture.MockRateLimitingService.Verify(x => x.WaitForRateLimitDelayAsync(input), Times.Once());
         }
 
         [Fact]

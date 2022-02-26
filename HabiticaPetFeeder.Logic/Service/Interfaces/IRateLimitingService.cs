@@ -5,5 +5,5 @@ namespace HabiticaPetFeeder.Logic.Service.Interfaces;
 
 public interface IRateLimitingService
 {
-    Task WaitForRateLimitDelay(RateLimitInfo rateLimitInfo);
+    Task WaitForRateLimitDelayAsync(RateLimitInfo rateLimitInfo);
 }

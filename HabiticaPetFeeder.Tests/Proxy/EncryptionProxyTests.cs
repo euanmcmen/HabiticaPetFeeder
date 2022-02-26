@@ -1,27 +1,27 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service;
-using HabiticaPetFeeder.Logic.Service.Interfaces;
+using HabiticaPetFeeder.Logic.Proxy;
+using HabiticaPetFeeder.Logic.Proxy.Interface;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace HabiticaPetFeeder.Tests.Service;
+namespace HabiticaPetFeeder.Tests.Proxy;
 
-public class EncryptionServiceTests_Fixture
+public class EncryptionProxyTests_Fixture
 {
     public IEncryptionService EncryptionService { get; private set; }
 
-    public EncryptionServiceTests_Fixture()
+    public EncryptionProxyTests_Fixture()
     {
-        EncryptionService = new EncryptionService(TestHelpers.GetMockedLogFactoryForType<EncryptionService>().Object,
+        EncryptionService = new EncryptionProxy(TestHelpers.GetMockedLogFactoryForType<EncryptionProxy>().Object,
             Options.Create(new EncryptionSettings() { Secret = "59dec600219a454a8ad3d39bf8e41c6b" }));
     }
 }
 
-public class EncryptionServiceTests : IClassFixture<EncryptionServiceTests_Fixture>
+public class EncryptionProxyTests : IClassFixture<EncryptionProxyTests_Fixture>
 {
-    private readonly EncryptionServiceTests_Fixture fixture;
+    private readonly EncryptionProxyTests_Fixture fixture;
 
-    public EncryptionServiceTests(EncryptionServiceTests_Fixture fixture)
+    public EncryptionProxyTests(EncryptionProxyTests_Fixture fixture)
     {
         this.fixture = fixture;
     }

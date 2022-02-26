@@ -9,8 +9,6 @@ namespace HabiticaPetFeeder.Tests
 
         public IEnumerable<Food> Foods { get; private set; }
 
-        public PetFoodPreferences BasicPetFoodPreferences { get; private set; }
-
         public TestData_Fixture()
         {
             //Should be fed 6 milks.
@@ -54,12 +52,12 @@ namespace HabiticaPetFeeder.Tests
                 { candyWhite },
             };
 
-            BasicPetFoodPreferences = new PetFoodPreferences();
-            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, milkWhite);
-            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, pieWhite);
-            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, candyWhite);
-            BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, meatBase);
-            BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, cakeBase);
+            //BasicPetFoodPreferences = new PetFoodPreferences();
+            //BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, milkWhite);
+            //BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, pieWhite);
+            //BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, candyWhite);
+            //BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, meatBase);
+            //BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, cakeBase);
         }
     }
 }
