@@ -157,7 +157,7 @@ public class DataServiceTests_Fixture
 
     public DataServiceTests_Fixture()
     {
-        DataService = new DataService(TestHelpers.GetMockedLogFactoryForType<DataService>().Object);
+        DataService = new DataService(TestHelpers.GetFakeLoggerFactoryForType<DataService>());
     }
 
     public void Dispose()

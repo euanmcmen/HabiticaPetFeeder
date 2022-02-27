@@ -1,5 +1,8 @@
-﻿using HabiticaPetFeeder.Logic.Service;
+﻿using FakeItEasy;
+using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
+using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -20,18 +23,47 @@ public class PetFoodFeedServiceTests_Fixture
 
         //TODO - Mock a stragegy.
 
-        PetFoodFeedService = new PetFoodFeedService(TestHelpers.GetMockedLogFactoryForType<PetFoodFeedService>().Object, PetFoodPreferenceStrategies);
+        PetFoodFeedService = new PetFoodFeedService(TestHelpers.GetFakeLoggerFactoryForType<PetFoodFeedService>(), PetFoodPreferenceStrategies);
     }
 }
 
 //TODO - Write a test class for the method.  I don't need to use the whole ordering thing anymore now that ordering is part of the test.
 
+public class PetFoodFeedServiceTests : IClassFixture<PetFoodFeedServiceTests_Fixture>
+{
+    protected readonly PetFoodFeedServiceTests_Fixture fixture;
 
+    public PetFoodFeedServiceTests(PetFoodFeedServiceTests_Fixture fixture)
+    {
+        this.fixture = fixture;
+    }
 
+    [Fact]
+    public void GetPetFoodFeedsWithConfiguredPreferences_ShouldOrderStrategiesByPriorityAscending()
+    {
+        // Arrange
+        var pets = new List<Pet>();
+        var foods = new List<Food>();
 
+        var strategyA = A.Fake<IPetFoodPreferenceStrategy>();
+        A.CallTo(() => strategyA.Priority).Returns(10);
+        A.CallTo(() => strategyA.GetPreferences(pets, foods)).Returns(new Dictionary<string, HashSet<string>>());
 
+        var strategyB = A.Fake<IPetFoodPreferenceStrategy>();
+        A.CallTo(() => strategyB.Priority).Returns(5);
+        A.CallTo(() => strategyB.GetPreferences(pets, foods)).Returns(new Dictionary<string, HashSet<string>>());
 
+        fixture.PetFoodPreferenceStrategies.Add(strategyA);
+        fixture.PetFoodPreferenceStrategies.Add(strategyB);
 
+        // Act
+        fixture.PetFoodFeedService.GetPetFoodFeedsWithConfiguredPreferences(pets, foods);
+
+        // Assert
+        A.CallTo(() => strategyB.GetPreferences(pets, foods)).MustHaveHappened()
+            .Then(A.CallTo(() => strategyA.GetPreferences(pets, foods)).MustHaveHappened());
+    }
+}
 
 
 

@@ -69,12 +69,6 @@ public class PetFoodFeedsController : ControllerBase
 
         var feeds = petFoodFeedService.GetPetFoodFeedsWithConfiguredPreferences(allPets, allFoods);
 
-        //var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
-
-        //List<PetFoodFeed> feeds = new();
-        //feeds.AddRange(petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences));
-        //feeds.AddRange(petFoodFeedService.GetFoodFeeds(allPets, allFoods));
-
         var userPetFoodFeeds = new UserPetFoodFeeds()
         {
             UserName = userName,

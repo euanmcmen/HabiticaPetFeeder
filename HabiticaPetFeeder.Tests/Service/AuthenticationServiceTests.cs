@@ -1,8 +1,8 @@
-﻿using HabiticaPetFeeder.Logic.Model;
+﻿using FakeItEasy;
+using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Proxy.Interface;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
-using Moq;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service;
@@ -11,13 +11,13 @@ public class AuthenticationServiceTests_Fixture
 {
     public IAuthenticationService AuthenticationService { get; private set; }
 
-    public Mock<IEncryptionService> MockEncryptionService { get; private set; }
+    public IEncryptionService EncryptionService { get; private set; }
 
     public AuthenticationServiceTests_Fixture()
     {
-        MockEncryptionService = new Mock<IEncryptionService>();
+        EncryptionService = A.Fake<IEncryptionService>();
 
-        AuthenticationService = new AuthenticationService(TestHelpers.GetMockedLogFactoryForType<AuthenticationService>().Object, MockEncryptionService.Object);
+        AuthenticationService = new AuthenticationService(TestHelpers.GetFakeLoggerFactoryForType<AuthenticationService>(), EncryptionService);
     }
 }
 
@@ -37,8 +37,8 @@ public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTes
     {
         this.fixture = fixture;
 
-        fixture.MockEncryptionService.Setup(x => x.Encrypt(PlainText)).Returns(Encrypted_PlainText);
-        fixture.MockEncryptionService.Setup(x => x.Decrypt(Encrypted_PlainText)).Returns(PlainText);
+        A.CallTo(() => fixture.EncryptionService.Encrypt(PlainText)).Returns(Encrypted_PlainText);
+        A.CallTo(() => fixture.EncryptionService.Decrypt(Encrypted_PlainText)).Returns(PlainText);
     }
 
     [Fact]

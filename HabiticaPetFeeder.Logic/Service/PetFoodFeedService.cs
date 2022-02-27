@@ -38,16 +38,6 @@ namespace HabiticaPetFeeder.Logic.Service
             return petFeeds;
         }
 
-        //public IEnumerable<Model.PetFoodFeed> GetPreferredFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods, IPetFoodPreferenceStrategy preferenceStrategy)
-        //{
-        //    return GetFoodFeedsWithPreference(pets, foods, preferenceStrategy);
-        //}
-
-        //public IEnumerable<Model.PetFoodFeed> GetFoodFeeds(IEnumerable<Pet> pets, IEnumerable<Food> foods)
-        //{
-        //    return GetFoodFeedsWithPreference(pets, foods, null);
-        //}
-
         private static IEnumerable<Model.PetFoodFeed> GetFoodFeedsWithPreference(IEnumerable<Pet> pets, IEnumerable<Food> foods, IPetFoodPreferenceStrategy petFoodPreferenceStrategy)
         {
             var petFeeds = new List<Model.PetFoodFeed>();

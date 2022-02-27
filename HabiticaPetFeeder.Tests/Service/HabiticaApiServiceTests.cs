@@ -23,7 +23,7 @@ public class HabiticaApiServiceTests_Fixture
         MockApiClient = new Mock<IHabiticaApiClient>();
 
         HabiticaApiService = new HabiticaApiService(
-            TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object, 
+            TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), 
             MockApiClient.Object, 
             Options.Create(new HabiticaApiSettings() { RateLimitThrottleThreshold = 20, UseLiveEndpoint = false, RateLimitThrottleDurationSeconds = 3 })
         );
