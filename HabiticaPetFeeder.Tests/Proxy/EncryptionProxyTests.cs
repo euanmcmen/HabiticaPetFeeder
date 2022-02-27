@@ -12,7 +12,7 @@ public class EncryptionProxyTests_Fixture
 
     public EncryptionProxyTests_Fixture()
     {
-        EncryptionService = new EncryptionProxy(TestHelpers.GetMockedLogFactoryForType<EncryptionProxy>().Object,
+        EncryptionService = new EncryptionProxy(TestHelpers.GetFakeLoggerFactoryForType<EncryptionProxy>(),
             Options.Create(new EncryptionSettings() { Secret = "59dec600219a454a8ad3d39bf8e41c6b" }));
     }
 }
