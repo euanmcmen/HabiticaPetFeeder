@@ -1,4 +1,5 @@
-﻿using HabiticaPetFeeder.Logic.Client.Interface;
+﻿using FakeItEasy;
+using HabiticaPetFeeder.Logic.Client.Interface;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
@@ -16,17 +17,15 @@ public class HabiticaApiServiceTests_Fixture
 {
     public HabiticaApiService HabiticaApiService { get; private set; }
 
-    public Mock<IHabiticaApiClient> MockApiClient { get; private set; }
+    public IHabiticaApiClient HabiticaApiClient { get; private set; }
 
     public HabiticaApiServiceTests_Fixture()
     {
-        MockApiClient = new Mock<IHabiticaApiClient>();
+        HabiticaApiClient = A.Fake<IHabiticaApiClient>();
 
-        HabiticaApiService = new HabiticaApiService(
-            TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), 
-            MockApiClient.Object, 
-            Options.Create(new HabiticaApiSettings() { RateLimitThrottleThreshold = 20, UseLiveEndpoint = false, RateLimitThrottleDurationSeconds = 3 })
-        );
+        var habiticaApiSettings = new HabiticaApiSettings() { RateLimitThrottleThreshold = 20, UseLiveEndpoint = false, RateLimitThrottleDurationSeconds = 3 };
+
+        HabiticaApiService = new HabiticaApiService(TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), HabiticaApiClient, Options.Create(habiticaApiSettings));
     }
 }
 
@@ -47,22 +46,17 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
             UserApiAuthInfo = new UserApiAuthInfo("test-key", "test-id")
         };
 
-        fixture.MockApiClient.Setup(x => x.GetUserAsync())
-            .ReturnsAsync(new RateLimitedApiResponse<UserResponse>()
-            {
-                Body = new UserResponse() { success = true },
-                RateLimitInfo = new RateLimitInfo() { RateLimitRemaining = 30 }
-            });
+        A.CallTo(() => fixture.HabiticaApiClient.GetUserAsync()).Returns(new RateLimitedApiResponse<UserResponse>()
+        {
+            Body = new UserResponse() { success = true },
+            RateLimitInfo = new RateLimitInfo() { RateLimitRemaining = 30 }
+        });
 
-        fixture.MockApiClient.Setup(x => x.GetContentAsync())
-            .ReturnsAsync(new RateLimitedApiResponse<ContentResponse>
-            {
-                Body = new ContentResponse() { success = true },
-                RateLimitInfo = new RateLimitInfo()
-                {
-                    RateLimitRemaining = 29
-                }
-            });
+        A.CallTo(() => fixture.HabiticaApiClient.GetContentAsync()).Returns(new RateLimitedApiResponse<ContentResponse>
+        {
+            Body = new ContentResponse() { success = true },
+            RateLimitInfo = new RateLimitInfo() { RateLimitRemaining = 29 }
+        });
 
         var result = await fixture.HabiticaApiService.GetHabiticaUserAsync(request);
 

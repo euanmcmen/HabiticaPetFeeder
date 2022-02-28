@@ -2,40 +2,26 @@
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
-using Moq;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
-using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace HabiticaPetFeeder.Tests.Service;
 
-public class PetFoodFeedServiceTests_Fixture
+//Reminder: XUnit ClassFixtures hold class-wide objects and are not reset per test.
+//Therefore calls to A.CallTo... Fake things will not be reset per execution.
+//Better to use test-wide objects, and reserve class initialization where it makes sense to do so specifically.
+//i.e. population of a list of pet and food feeds which will be accessed by all tests.
+
+public class PetFoodFeedServiceTests
 {
-    public PetFoodFeedService PetFoodFeedService { get; private set; }
+    private readonly PetFoodFeedService petFoodFeedService;
+    private readonly List<IPetFoodPreferenceStrategy> petFoodPreferenceStrategies;
 
-    public List<IPetFoodPreferenceStrategy> PetFoodPreferenceStrategies { get; private set; }
-
-    public PetFoodFeedServiceTests_Fixture()
+    public PetFoodFeedServiceTests()
     {
-        PetFoodPreferenceStrategies = new List<IPetFoodPreferenceStrategy>();
+        petFoodPreferenceStrategies = new List<IPetFoodPreferenceStrategy>();
 
-        //TODO - Mock a stragegy.
-
-        PetFoodFeedService = new PetFoodFeedService(TestHelpers.GetFakeLoggerFactoryForType<PetFoodFeedService>(), PetFoodPreferenceStrategies);
-    }
-}
-
-//TODO - Write a test class for the method.  I don't need to use the whole ordering thing anymore now that ordering is part of the test.
-
-public class PetFoodFeedServiceTests : IClassFixture<PetFoodFeedServiceTests_Fixture>
-{
-    protected readonly PetFoodFeedServiceTests_Fixture fixture;
-
-    public PetFoodFeedServiceTests(PetFoodFeedServiceTests_Fixture fixture)
-    {
-        this.fixture = fixture;
+        petFoodFeedService = new PetFoodFeedService(TestHelpers.GetFakeLoggerFactoryForType<PetFoodFeedService>(), petFoodPreferenceStrategies);
     }
 
     [Fact]
@@ -53,11 +39,11 @@ public class PetFoodFeedServiceTests : IClassFixture<PetFoodFeedServiceTests_Fix
         A.CallTo(() => strategyB.Priority).Returns(5);
         A.CallTo(() => strategyB.GetPreferences(pets, foods)).Returns(new Dictionary<string, HashSet<string>>());
 
-        fixture.PetFoodPreferenceStrategies.Add(strategyA);
-        fixture.PetFoodPreferenceStrategies.Add(strategyB);
+        petFoodPreferenceStrategies.Add(strategyA);
+        petFoodPreferenceStrategies.Add(strategyB);
 
         // Act
-        fixture.PetFoodFeedService.GetPetFoodFeedsWithConfiguredPreferences(pets, foods);
+        petFoodFeedService.GetPetFoodFeedsWithConfiguredPreferences(pets, foods);
 
         // Assert
         A.CallTo(() => strategyB.GetPreferences(pets, foods)).MustHaveHappened()

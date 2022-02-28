@@ -1,32 +1,25 @@
-﻿using HabiticaPetFeeder.Logic.Model;
+﻿using FakeItEasy;
+using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Proxy.Interface;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Options;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service
 {
-    public class RateLimitingServiceTests_Fixture
+    public class RateLimitingServiceTests
     {
-        public Mock<IThreadingProxy> MockThreadingProxy { get; private set; }
-        public IRateLimitingService RateLimitingService { get; private set; }
+        readonly IThreadingProxy threadingProxy;
+        readonly IRateLimitingService rateLimitingService;
 
-        public const int RateLimitStandardDurationSeconds = 1;
+        const int RateLimitStandardDurationSeconds = 1;
+        const int RateLimitThrottleDurationSeconds = 3;
+        const int RateLimitThrottleThreshold = 20;
 
-        public const int RateLimitThrottleDurationSeconds = 3;
-
-        public const int RateLimitThrottleThreshold = 20;
-
-        public RateLimitingServiceTests_Fixture()
+        public RateLimitingServiceTests()
         {
-            MockThreadingProxy = new Mock<IThreadingProxy>();
+            threadingProxy = A.Fake<IThreadingProxy>();
 
             var habiticaApiSettings = new HabiticaApiSettings()
             {
@@ -35,17 +28,7 @@ namespace HabiticaPetFeeder.Tests.Service
                 RateLimitThrottleThreshold = RateLimitThrottleThreshold,
             };
 
-            RateLimitingService = new RateLimitingService(MockThreadingProxy.Object, Options.Create(habiticaApiSettings));
-        }
-    }
-
-    public class RateLimitingServiceTests : IClassFixture<RateLimitingServiceTests_Fixture>
-    {
-        private readonly RateLimitingServiceTests_Fixture fixture;
-
-        public RateLimitingServiceTests(RateLimitingServiceTests_Fixture fixture)
-        {
-            this.fixture = fixture;
+            rateLimitingService = new RateLimitingService(threadingProxy, Options.Create(habiticaApiSettings));
         }
 
         [Fact]
@@ -53,19 +36,19 @@ namespace HabiticaPetFeeder.Tests.Service
         {
             var input = new RateLimitInfo { RateLimitRemaining = 10 };
             
-            fixture.RateLimitingService.WaitForRateLimitDelayAsync(input);
+            rateLimitingService.WaitForRateLimitDelayAsync(input);
 
-            fixture.MockThreadingProxy.Verify(x => x.WaitForSecondsAsync(RateLimitingServiceTests_Fixture.RateLimitThrottleDurationSeconds));
+            AssertWaitForSecondsAsyncWasCalled(RateLimitThrottleDurationSeconds);
         }
 
         [Fact]
         public void WaitForRateLimitDelay_WhenAtThreshhold_ShouldCallThreadingProxyWithStandardDuration()
         {
-            var input = new RateLimitInfo { RateLimitRemaining = RateLimitingServiceTests_Fixture.RateLimitThrottleThreshold };
+            var input = new RateLimitInfo { RateLimitRemaining = RateLimitThrottleThreshold };
 
-            fixture.RateLimitingService.WaitForRateLimitDelayAsync(input);
+            rateLimitingService.WaitForRateLimitDelayAsync(input);
 
-            fixture.MockThreadingProxy.Verify(x => x.WaitForSecondsAsync(RateLimitingServiceTests_Fixture.RateLimitStandardDurationSeconds));
+            AssertWaitForSecondsAsyncWasCalled(RateLimitStandardDurationSeconds);
         }
 
         [Fact]
@@ -73,9 +56,15 @@ namespace HabiticaPetFeeder.Tests.Service
         {
             var input = new RateLimitInfo { RateLimitRemaining = 29 };
 
-            fixture.RateLimitingService.WaitForRateLimitDelayAsync(input);
+            rateLimitingService.WaitForRateLimitDelayAsync(input);
 
-            fixture.MockThreadingProxy.Verify(x => x.WaitForSecondsAsync(RateLimitingServiceTests_Fixture.RateLimitStandardDurationSeconds));
+            AssertWaitForSecondsAsyncWasCalled(RateLimitStandardDurationSeconds);
+        }
+
+        private void AssertWaitForSecondsAsyncWasCalled(int seconds)
+        {
+            A.CallTo(() => threadingProxy.WaitForSecondsAsync(seconds))
+                .MustHaveHappenedOnceExactly();
         }
     }
 
