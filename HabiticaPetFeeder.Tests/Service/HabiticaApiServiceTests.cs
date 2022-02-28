@@ -6,7 +6,6 @@ using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service;
 using Microsoft.Extensions.Options;
-using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
