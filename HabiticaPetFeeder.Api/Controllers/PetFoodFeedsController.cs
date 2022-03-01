@@ -4,14 +4,9 @@ using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Api.Controllers;
-
-/*
- * The authentication header has no scheme.  The header value is the encrypted token.
- */
 
 [Route("api/[controller]")]
 [ApiController]
@@ -21,14 +16,12 @@ public class PetFoodFeedsController : ControllerBase
     private readonly IHabiticaApiService habiticaApiService;
     private readonly IAuthenticationService authenticationService;
     private readonly IDataService dataService;
-    private readonly IPetFoodPreferenceService petFoodPreferenceService;
     private readonly IPetFoodFeedService petFoodFeedService;
 
     public PetFoodFeedsController(ILoggerFactory loggerFactory,
                               IHabiticaApiService habiticaApiService,
                               IAuthenticationService authenticationService,
                               IDataService dataService,
-                              IPetFoodPreferenceService petFoodPreferenceService,
                               IPetFoodFeedService petFoodFeedService)
     {
         logger = loggerFactory.CreateLogger<PetFoodFeedsController>();
@@ -36,7 +29,6 @@ public class PetFoodFeedsController : ControllerBase
         this.habiticaApiService = habiticaApiService;
         this.authenticationService = authenticationService;
         this.dataService = dataService;
-        this.petFoodPreferenceService = petFoodPreferenceService;
         this.petFoodFeedService = petFoodFeedService;
     }
 
@@ -68,6 +60,23 @@ public class PetFoodFeedsController : ControllerBase
         return Ok(petFeedsResponse);
     }
 
+    private UserPetFoodFeeds GetUserPetFoodFeeds(UserContentPair userContentPair)
+    {
+        var userName = dataService.GetUserName(userContentPair.User);
+        var allPets = dataService.GetPets(userContentPair.User, userContentPair.Content);
+        var allFoods = dataService.GetFoods(userContentPair.User, userContentPair.Content);
+
+        var feeds = petFoodFeedService.GetPetFoodFeedsWithConfiguredPreferences(allPets, allFoods);
+
+        var userPetFoodFeeds = new UserPetFoodFeeds()
+        {
+            UserName = userName,
+            PetFoodFeeds = feeds
+        };
+
+        return userPetFoodFeeds;
+    }
+
     [HttpPost]
     [Route("feed")]
     public async Task<IActionResult> FeedUserPetAsync(PetFoodFeed petFoodFeed)
@@ -93,27 +102,6 @@ public class PetFoodFeedsController : ControllerBase
             $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} ");
 
         return Ok(apiResponse);
-    }
-
-    private UserPetFoodFeeds GetUserPetFoodFeeds(UserContentPair userContentPair)
-    {
-        var userName = dataService.GetUserName(userContentPair.User);
-        var allPets = dataService.GetPets(userContentPair.User, userContentPair.Content);
-        var allFoods = dataService.GetFoods(userContentPair.User, userContentPair.Content);
-
-        var basicPetFoodPreferences = petFoodPreferenceService.GetUserBasicPetPreferredFoods(allPets, allFoods);
-
-        List<PetFoodFeed> feeds = new();
-        feeds.AddRange(petFoodFeedService.GetPreferredFoodFeeds(allPets, allFoods, basicPetFoodPreferences));
-        feeds.AddRange(petFoodFeedService.GetFoodFeeds(allPets, allFoods));
-
-        var userPetFoodFeeds = new UserPetFoodFeeds()
-        {
-            UserName = userName,
-            PetFoodFeeds = feeds
-        };
-
-        return userPetFoodFeeds;
     }
 
     private UserApiAuthInfo GetUserAuthFromRequestHeader(HttpRequest httpRequest)

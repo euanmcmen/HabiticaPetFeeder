@@ -1,4 +1,4 @@
-﻿using HabiticaPetFeeder.Logic.Client;
+﻿using HabiticaPetFeeder.Logic.Client.Interface;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service.Interfaces;

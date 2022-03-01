@@ -1,7 +1,12 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
+using HabiticaPetFeeder.Logic.Client.Interface;
 using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Proxy;
+using HabiticaPetFeeder.Logic.Proxy.Interface;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -36,11 +41,15 @@ namespace HabiticaPetFeeder.Api
             services.Configure<HabiticaApiSettings>(configuration.GetSection(HabiticaApiSettings.AppSettingName));
             services.Configure<EncryptionSettings>(configuration.GetSection(EncryptionSettings.AppSettingName));
 
+            //Configure Pet Food Preference strategies
+            services.AddScoped<IPetFoodPreferenceStrategy, BasicPetFoodPreferenceStrategy>();
+            services.AddScoped<IPetFoodPreferenceStrategy, EmptyPetFoodPreferenceStrategy>();
+
             //Configure app services.
+            services.AddScoped<IThreadingProxy, ThreadingProxy>();
             services.AddScoped<IRateLimitingService, RateLimitingService>();
-            services.AddScoped<IEncryptionService, EncryptionService>();
+            services.AddScoped<IEncryptionService, EncryptionProxy>();
             services.AddScoped<IDataService, DataService>();
-            services.AddScoped<IPetFoodPreferenceService, PetFoodPreferenceService>();
             services.AddScoped<IPetFoodFeedService, PetFoodFeedService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
         }

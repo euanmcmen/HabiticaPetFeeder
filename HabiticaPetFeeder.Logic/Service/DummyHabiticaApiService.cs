@@ -40,7 +40,7 @@ public class DummyHabiticaApiService : IHabiticaApiService
 
     public async Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest)
     {
-        await rateLimitingService.WaitForRateLimitDelay(apiPetFoodFeedRequest.RateLimitInfo);
+        await rateLimitingService.WaitForRateLimitDelayAsync(apiPetFoodFeedRequest.RateLimitInfo);
 
         var resetDate = DateTimeHelper.StringToDate(apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset);
         var responseRateLimitInfo = resetDate < DateTime.UtcNow

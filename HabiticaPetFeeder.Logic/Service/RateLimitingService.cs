@@ -1,10 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Proxy.Interface;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Logic.Service;
@@ -12,21 +9,23 @@ namespace HabiticaPetFeeder.Logic.Service;
 public class RateLimitingService : IRateLimitingService
 {
     private readonly HabiticaApiSettings habiticaApiSettings;
+    private readonly IThreadingProxy threadingProxy;
 
-    public RateLimitingService(IOptions<HabiticaApiSettings> habiticaApiSettingsOptions)
+    public RateLimitingService(IThreadingProxy threadingProxy, IOptions<HabiticaApiSettings> habiticaApiSettingsOptions)
     {
         habiticaApiSettings = habiticaApiSettingsOptions.Value;
+        this.threadingProxy = threadingProxy;
     }
 
-    public async Task WaitForRateLimitDelay(RateLimitInfo rateLimitInfo)
+    public async Task WaitForRateLimitDelayAsync(RateLimitInfo rateLimitInfo)
     {
         if (rateLimitInfo.RateLimitRemaining < habiticaApiSettings.RateLimitThrottleThreshold)
         {
-            await Task.Delay(habiticaApiSettings.RateLimitThrottleDurationSeconds * 1000);
+            await threadingProxy.WaitForSecondsAsync(habiticaApiSettings.RateLimitThrottleDurationSeconds);
         }
         else
         {
-            await Task.Delay(1000);
+            await threadingProxy.WaitForSecondsAsync(habiticaApiSettings.RateLimitStandardDurationSeconds);
         }
     }
 }

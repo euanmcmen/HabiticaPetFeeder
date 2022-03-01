@@ -1,194 +1,25 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
-using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Service;
+using HabiticaPetFeeder.Tests.DataFixtures;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service;
 
-public class DataService_InputData_Fixture
+public class DataServiceTests : IClassFixture<UserResponseDataFixture>, IClassFixture<ContentResponseDataFixture>
 {
-    public UserResponse TestClientDataUserResponse { get; }
+    private readonly DataService dataService;
 
-    public ContentResponse TestClientDataContentResponse { get; }
+    private readonly UserResponseDataFixture userResponseDataFixture;
+    private readonly ContentResponseDataFixture contentResponseDataFixture;
 
-    public DataService_InputData_Fixture()
+    public DataServiceTests(UserResponseDataFixture userResponseDataFixture, ContentResponseDataFixture contentResponseDataFixture)
     {
-        TestClientDataUserResponse = BuildTestUserResponse();
+        this.userResponseDataFixture = userResponseDataFixture;
+        this.contentResponseDataFixture = contentResponseDataFixture;
 
-        TestClientDataContentResponse = BuildTestContentResponse();
-    }
-
-    private static ContentResponse BuildTestContentResponse()
-    {
-        return new ContentResponse()
-        {
-            data = new ContentResponseData()
-            {
-                food = new Dictionary<string, ContentResponseFoodInfo>()
-                    {
-                        {"Meat", new ContentResponseFoodInfo() { target = "Base" } },
-                        {"Potatoe", new ContentResponseFoodInfo() { target = "Desert" } },
-                        {"Milk", new ContentResponseFoodInfo() { target = "White" } },
-                        {"Fish", new ContentResponseFoodInfo() { target = "Skeleton" } },
-                        {"RottenMeat", new ContentResponseFoodInfo() { target = "Zombie" } },
-                        {"CottonCandyBlue", new ContentResponseFoodInfo() { target = "CottonCandyBlue" } },
-                        {"Cake_Skeleton", new ContentResponseFoodInfo() { target = "Skeleton" } },
-                        {"Cake_Base", new ContentResponseFoodInfo() { target = "Base" } },
-                        {"Cake_CottonCandyPink", new ContentResponseFoodInfo() { target = "CottonCandyPink" } },
-                        {"Cake_CottonCandyBlue", new ContentResponseFoodInfo() { target = "CottonCandyBlue" } },
-                        {"Cake_Golden", new ContentResponseFoodInfo() { target = "Golden" } },
-                        {"Candy_Skeleton", new ContentResponseFoodInfo() { target = "Skeleton" } },
-                        {"Candy_Base", new ContentResponseFoodInfo() { target = "Base" } },
-                        {"Pie_Base", new ContentResponseFoodInfo() { target = "Base" } },
-                        {"Saddle", new ContentResponseFoodInfo() { target = null } }
-                    },
-                petInfo = new Dictionary<string, ContentResponsePetInfo>
-                {
-
-                },
-                pets = new Dictionary<string, string>
-                    {
-                        { "Wolf-Base", "true" },
-                        { "Wolf-White", "true" },
-                        { "Wolf-Desert", "true" },
-                        { "TigerCub-Base", "true" },
-                        { "TigerCub-Shade", "true" },
-                        { "LionCub-Base", "true" },
-                        { "LionCub-White", "true" },
-                        { "Fox-CottonCandyPink", "true" },
-                        { "Dragon-Skeleton", "true" },
-                        { "BearCub-Golden", "true" },
-                    },
-                premiumPets = new Dictionary<string, string>
-                    {
-                        { "Wolf-RoyalPurple", "true" },
-                        { "Wolf-Cupid", "true" },
-                        { "TigerCub-RoyalPurple", "true" },
-                        { "PandaCub-RoyalPurple", "true" },
-                        { "LionCub-RoyalPurple", "true" },
-                        { "Fox-RoyalPurple", "true" },
-                        { "FlyingPig-RoyalPurple", "true" },
-                        { "Dragon-RoyalPurple", "true" },
-                        { "BearCub-RoyalPurple", "true" },
-                    },
-                questPets = new Dictionary<string, string>
-                    {
-                        { "Gryphon-Base", "true" },
-                        { "Owl-Skeleton", "true" },
-                        { "Robot-Golden", "true" },
-                    },
-                specialPets = new Dictionary<string, string>
-                    {
-                        { "Wolf-Veteran", "veteranWolf" },
-                        { "JackOLantern-Base", "jackolantern" },
-                        { "Turkey-Base", "turkey" },
-                        { "Orca-Base", "orca" },
-                        { "BearCub-Polar", "polarBearPup" },
-                    },
-                wackyPets = new Dictionary<string, string>
-                    {
-                        { "Wolf-Veggie", "true" },
-                        { "Dragon-Dessert", "true" },
-                        { "BearCub-Veggie", "true" },
-                    }
-            }
-        };
-    }
-
-    private static UserResponse BuildTestUserResponse()
-    {
-        return new UserResponse
-        {
-            data = new UserResponseData
-            {
-                items = new UserResponseDataItems()
-                {
-                    pets = new Dictionary<string, int>
-                        {
-                            { "LionCub-White", 20 },
-                            { "Wolf-Base", 10 },
-                            { "Dragon-Skeleton", 5 },
-                            { "TigerCub-RoyalPurple", 5 },
-                            { "Dragon-RoyalPurple", -1 },
-                            { "FlyingPig-RoyalPurple", -1 },
-                            { "Orca-Base", 5 }
-                        },
-                    food = new Dictionary<string, int>()
-                        {
-                            { "Potatoe", 207 },
-                            { "Meat", 175 },
-                            { "Saddle", 10 },
-                            { "CottonCandyBlue", 199 },
-                            { "Cake_Base", 4 },
-                            { "Cake_CottonCandyBlue", 4 },
-                            { "Candy_Base", 1 },
-                            { "Pie_Base", 1 },
-
-                        },
-                    mounts = new Dictionary<string, bool>()
-                        {
-                            { "Dragon-Skeleton", true },
-                            { "Dragon-White", true },
-                            { "Dragon-RoyalPurple", true },
-                            { "Orca-Base", true },
-                            { "Gryphon-RoyalPurple", true },
-                            { "FlyingPig-RoyalPurple", true },
-                            { "Aether-Invisible", true }
-                        }
-                },
-                auth = new UserResponseDataAuth()
-                {
-                    local = new UserResponseDataAuthLocal()
-                    {
-                        username = "DressingFrown"
-                    }
-                }
-            }
-        };
-    }
-}
-
-public class DataServiceTests_Fixture
-{
-    public DataService DataService { get; }
-
-    public DataServiceTests_Fixture()
-    {
-        DataService = new DataService(TestHelpers.GetMockedLogFactoryForType<DataService>().Object);
-    }
-
-    public void Dispose()
-    {
-    }
-}
-
-public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassFixture<DataService_InputData_Fixture>
-{
-    private readonly DataServiceTests_Fixture fixture;
-    private readonly DataService_InputData_Fixture testDataInputFixture;
-
-    private string GetUserName()
-    {
-        return fixture.DataService.GetUserName(testDataInputFixture.TestClientDataUserResponse);
-    }
-
-    private IEnumerable<Pet> GetPets()
-    {
-        return fixture.DataService.GetPets(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
-    }
-
-    private IEnumerable<Food> GetFoods()
-    {
-        return fixture.DataService.GetFoods(testDataInputFixture.TestClientDataUserResponse, testDataInputFixture.TestClientDataContentResponse);
-    }
-
-    public DataServiceTests(DataServiceTests_Fixture fixture, DataService_InputData_Fixture testDataInputFixture)
-    {
-        this.fixture = fixture;
-        this.testDataInputFixture = testDataInputFixture;
+        dataService = new DataService(TestHelpers.GetFakeLoggerFactoryForType<DataService>());
     }
 
     [Fact]
@@ -196,7 +27,7 @@ public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassF
     {
         var result = GetUserName();
 
-        Assert.Equal(testDataInputFixture.TestClientDataUserResponse.data.auth.local.username, result);
+        Assert.Equal(userResponseDataFixture.UserResponse.data.auth.local.username, result);
         Assert.Equal("DressingFrown", result);
     }
 
@@ -245,5 +76,20 @@ public class DataServiceTests : IClassFixture<DataServiceTests_Fixture>, IClassF
         var result = GetFoods();
 
         Assert.DoesNotContain(result, x => x.FullName == "Saddle");
+    }
+
+    private string GetUserName()
+    {
+        return dataService.GetUserName(userResponseDataFixture.UserResponse);
+    }
+
+    private IEnumerable<Pet> GetPets()
+    {
+        return dataService.GetPets(userResponseDataFixture.UserResponse, contentResponseDataFixture.ContentResponse);
+    }
+
+    private IEnumerable<Food> GetFoods()
+    {
+        return dataService.GetFoods(userResponseDataFixture.UserResponse, contentResponseDataFixture.ContentResponse);
     }
 }

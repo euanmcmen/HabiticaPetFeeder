@@ -1,17 +1,17 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using System.Collections.Generic;
 
-namespace HabiticaPetFeeder.Tests
+namespace HabiticaPetFeeder.Tests.DataFixtures
 {
-    public class TestData_Fixture
+    public class PetFoodDataFixture
     {
         public IEnumerable<Pet> Pets { get; private set; }
 
         public IEnumerable<Food> Foods { get; private set; }
 
-        public PetFoodPreferences BasicPetFoodPreferences { get; private set; }
+        public Dictionary<string, HashSet<string>> BasicPetFoodPreferences { get; private set; }
 
-        public TestData_Fixture()
+        public PetFoodDataFixture()
         {
             //Should be fed 6 milks.
             var lionWhite = new Pet("LionCub-White", "White", new IncreasingQuantity(20), true);
@@ -54,12 +54,11 @@ namespace HabiticaPetFeeder.Tests
                 { candyWhite },
             };
 
-            BasicPetFoodPreferences = new PetFoodPreferences();
-            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, milkWhite);
-            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, pieWhite);
-            BasicPetFoodPreferences.AddPetPreferredFood(lionWhite, candyWhite);
-            BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, meatBase);
-            BasicPetFoodPreferences.AddPetPreferredFood(wolfBase, cakeBase);
+            BasicPetFoodPreferences = new Dictionary<string, HashSet<string>>
+            {
+                { lionWhite.FullName, new HashSet<string>(new[] { milkWhite.FullName, pieWhite.FullName, candyWhite.FullName }) },
+                { wolfBase.FullName, new HashSet<string>(new[] { meatBase.FullName, cakeBase.FullName }) }
+            };
         }
     }
 }

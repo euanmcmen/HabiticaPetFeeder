@@ -1,28 +1,16 @@
-﻿using HabiticaPetFeeder.Logic.Model;
+﻿using FakeItEasy;
+using HabiticaPetFeeder.Logic.Model;
+using HabiticaPetFeeder.Logic.Proxy.Interface;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
-using Moq;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service;
 
-public class AuthenticationServiceTests_Fixture
+public class AuthenticationServiceTests
 {
-    public IAuthenticationService AuthenticationService { get; private set; }
-
-    public Mock<IEncryptionService> MockEncryptionService { get; private set; }
-
-    public AuthenticationServiceTests_Fixture()
-    {
-        MockEncryptionService = new Mock<IEncryptionService>();
-
-        AuthenticationService = new AuthenticationService(TestHelpers.GetMockedLogFactoryForType<AuthenticationService>().Object, MockEncryptionService.Object);
-    }
-}
-
-public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTests_Fixture>
-{
-    private readonly AuthenticationServiceTests_Fixture fixture;
+    private readonly IAuthenticationService authenticationService;
+    private readonly IEncryptionService encryptionService;
 
     private readonly UserApiAuthInfo testAuthInfo = new UserApiAuthInfo("testUser", "testKey");
 
@@ -30,20 +18,20 @@ public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTes
     private const string Encrypted_PlainText = "encrypted";
     private const string Encoded_Encrypted_PlainText = "ZW5jcnlwdGVk";
 
-
-
-    public AuthenticationServiceTests(AuthenticationServiceTests_Fixture fixture)
+    public AuthenticationServiceTests()
     {
-        this.fixture = fixture;
+        encryptionService = A.Fake<IEncryptionService>();
 
-        fixture.MockEncryptionService.Setup(x => x.Encrypt(PlainText)).Returns(Encrypted_PlainText);
-        fixture.MockEncryptionService.Setup(x => x.Decrypt(Encrypted_PlainText)).Returns(PlainText);
+        authenticationService = new AuthenticationService(TestHelpers.GetFakeLoggerFactoryForType<AuthenticationService>(), encryptionService);
+
+        A.CallTo(() => encryptionService.Encrypt(PlainText)).Returns(Encrypted_PlainText);
+        A.CallTo(() => encryptionService.Decrypt(Encrypted_PlainText)).Returns(PlainText);
     }
 
     [Fact]
     public void GetAuthenticationTokenForUserAuth_ReturnsBase64EncodedUserIdAndKeyToken()
     {
-        var actual = fixture.AuthenticationService.GetAuthenticationTokenForUserAuth(testAuthInfo);
+        var actual = authenticationService.GetAuthenticationTokenForUserAuth(testAuthInfo);
 
         Assert.Equal(Encoded_Encrypted_PlainText, actual);
     }
@@ -51,7 +39,7 @@ public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTes
     [Fact]
     public void GetUserAuthFromAuthenticationToken_ReturnsUserAuthFromToken()
     {
-        var actual = fixture.AuthenticationService.GetUserAuthFromAuthenticationToken(Encoded_Encrypted_PlainText);
+        var actual = authenticationService.GetUserAuthFromAuthenticationToken(Encoded_Encrypted_PlainText);
 
         Assert.Equal(testAuthInfo, actual);
     }

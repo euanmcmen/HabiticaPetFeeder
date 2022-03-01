@@ -1,48 +1,31 @@
-﻿using HabiticaPetFeeder.Logic.Model;
+﻿using FakeItEasy;
+using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using HabiticaPetFeeder.Logic.Util;
-using Microsoft.Extensions.Options;
-using Moq;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service;
 
-public class DummyHabiticaApiServiceTests_Fixture
+public class DummyHabiticaApiServiceTests
 {
-    public DummyHabiticaApiService DummyHabiticaApiService { get; private set; }
+    private readonly DummyHabiticaApiService dummyHabiticaApiService;
+    private readonly IMongoDbService mongoDbService;
+    private readonly IRateLimitingService rateLimitingService;
 
-    public Mock<IMongoDbService> MockMongoDbService { get; private set; }
-
-    public Mock<IRateLimitingService> MockRateLimitingService { get; private set; }
-
-    public DummyHabiticaApiServiceTests_Fixture()
+    public DummyHabiticaApiServiceTests()
     {
-        MockMongoDbService = new Mock<IMongoDbService>();
+        mongoDbService = A.Fake<IMongoDbService>();
+        rateLimitingService = A.Fake<IRateLimitingService>();
 
-        MockRateLimitingService = new Mock<IRateLimitingService>();
-
-        DummyHabiticaApiService = 
-            new DummyHabiticaApiService(TestHelpers.GetMockedLogFactoryForType<HabiticaApiService>().Object, 
-                MockRateLimitingService.Object, 
-                MockMongoDbService.Object);
+        dummyHabiticaApiService =
+            new DummyHabiticaApiService(TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), rateLimitingService, mongoDbService);
     }
-}
-
-public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServiceTests_Fixture>
-{
-    protected readonly DummyHabiticaApiServiceTests_Fixture fixture;
-
-    public DummyHabiticaApiServiceTests(DummyHabiticaApiServiceTests_Fixture fixture)
-    {
-        this.fixture = fixture;
-    }
-
 
     [Fact]
     public async Task GetHabiticaUserAsync_ReturnsUserAndContentData()
@@ -52,25 +35,23 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
             UserApiAuthInfo = new UserApiAuthInfo("test-key", "test-id")
         };
 
-        fixture.MockMongoDbService.Setup(x => x.GetDummyRecordByFriendlyNameAsync<UserResponse>("UserResponse"))
-            .ReturnsAsync(new UserResponse() { success = true });
+        A.CallTo(() => mongoDbService.GetDummyRecordByFriendlyNameAsync<UserResponse>("UserResponse")).Returns(new UserResponse() { success = true });
 
-        fixture.MockMongoDbService.Setup(x => x.GetDummyRecordByFriendlyNameAsync<ContentResponse>("ContentResponse"))
-            .ReturnsAsync(new ContentResponse() { success = true });
+        A.CallTo(() => mongoDbService.GetDummyRecordByFriendlyNameAsync<ContentResponse>("ContentResponse")).Returns(new ContentResponse() { success = true });
 
-        var result = await fixture.DummyHabiticaApiService.GetHabiticaUserAsync(request);
+        var result = await dummyHabiticaApiService.GetHabiticaUserAsync(request);
 
         Assert.True(result.Body.User.success);
         Assert.True(result.Body.Content.success);
         Assert.Equal(28, result.RateLimitInfo.RateLimitRemaining);
     }
 
-    public class FeedPetFoodAsyncTests : DummyHabiticaApiServiceTests, IClassFixture<DummyHabiticaApiServiceTests_Fixture>
+    public class FeedPetFoodAsyncTests : DummyHabiticaApiServiceTests
     {
         private readonly PetFoodFeed petFoodFeed;
         private readonly UserApiAuthInfo userApiAuthInfo;
 
-        public FeedPetFoodAsyncTests(DummyHabiticaApiServiceTests_Fixture fixture) : base(fixture)
+        public FeedPetFoodAsyncTests()
         {
             petFoodFeed = new PetFoodFeed("test-pet-name", "test-food-name", 1, false);
             userApiAuthInfo = new UserApiAuthInfo("test-key", "test-id");
@@ -87,7 +68,7 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
 
             var response = await GetTestResultAsync(input);
 
-            fixture.MockRateLimitingService.Verify(x => x.WaitForRateLimitDelay(input), Times.Once());
+            A.CallTo(() => rateLimitingService.WaitForRateLimitDelayAsync(input)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -127,7 +108,7 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
                 UserApiAuthInfo = userApiAuthInfo
             };
 
-            return await fixture.DummyHabiticaApiService.FeedPetFoodAsync(request);
+            return await dummyHabiticaApiService.FeedPetFoodAsync(request);
         }
     }
 }
