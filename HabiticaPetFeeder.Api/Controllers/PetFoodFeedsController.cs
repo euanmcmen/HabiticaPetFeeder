@@ -4,7 +4,6 @@ using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Api.Controllers;

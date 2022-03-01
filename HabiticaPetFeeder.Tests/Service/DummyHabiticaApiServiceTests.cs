@@ -12,33 +12,19 @@ using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service;
 
-public class DummyHabiticaApiServiceTests_Fixture
+public class DummyHabiticaApiServiceTests
 {
-    public DummyHabiticaApiService DummyHabiticaApiService { get; private set; }
+    private readonly DummyHabiticaApiService dummyHabiticaApiService;
+    private readonly IMongoDbService mongoDbService;
+    private readonly IRateLimitingService rateLimitingService;
 
-    public IMongoDbService MongoDbService { get; private set; }
-
-    public IRateLimitingService RateLimitingService { get; private set; }
-
-    public DummyHabiticaApiServiceTests_Fixture()
+    public DummyHabiticaApiServiceTests()
     {
-        MongoDbService = A.Fake<IMongoDbService>();
+        mongoDbService = A.Fake<IMongoDbService>();
+        rateLimitingService = A.Fake<IRateLimitingService>();
 
-        RateLimitingService = A.Fake<IRateLimitingService>();
-
-        DummyHabiticaApiService =
-            new DummyHabiticaApiService(TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), RateLimitingService, MongoDbService);
-
-    }
-}
-
-public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServiceTests_Fixture>
-{
-    protected readonly DummyHabiticaApiServiceTests_Fixture fixture;
-
-    public DummyHabiticaApiServiceTests(DummyHabiticaApiServiceTests_Fixture fixture)
-    {
-        this.fixture = fixture;
+        dummyHabiticaApiService =
+            new DummyHabiticaApiService(TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), rateLimitingService, mongoDbService);
     }
 
     [Fact]
@@ -49,23 +35,23 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
             UserApiAuthInfo = new UserApiAuthInfo("test-key", "test-id")
         };
 
-        A.CallTo(() => fixture.MongoDbService.GetDummyRecordByFriendlyNameAsync<UserResponse>("UserResponse")).Returns(new UserResponse() { success = true });
+        A.CallTo(() => mongoDbService.GetDummyRecordByFriendlyNameAsync<UserResponse>("UserResponse")).Returns(new UserResponse() { success = true });
 
-        A.CallTo(() => fixture.MongoDbService.GetDummyRecordByFriendlyNameAsync<ContentResponse>("ContentResponse")).Returns(new ContentResponse() { success = true });
+        A.CallTo(() => mongoDbService.GetDummyRecordByFriendlyNameAsync<ContentResponse>("ContentResponse")).Returns(new ContentResponse() { success = true });
 
-        var result = await fixture.DummyHabiticaApiService.GetHabiticaUserAsync(request);
+        var result = await dummyHabiticaApiService.GetHabiticaUserAsync(request);
 
         Assert.True(result.Body.User.success);
         Assert.True(result.Body.Content.success);
         Assert.Equal(28, result.RateLimitInfo.RateLimitRemaining);
     }
 
-    public class FeedPetFoodAsyncTests : DummyHabiticaApiServiceTests, IClassFixture<DummyHabiticaApiServiceTests_Fixture>
+    public class FeedPetFoodAsyncTests : DummyHabiticaApiServiceTests
     {
         private readonly PetFoodFeed petFoodFeed;
         private readonly UserApiAuthInfo userApiAuthInfo;
 
-        public FeedPetFoodAsyncTests(DummyHabiticaApiServiceTests_Fixture fixture) : base(fixture)
+        public FeedPetFoodAsyncTests()
         {
             petFoodFeed = new PetFoodFeed("test-pet-name", "test-food-name", 1, false);
             userApiAuthInfo = new UserApiAuthInfo("test-key", "test-id");
@@ -82,8 +68,7 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
 
             var response = await GetTestResultAsync(input);
 
-            A.CallTo(() => fixture.RateLimitingService.WaitForRateLimitDelayAsync(input)).MustHaveHappenedOnceExactly();
-            //fixture.MockRateLimitingService.Verify(x => x.WaitForRateLimitDelayAsync(input), Times.Once());
+            A.CallTo(() => rateLimitingService.WaitForRateLimitDelayAsync(input)).MustHaveHappenedOnceExactly();
         }
 
         [Fact]
@@ -123,7 +108,7 @@ public class DummyHabiticaApiServiceTests : IClassFixture<DummyHabiticaApiServic
                 UserApiAuthInfo = userApiAuthInfo
             };
 
-            return await fixture.DummyHabiticaApiService.FeedPetFoodAsync(request);
+            return await dummyHabiticaApiService.FeedPetFoodAsync(request);
         }
     }
 }

@@ -7,23 +7,10 @@ using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service;
 
-public class AuthenticationServiceTests_Fixture
+public class AuthenticationServiceTests
 {
-    public IAuthenticationService AuthenticationService { get; private set; }
-
-    public IEncryptionService EncryptionService { get; private set; }
-
-    public AuthenticationServiceTests_Fixture()
-    {
-        EncryptionService = A.Fake<IEncryptionService>();
-
-        AuthenticationService = new AuthenticationService(TestHelpers.GetFakeLoggerFactoryForType<AuthenticationService>(), EncryptionService);
-    }
-}
-
-public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTests_Fixture>
-{
-    private readonly AuthenticationServiceTests_Fixture fixture;
+    private readonly IAuthenticationService authenticationService;
+    private readonly IEncryptionService encryptionService;
 
     private readonly UserApiAuthInfo testAuthInfo = new UserApiAuthInfo("testUser", "testKey");
 
@@ -31,20 +18,20 @@ public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTes
     private const string Encrypted_PlainText = "encrypted";
     private const string Encoded_Encrypted_PlainText = "ZW5jcnlwdGVk";
 
-
-
-    public AuthenticationServiceTests(AuthenticationServiceTests_Fixture fixture)
+    public AuthenticationServiceTests()
     {
-        this.fixture = fixture;
+        encryptionService = A.Fake<IEncryptionService>();
 
-        A.CallTo(() => fixture.EncryptionService.Encrypt(PlainText)).Returns(Encrypted_PlainText);
-        A.CallTo(() => fixture.EncryptionService.Decrypt(Encrypted_PlainText)).Returns(PlainText);
+        authenticationService = new AuthenticationService(TestHelpers.GetFakeLoggerFactoryForType<AuthenticationService>(), encryptionService);
+
+        A.CallTo(() => encryptionService.Encrypt(PlainText)).Returns(Encrypted_PlainText);
+        A.CallTo(() => encryptionService.Decrypt(Encrypted_PlainText)).Returns(PlainText);
     }
 
     [Fact]
     public void GetAuthenticationTokenForUserAuth_ReturnsBase64EncodedUserIdAndKeyToken()
     {
-        var actual = fixture.AuthenticationService.GetAuthenticationTokenForUserAuth(testAuthInfo);
+        var actual = authenticationService.GetAuthenticationTokenForUserAuth(testAuthInfo);
 
         Assert.Equal(Encoded_Encrypted_PlainText, actual);
     }
@@ -52,7 +39,7 @@ public class AuthenticationServiceTests : IClassFixture<AuthenticationServiceTes
     [Fact]
     public void GetUserAuthFromAuthenticationToken_ReturnsUserAuthFromToken()
     {
-        var actual = fixture.AuthenticationService.GetUserAuthFromAuthenticationToken(Encoded_Encrypted_PlainText);
+        var actual = authenticationService.GetUserAuthFromAuthenticationToken(Encoded_Encrypted_PlainText);
 
         Assert.Equal(testAuthInfo, actual);
     }

@@ -12,29 +12,18 @@ using Xunit;
 
 namespace HabiticaPetFeeder.Tests.Service;
 
-public class HabiticaApiServiceTests_Fixture
+public class HabiticaApiServiceTests
 {
-    public HabiticaApiService HabiticaApiService { get; private set; }
+    private readonly HabiticaApiService habiticaApiService;
+    private readonly IHabiticaApiClient habiticaApiClient;
 
-    public IHabiticaApiClient HabiticaApiClient { get; private set; }
-
-    public HabiticaApiServiceTests_Fixture()
+    public HabiticaApiServiceTests()
     {
-        HabiticaApiClient = A.Fake<IHabiticaApiClient>();
+        habiticaApiClient = A.Fake<IHabiticaApiClient>();
 
         var habiticaApiSettings = new HabiticaApiSettings() { RateLimitThrottleThreshold = 20, UseLiveEndpoint = false, RateLimitThrottleDurationSeconds = 3 };
 
-        HabiticaApiService = new HabiticaApiService(TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), HabiticaApiClient, Options.Create(habiticaApiSettings));
-    }
-}
-
-public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fixture>
-{
-    protected readonly HabiticaApiServiceTests_Fixture fixture;
-
-    public HabiticaApiServiceTests(HabiticaApiServiceTests_Fixture fixture)
-    {
-        this.fixture = fixture;
+        habiticaApiService = new HabiticaApiService(TestHelpers.GetFakeLoggerFactoryForType<HabiticaApiService>(), habiticaApiClient, Options.Create(habiticaApiSettings));
     }
 
     [Fact]
@@ -45,19 +34,19 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
             UserApiAuthInfo = new UserApiAuthInfo("test-key", "test-id")
         };
 
-        A.CallTo(() => fixture.HabiticaApiClient.GetUserAsync()).Returns(new RateLimitedApiResponse<UserResponse>()
+        A.CallTo(() => habiticaApiClient.GetUserAsync()).Returns(new RateLimitedApiResponse<UserResponse>()
         {
             Body = new UserResponse() { success = true },
             RateLimitInfo = new RateLimitInfo() { RateLimitRemaining = 30 }
         });
 
-        A.CallTo(() => fixture.HabiticaApiClient.GetContentAsync()).Returns(new RateLimitedApiResponse<ContentResponse>
+        A.CallTo(() => habiticaApiClient.GetContentAsync()).Returns(new RateLimitedApiResponse<ContentResponse>
         {
             Body = new ContentResponse() { success = true },
             RateLimitInfo = new RateLimitInfo() { RateLimitRemaining = 29 }
         });
 
-        var result = await fixture.HabiticaApiService.GetHabiticaUserAsync(request);
+        var result = await habiticaApiService.GetHabiticaUserAsync(request);
 
         Assert.True(result.Body.User.success);
         Assert.True(result.Body.Content.success);
@@ -67,6 +56,6 @@ public class HabiticaApiServiceTests : IClassFixture<HabiticaApiServiceTests_Fix
     [Fact]
     public async Task FeedPetFoodAsync_ThrowsNotImplementedException()
     {
-        await Assert.ThrowsAsync<NotImplementedException>(() => fixture.HabiticaApiService.FeedPetFoodAsync(null));
+        await Assert.ThrowsAsync<NotImplementedException>(() => habiticaApiService.FeedPetFoodAsync(null));
     }
 }

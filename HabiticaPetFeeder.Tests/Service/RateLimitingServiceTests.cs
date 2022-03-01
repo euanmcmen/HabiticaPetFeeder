@@ -10,8 +10,8 @@ namespace HabiticaPetFeeder.Tests.Service
 {
     public class RateLimitingServiceTests
     {
-        readonly IThreadingProxy threadingProxy;
-        readonly IRateLimitingService rateLimitingService;
+        private readonly IThreadingProxy threadingProxy;
+        private readonly IRateLimitingService rateLimitingService;
 
         const int RateLimitStandardDurationSeconds = 1;
         const int RateLimitThrottleDurationSeconds = 3;
