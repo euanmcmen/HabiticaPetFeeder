@@ -27,9 +27,6 @@ namespace HabiticaPetFeeder.Api.Controllers
             try
             {
                 var authenticationToken = authenticationService.GetAuthenticationTokenForUserAuth(userApiAuthInfo);
-
-                logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} | Auth token generated: {authenticationToken}");
-
                 return Ok(authenticationToken);
             }
             catch (ArgumentNullException ane)
