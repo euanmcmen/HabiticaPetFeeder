@@ -1,4 +1,4 @@
-﻿namespace HabiticaPetFeeder.Logic.Proxy.Interface;
+﻿namespace HabiticaPetFeeder.Logic.Proxy.Abstraction;
 
 public interface IEncryptionService
 {

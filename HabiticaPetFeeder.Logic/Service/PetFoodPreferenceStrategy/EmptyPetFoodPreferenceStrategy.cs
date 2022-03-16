@@ -1,5 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Abstraction;
 using System.Collections.Generic;
 
 namespace HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy;

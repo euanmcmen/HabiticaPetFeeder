@@ -1,4 +1,4 @@
-﻿using HabiticaPetFeeder.Logic.Proxy.Interface;
+﻿using HabiticaPetFeeder.Logic.Proxy.Abstraction;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Logic.Proxy;

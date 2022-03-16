@@ -1,6 +1,6 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Proxy;
-using HabiticaPetFeeder.Logic.Proxy.Interface;
+using HabiticaPetFeeder.Logic.Proxy.Abstraction;
 using Microsoft.Extensions.Options;
 using Xunit;
 

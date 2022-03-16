@@ -1,12 +1,12 @@
 ﻿using HabiticaPetFeeder.Logic.Client;
-using HabiticaPetFeeder.Logic.Client.Interface;
+using HabiticaPetFeeder.Logic.Client.Abstraction;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Proxy;
-using HabiticaPetFeeder.Logic.Proxy.Interface;
+using HabiticaPetFeeder.Logic.Proxy.Abstraction;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy;
-using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Abstraction;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;

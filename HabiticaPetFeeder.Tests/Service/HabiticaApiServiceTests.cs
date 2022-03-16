@@ -1,5 +1,5 @@
 ﻿using FakeItEasy;
-using HabiticaPetFeeder.Logic.Client.Interface;
+using HabiticaPetFeeder.Logic.Client.Abstraction;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;

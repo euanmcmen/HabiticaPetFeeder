@@ -1,5 +1,5 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Proxy.Interface;
+using HabiticaPetFeeder.Logic.Proxy.Abstraction;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;

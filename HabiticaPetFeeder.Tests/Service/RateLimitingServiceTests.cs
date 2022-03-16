@@ -1,6 +1,6 @@
 ﻿using FakeItEasy;
 using HabiticaPetFeeder.Logic.Model;
-using HabiticaPetFeeder.Logic.Proxy.Interface;
+using HabiticaPetFeeder.Logic.Proxy.Abstraction;
 using HabiticaPetFeeder.Logic.Service;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Options;

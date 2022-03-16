@@ -2,7 +2,7 @@
 using FluentAssertions;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Service;
-using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Interfaces;
+using HabiticaPetFeeder.Logic.Service.PetFoodPreferenceStrategy.Abstraction;
 using HabiticaPetFeeder.Tests.DataFixtures;
 using System.Collections.Generic;
 using Xunit;
