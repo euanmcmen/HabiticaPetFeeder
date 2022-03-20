@@ -1,5 +1,7 @@
 ﻿using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
+using HabiticaPetFeeder.Logic.Service.ApiService.Feed.Abstraction;
+using HabiticaPetFeeder.Logic.Service.ApiService.Fetch.Abstraction;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,20 +15,22 @@ namespace HabiticaPetFeeder.Api.Controllers;
 public class PetFoodFeedsController : ControllerBase
 {
     private readonly ILogger<PetFoodFeedsController> logger;
-    private readonly IHabiticaApiService habiticaApiService;
+    private readonly IFetchApiService fetchApiService;
+    private readonly IFeedApiService feedApiService;
     private readonly IAuthenticationService authenticationService;
     private readonly IDataService dataService;
     private readonly IPetFoodFeedService petFoodFeedService;
 
     public PetFoodFeedsController(ILoggerFactory loggerFactory,
-                              IHabiticaApiService habiticaApiService,
+                              IFetchApiService fetchApiService,
+                              IFeedApiService feedApiService,
                               IAuthenticationService authenticationService,
                               IDataService dataService,
                               IPetFoodFeedService petFoodFeedService)
     {
         logger = loggerFactory.CreateLogger<PetFoodFeedsController>();
-
-        this.habiticaApiService = habiticaApiService;
+        this.fetchApiService = fetchApiService;
+        this.feedApiService = feedApiService;
         this.authenticationService = authenticationService;
         this.dataService = dataService;
         this.petFoodFeedService = petFoodFeedService;
@@ -43,7 +47,7 @@ public class PetFoodFeedsController : ControllerBase
 
         var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
 
-        var userInfoResponse = await habiticaApiService.GetHabiticaUserAsync(userInfoApiRequest);
+        var userInfoResponse = await fetchApiService.GetHabiticaUserAsync(userInfoApiRequest);
 
         var userPetFoodFeeds = GetUserPetFoodFeeds(userInfoResponse.Body);
 
@@ -96,7 +100,7 @@ public class PetFoodFeedsController : ControllerBase
 
         var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Body = petFoodFeed, RateLimitInfo = rateLimitInfo, UserApiAuthInfo = userApiAuthInfo };
 
-        var apiResponse = await habiticaApiService.FeedPetFoodAsync(apiRequest);
+        var apiResponse = await feedApiService.FeedPetFoodAsync(apiRequest);
 
         logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
             $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} ");

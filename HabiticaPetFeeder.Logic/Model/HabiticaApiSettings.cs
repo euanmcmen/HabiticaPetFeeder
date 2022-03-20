@@ -4,7 +4,9 @@ public class HabiticaApiSettings
 {
     public const string AppSettingName = "HabiticaApi";
 
-    public bool UseLiveEndpoint { get; set; }
+    public bool UseLiveFetchEndpoint { get; set; }
+
+    public bool UseLiveFeedEndpoint { get; set; }
 
     public int RateLimitStandardDurationSeconds { get; set; }
 
