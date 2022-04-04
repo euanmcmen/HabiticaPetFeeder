@@ -75,6 +75,8 @@ public class HabiticaApiClient : IHabiticaApiClient
 
     private async static Task<RateLimitedApiResponse<T>> ParseResponse<T>(HttpResponseMessage response)
     {
+        response.EnsureSuccessStatusCode();
+
         var content = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
 
         var rateLimitedResponse = new RateLimitedApiResponse<T> { Body = content, RateLimitInfo = new RateLimitInfo() };

@@ -6,6 +6,7 @@ using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Api.Controllers;
@@ -45,23 +46,31 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
+        try
+        {
+            var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
 
-        var userInfoResponse = await fetchApiService.GetHabiticaUserAsync(userInfoApiRequest);
+            var userInfoResponse = await fetchApiService.GetHabiticaUserAsync(userInfoApiRequest);
 
-        var userPetFoodFeeds = GetUserPetFoodFeeds(userInfoResponse.Body);
+            var userPetFoodFeeds = GetUserPetFoodFeeds(userInfoResponse.Body);
 
-        var petFeedsResponse =
-            new RateLimitedApiResponse<UserPetFoodFeeds>()
-            {
-                RateLimitInfo = userInfoResponse.RateLimitInfo,
-                Body = userPetFoodFeeds
-            };
+            var petFeedsResponse =
+                new RateLimitedApiResponse<UserPetFoodFeeds>()
+                {
+                    RateLimitInfo = userInfoResponse.RateLimitInfo,
+                    Body = userPetFoodFeeds
+                };
 
-        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
-            $"| Number of pet food feeds calculated: {userPetFoodFeeds.PetFoodFeeds.Count}");
+            logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
+                $"| Number of pet food feeds calculated: {userPetFoodFeeds.PetFoodFeeds.Count}");
 
-        return Ok(petFeedsResponse);
+            return Ok(petFeedsResponse);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, $"User Id: {userApiAuthInfo.ApiUserId} | An exception occurred in {nameof(GetPetFeedsForUserAsync)}.");
+            throw;
+        }
     }
 
     private UserPetFoodFeeds GetUserPetFoodFeeds(UserContentPair userContentPair)
@@ -98,14 +107,22 @@ public class PetFoodFeedsController : ControllerBase
         if (rateLimitInfo is null)
             return Forbid();
 
-        var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Body = petFoodFeed, RateLimitInfo = rateLimitInfo, UserApiAuthInfo = userApiAuthInfo };
+        try
+        {
+            var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Body = petFoodFeed, RateLimitInfo = rateLimitInfo, UserApiAuthInfo = userApiAuthInfo };
 
-        var apiResponse = await feedApiService.FeedPetFoodAsync(apiRequest);
+            var apiResponse = await feedApiService.FeedPetFoodAsync(apiRequest);
 
-        logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
-            $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity} ");
+            logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
+                $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity}");
 
-        return Ok(apiResponse);
+            return Ok(apiResponse);
+        }
+        catch(Exception e)
+        {
+            logger.LogError(e, $"User Id: {userApiAuthInfo.ApiUserId} | An exception occurred in {nameof(FeedUserPetAsync)}.");
+            throw;
+        }
     }
 
     private UserApiAuthInfo GetUserAuthFromRequestHeader(HttpRequest httpRequest)

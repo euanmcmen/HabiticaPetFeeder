@@ -4,7 +4,6 @@ using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service.ApiService.Feed.Abstraction;
 using HabiticaPetFeeder.Logic.Service.Interfaces;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Logic.Service.ApiService.Feed;
