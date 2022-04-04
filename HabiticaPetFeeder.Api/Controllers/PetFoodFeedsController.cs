@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace HabiticaPetFeeder.Api.Controllers;
@@ -46,7 +47,7 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        try
+        return await HandleApiOperationAsync(nameof(GetPetFeedsForUserAsync), userApiAuthInfo.ApiUserId, async () =>
         {
             var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
 
@@ -65,12 +66,7 @@ public class PetFoodFeedsController : ControllerBase
                 $"| Number of pet food feeds calculated: {userPetFoodFeeds.PetFoodFeeds.Count}");
 
             return Ok(petFeedsResponse);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, $"User Id: {userApiAuthInfo.ApiUserId} | An exception occurred in {nameof(GetPetFeedsForUserAsync)}.");
-            throw;
-        }
+        });
     }
 
     private UserPetFoodFeeds GetUserPetFoodFeeds(UserContentPair userContentPair)
@@ -107,9 +103,14 @@ public class PetFoodFeedsController : ControllerBase
         if (rateLimitInfo is null)
             return Forbid();
 
-        try
+        return await HandleApiOperationAsync(nameof(FeedUserPetAsync), userApiAuthInfo.ApiUserId, async () =>
         {
-            var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>() { Body = petFoodFeed, RateLimitInfo = rateLimitInfo, UserApiAuthInfo = userApiAuthInfo };
+            var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>()
+            {
+                Body = petFoodFeed,
+                RateLimitInfo = rateLimitInfo,
+                UserApiAuthInfo = userApiAuthInfo
+            };
 
             var apiResponse = await feedApiService.FeedPetFoodAsync(apiRequest);
 
@@ -117,11 +118,28 @@ public class PetFoodFeedsController : ControllerBase
                 $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity}");
 
             return Ok(apiResponse);
-        }
-        catch(Exception e)
+        });
+    }
+
+    private async Task<IActionResult> HandleApiOperationAsync(string operationName, string apiUserId, Func<Task<IActionResult>> action)
+    {
+        try
         {
-            logger.LogError(e, $"User Id: {userApiAuthInfo.ApiUserId} | An exception occurred in {nameof(FeedUserPetAsync)}.");
-            throw;
+            return await action();
+        }
+        catch (HttpRequestException httpEx)
+        {
+            logger.LogError(httpEx, $"{operationName} | User Id: {apiUserId} | " +
+                $"Unexpected API status code: {httpEx.StatusCode}.");
+
+            return StatusCode((int)httpEx.StatusCode);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, $"{operationName} | User Id: {apiUserId} | " +
+                $"General error occurred: {e.Message}.");
+
+            return StatusCode(500);
         }
     }
 
