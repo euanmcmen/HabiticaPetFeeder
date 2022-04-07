@@ -47,30 +47,32 @@ public class PetFoodFeedsController : ControllerBase
         if (userApiAuthInfo is null)
             return Unauthorized();
 
-        return await HandleApiOperationAsync(nameof(GetPetFeedsForUserAsync), userApiAuthInfo.ApiUserId, async () =>
-        {
-            var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
+        var userInfoApiRequest = new AuthenticatedApiRequest() { UserApiAuthInfo = userApiAuthInfo };
 
-            var userInfoResponse = await fetchApiService.GetHabiticaUserAsync(userInfoApiRequest);
+        var userInfoResponse = await fetchApiService.GetHabiticaUserAsync(userInfoApiRequest);
 
-            var userPetFoodFeeds = GetUserPetFoodFeeds(userInfoResponse.Body);
+        var userPetFoodFeeds = GetUserPetFoodFeeds(userInfoResponse);
 
-            var petFeedsResponse =
-                new RateLimitedApiResponse<UserPetFoodFeeds>()
-                {
-                    RateLimitInfo = userInfoResponse.RateLimitInfo,
-                    Body = userPetFoodFeeds
-                };
+        var petFeedsResponse =
+            new RateLimitedApiResponse<UserPetFoodFeeds>()
+            {
+                RateLimitInfo = userInfoResponse.RateLimitInfo,
+                HttpStatus = userInfoResponse.HttpStatus,
+                Body = userPetFoodFeeds
+            };
 
-            logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
-                $"| Number of pet food feeds calculated: {userPetFoodFeeds.PetFoodFeeds.Count}");
-
-            return Ok(petFeedsResponse);
-        });
+        return HandleApiResponse(nameof(GetPetFeedsForUserAsync), userApiAuthInfo, petFeedsResponse);
     }
 
-    private UserPetFoodFeeds GetUserPetFoodFeeds(UserContentPair userContentPair)
+    private UserPetFoodFeeds GetUserPetFoodFeeds(RateLimitedApiResponse<UserContentPair> userInfoResponse)
     {
+        if (userInfoResponse.HttpStatus != System.Net.HttpStatusCode.OK)
+        {
+            return null;
+        }
+
+        var userContentPair = userInfoResponse.Body;
+
         var userName = dataService.GetUserName(userContentPair.User);
         var allPets = dataService.GetPets(userContentPair.User, userContentPair.Content);
         var allFoods = dataService.GetFoods(userContentPair.User, userContentPair.Content);
@@ -103,44 +105,27 @@ public class PetFoodFeedsController : ControllerBase
         if (rateLimitInfo is null)
             return Forbid();
 
-        return await HandleApiOperationAsync(nameof(FeedUserPetAsync), userApiAuthInfo.ApiUserId, async () =>
+        var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>()
         {
-            var apiRequest = new AuthenticatedRateLimitedApiRequest<PetFoodFeed>()
-            {
-                Body = petFoodFeed,
-                RateLimitInfo = rateLimitInfo,
-                UserApiAuthInfo = userApiAuthInfo
-            };
+            Body = petFoodFeed,
+            RateLimitInfo = rateLimitInfo,
+            UserApiAuthInfo = userApiAuthInfo
+        };
 
-            var apiResponse = await feedApiService.FeedPetFoodAsync(apiRequest);
+        var apiResponse = await feedApiService.FeedPetFoodAsync(apiRequest);
 
-            logger.LogInformation($"User Id: {userApiAuthInfo.ApiUserId} " +
-                $"| Pet {petFoodFeed.PetFullName} was fed {petFoodFeed.FoodFullName} x{petFoodFeed.FeedQuantity}");
-
-            return Ok(apiResponse);
-        });
+        return HandleApiResponse(nameof(FeedUserPetAsync), userApiAuthInfo, apiResponse);
     }
 
-    private async Task<IActionResult> HandleApiOperationAsync(string operationName, string apiUserId, Func<Task<IActionResult>> action)
+    private IActionResult HandleApiResponse(string operationName, UserApiAuthInfo userApiAuthInfo, RateLimitedApiResponse rateLimitedApiResponse)
     {
-        try
+        if (rateLimitedApiResponse.HttpStatus != System.Net.HttpStatusCode.OK)
         {
-            return await action();
+            logger.LogError($"{operationName} | User Id: {userApiAuthInfo.ApiUserId} | " +
+                $"Unexpected API status code: {rateLimitedApiResponse.HttpStatus}.");
         }
-        catch (HttpRequestException httpEx)
-        {
-            logger.LogError(httpEx, $"{operationName} | User Id: {apiUserId} | " +
-                $"Unexpected API status code: {httpEx.StatusCode}.");
 
-            return StatusCode((int)httpEx.StatusCode);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, $"{operationName} | User Id: {apiUserId} | " +
-                $"General error occurred: {e.Message}.");
-
-            return StatusCode(500);
-        }
+        return StatusCode((int)rateLimitedApiResponse.HttpStatus, rateLimitedApiResponse);
     }
 
     private UserApiAuthInfo GetUserAuthFromRequestHeader(HttpRequest httpRequest)

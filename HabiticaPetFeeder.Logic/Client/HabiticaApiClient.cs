@@ -75,11 +75,12 @@ public class HabiticaApiClient : IHabiticaApiClient
 
     private async static Task<RateLimitedApiResponse<T>> ParseResponse<T>(HttpResponseMessage response)
     {
-        response.EnsureSuccessStatusCode();
+        var rateLimitedResponse = new RateLimitedApiResponse<T> { RateLimitInfo = new RateLimitInfo(), HttpStatus = response.StatusCode };
 
-        var content = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
-
-        var rateLimitedResponse = new RateLimitedApiResponse<T> { Body = content, RateLimitInfo = new RateLimitInfo() };
+        if (response.IsSuccessStatusCode)
+        {
+            rateLimitedResponse.Body = JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        }
 
         if (response.Headers.TryGetValues("X-RateLimit-Remaining", out IEnumerable<string> rateLimitRemainingHeader))
         {

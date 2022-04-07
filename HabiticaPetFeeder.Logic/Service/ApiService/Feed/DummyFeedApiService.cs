@@ -37,7 +37,7 @@ public class DummyFeedApiService : IFeedApiService
                 RateLimitReset = apiPetFoodFeedRequest.RateLimitInfo.RateLimitReset
             };
 
-        var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitInfo = responseRateLimitInfo };
+        var rateLimitedResponse = new RateLimitedApiResponse() { RateLimitInfo = responseRateLimitInfo, HttpStatus = System.Net.HttpStatusCode.OK };
 
         return rateLimitedResponse;
     }

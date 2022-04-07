@@ -31,7 +31,16 @@ public class FetchApiService : IFetchApiService
             ? userResponse.RateLimitInfo
             : contentResponse.RateLimitInfo;
 
-        var rateLimitedResponse = new RateLimitedApiResponse<UserContentPair> { RateLimitInfo = minRateLimitInfo, Body = userPetFoodInfo };
+        var aggregateHttpStatus = userResponse.HttpStatus == System.Net.HttpStatusCode.OK && userResponse.HttpStatus == System.Net.HttpStatusCode.OK
+            ? System.Net.HttpStatusCode.OK
+            : System.Net.HttpStatusCode.Unauthorized;
+
+        var rateLimitedResponse = new RateLimitedApiResponse<UserContentPair>
+        {
+            RateLimitInfo = minRateLimitInfo,
+            Body = userPetFoodInfo,
+            HttpStatus = aggregateHttpStatus
+        };
 
         return rateLimitedResponse;
     }
