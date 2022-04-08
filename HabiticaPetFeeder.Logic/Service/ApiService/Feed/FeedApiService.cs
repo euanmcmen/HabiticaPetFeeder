@@ -23,6 +23,8 @@ public class FeedApiService : IFeedApiService
 
     public async Task<RateLimitedApiResponse> FeedPetFoodAsync(AuthenticatedRateLimitedApiRequest<PetFoodFeed> apiPetFoodFeedRequest)
     {
+        await habiticaApiClient.AuthenticateAsync(apiPetFoodFeedRequest.UserApiAuthInfo);
+
         await rateLimitingService.WaitForRateLimitDelayAsync(apiPetFoodFeedRequest.RateLimitInfo); 
 
         var apiResponse = await habiticaApiClient.FeedPetFoodAsync(apiPetFoodFeedRequest.Body);
