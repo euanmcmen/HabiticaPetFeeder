@@ -1,4 +1,4 @@
-﻿using HabiticaPetFeeder.Logic.Client;
+﻿using HabiticaPetFeeder.Logic.Client.Abstraction;
 using HabiticaPetFeeder.Logic.Model;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Service.ApiService.Feed.Abstraction;
@@ -11,10 +11,10 @@ namespace HabiticaPetFeeder.Logic.Service.ApiService.Feed;
 public class FeedApiService : IFeedApiService
 {
     private readonly ILogger<FeedApiService> logger;
-    private readonly HabiticaApiClient habiticaApiClient;
+    private readonly IHabiticaApiClient habiticaApiClient;
     private readonly IRateLimitingService rateLimitingService;
 
-    public FeedApiService(ILoggerFactory loggerFactory, HabiticaApiClient habiticaApiClient, IRateLimitingService rateLimitingService)
+    public FeedApiService(ILoggerFactory loggerFactory, IHabiticaApiClient habiticaApiClient, IRateLimitingService rateLimitingService)
     {
         this.logger = loggerFactory.CreateLogger<FeedApiService>();
         this.habiticaApiClient = habiticaApiClient;
