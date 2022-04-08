@@ -4,6 +4,7 @@ using HabiticaPetFeeder.Logic.Model.ApiModel.ContentResponse;
 using HabiticaPetFeeder.Logic.Model.ApiModel.UserResponse;
 using HabiticaPetFeeder.Logic.Model.ApiOperations;
 using HabiticaPetFeeder.Logic.Model.FeedResponse;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,26 +15,23 @@ namespace HabiticaPetFeeder.Logic.Client;
 
 public class HabiticaApiClient : IHabiticaApiClient
 {
+    private readonly HabiticaApiClientHeaderSettings habiticaApiClientHeaderSettings;
     private readonly HttpClient httpClient;
-
-    private const string MyApiUserId = "5f10718c-957a-47dc-bdf8-3c90053ca248";
-    private const string MyAppName = "HabiticaPetFeeder";
 
     private const string userEndpoint = @"https://habitica.com/api/v3/user?userFields=items.pets,items.mounts,items.food";
     private const string contentEndpoint = @"https://habitica.com/api/v3/content";
     private const string feedPetEndpoint = @"https://habitica.com/api/v3/user/feed/{0}/{1}?amount={2}";
 
-    //https: //habitica.com/api/v3/user/feed/Armadillo-Shade/Chocolate?amount=9
-
-    public HabiticaApiClient(HttpClient httpClient)
+    public HabiticaApiClient(HttpClient httpClient, IOptions<HabiticaApiClientHeaderSettings> clientHeaderSettingsOptions)
     {
+        this.habiticaApiClientHeaderSettings = clientHeaderSettingsOptions.Value;
         this.httpClient = httpClient;
     }
 
     public Task AuthenticateAsync(UserApiAuthInfo userApiAuthInfo)
     {
         httpClient.DefaultRequestHeaders.Clear();
-        httpClient.DefaultRequestHeaders.Add("x-client", $"{MyApiUserId}-{MyAppName}");
+        httpClient.DefaultRequestHeaders.Add("x-client", $"{habiticaApiClientHeaderSettings.MyUserId}-{habiticaApiClientHeaderSettings.MyAppName}");
         httpClient.DefaultRequestHeaders.Add("x-api-user", userApiAuthInfo.ApiUserId);
         httpClient.DefaultRequestHeaders.Add("x-api-key", userApiAuthInfo.ApiUserKey);
 

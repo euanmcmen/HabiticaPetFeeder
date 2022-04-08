@@ -22,7 +22,7 @@ public static class StartupExtensions
     public static void UseHabiticaPetFeederServiceLayer(this IServiceCollection services, IConfiguration configuration)
     {
         // Configure web client
-        services.AddScoped<IHabiticaApiClient>((sp) => new HabiticaApiClient(new System.Net.Http.HttpClient()));
+        services.AddHttpClient<IHabiticaApiClient, HabiticaApiClient>();
 
         // Configure Mongo
         services.AddScoped<IMongoDbService, MongoDbService>();
@@ -36,6 +36,7 @@ public static class StartupExtensions
         //Configure Options
         services.Configure<HabiticaApiSettings>(configuration.GetSection(HabiticaApiSettings.AppSettingName));
         services.Configure<EncryptionSettings>(configuration.GetSection(EncryptionSettings.AppSettingName));
+        services.Configure<HabiticaApiClientHeaderSettings>(configuration.GetSection(HabiticaApiClientHeaderSettings.AppSettingName));
 
         //Configure Pet Food Preference strategies
         services.AddScoped<IPetFoodPreferenceStrategy, BasicPetFoodPreferenceStrategy>();
