@@ -32,7 +32,7 @@ public class DummyFetchApiService : IFetchApiService
 
         var responseRateInfo = new RateLimitInfo { RateLimitReset = DateTimeHelper.DateToString(DateTime.UtcNow), RateLimitRemaining = 28 };
 
-        var rateLimitedResponse = new RateLimitedApiResponse<UserContentPair> { RateLimitInfo = responseRateInfo, Body = userPetFoodInfo };
+        var rateLimitedResponse = new RateLimitedApiResponse<UserContentPair> { RateLimitInfo = responseRateInfo, Body = userPetFoodInfo, HttpStatus = System.Net.HttpStatusCode.OK };
 
         return rateLimitedResponse;
     }
